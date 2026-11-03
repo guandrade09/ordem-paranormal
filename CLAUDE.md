@@ -8,6 +8,7 @@ Base de regras: livro v1.1 + ficha oficial. Hospedagem: GitHub Pages. Login e ba
 - `css/style.css` — estilos (a ordem das regras importa, é uma cascata).
 - `js/` — scripts clássicos no escopo global (os `onclick="..."` do HTML chamam funções globais):
   `config` · `core` (estado, utilitários) · `data` (tabelas do livro) · `rules` (cálculos) · `ui` (roteador R, gestos) · `views` (telas) · `account` (login e sincronização) · `main.js` (inicia o app).
+- `js/data/threats.js` — ameaças do livro (`THREATS`); `js/views/threats.js` — Monstruário (lista `thr` e ficha `thd`, abas Info/Ações). Paletas por elemento em `css/style.css` (seção "Monstruário"), aplicadas por `thTheme()` e independentes do tema claro/escuro. Ícones de Humanos/Natureza em `img/`.
 - `supabase.sql` — tabelas + RLS (cada usuário só acessa as próprias linhas).
 - `tests/` — `npm test` (ou `node tests/run.js`). Sem dependências.
 
@@ -26,7 +27,7 @@ Base de regras: livro v1.1 + ficha oficial. Hospedagem: GitHub Pages. Login e ba
 - Fundo escuro do tema: `#121212`.
 
 ## Pendências conhecidas
-Monstruário, Escudo do Mestre, Criador de Cenas; DT +2 do Especialista em Elemento; excluir conta pelo app; compartilhar fichas/campanhas entre contas.
+Escudo do Mestre, Criador de Cenas; Monstruário: faltam os Perigos (armadilhas/doenças), a Máscara do Desespero não tem o texto do Enigma de Medo, imagens das ameaças só ficam no aparelho (`op_thimg`, não sincronizam); DT +2 do Especialista em Elemento; excluir conta pelo app; compartilhar fichas/campanhas entre contas.
 
 ## Limites dos testes
 Simulam navegador e servidor (Supabase falso). Não cobrem aparência visual nem o Supabase real: depois de publicar, teste o login uma vez de verdade.

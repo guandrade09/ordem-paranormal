@@ -46,6 +46,10 @@
  "modificacoes:lista": "956909255:4856",
  "ataque:pistola": "-2008006821:4039",
  "combate:ordem": "Ana17,Bruno15,Caio14,Davi14 | Bruno15,Caio14,Davi14,Ana13 | limiteCaio=13",
+ "monstruario:lista": "66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true",
+ "monstruario:fichas": "ok",
+ "monstruario:tema": "morte||",
+ "monstruario:imagem": "true|false",
  "dados:rd": "4,4,4|11",
  "estado:serializavel": true
 }

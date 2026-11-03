@@ -37,6 +37,12 @@ function main() {
   check('editar ficha: salva nome/jogador/foto, remove a foto e recusa nome vazio',
     result['edicao:ficha'] === 'Novo Nome|Maria|true || Novo Nome|Maria|false', result['edicao:ficha']);
 
+  check('monstruário: 66 ameaças, grupos na ordem do livro e VD crescente em cada grupo',
+    result['monstruario:lista'] === '66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true', result['monstruario:lista']);
+  check('monstruário: todas as fichas (abas Info e Ações) desenham sem undefined/NaN', result['monstruario:fichas'] === 'ok', result['monstruario:fichas']);
+  check('monstruário: paleta do elemento só nas fichas (Realidade e lista voltam ao tema padrão)', result['monstruario:tema'] === 'morte||', result['monstruario:tema']);
+  check('monstruário: imagem da ameaça é guardada e removida', result['monstruario:imagem'] === 'true|false', result['monstruario:imagem']);
+
   if (process.env.UPDATE) {
     fs.writeFileSync(SNAPSHOT, JSON.stringify(result, null, 1) + '\n');
     console.log('snapshot regravado:', Object.keys(result).length, 'resultados');

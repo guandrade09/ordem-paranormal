@@ -80,6 +80,39 @@
     return antes + ' | ' + depois + ' | limiteCaio=' + lim;
   });
 
+  // --- Monstruário (Ameaças): grupos por elemento, VD crescente e fichas sem dados faltando ---
+  safe('monstruario:lista', () => {
+    S.v = 'thr'; R();
+    const h = document.querySelector('#app').innerHTML;
+    const ordem = THO.filter((e) => THREATS.some((t) => t.el == e));
+    const pos = ordem.map((e) => h.indexOf(e.toUpperCase() + ' <small>'));
+    const crescente = THO.every((e) => thSorted(e).every((t, i, l) => !i || l[i - 1].vd <= t.vd));
+    return [THREATS.length, ordem.join('>'), pos.every((p, i) => p > -1 && (!i || p > pos[i - 1])), crescente].join('|');
+  });
+  safe('monstruario:fichas', () => {
+    let ruins = [];
+    THREATS.forEach((t) => {
+      ['i', 'a'].forEach((tab) => {
+        S.thid = t.id; S.tht = tab; S.v = 'thd'; R();
+        const h = document.querySelector('#app').innerHTML;
+        if (/undefined|NaN|null|\[object/.test(h) || !h.includes(t.n)) ruins.push(t.id + ':' + tab);
+      });
+    });
+    return ruins.length ? 'RUINS ' + ruins.join(',') : 'ok';
+  });
+  safe('monstruario:tema', () => {
+    S.thid = 'nidere'; S.tht = 'i'; S.v = 'thd'; R();
+    const a = document.body.dataset.thel;
+    S.thid = 'bandido'; R();
+    const b = document.body.dataset.thel || '';
+    S.v = 'thr'; R();
+    return a + '|' + b + '|' + (document.body.dataset.thel || '');
+  });
+  safe('monstruario:imagem', () => {
+    thImgSet('nidere', 'data:image/jpeg;base64,xx'); const a = !!thImgs().nidere;
+    thImgSet('nidere', ''); return a + '|' + !!thImgs().nidere;
+  });
+
   // --- dados (Math.random fixo em 0.5) ---
   safe('dados:rd', () => rd(3, 6).join(',') + '|' + String(rl('2d6+3')));
 

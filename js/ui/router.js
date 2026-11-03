@@ -13,7 +13,8 @@ function R() {
   } catch (e) {
     MDC = null
   }
-  $('#app').innerHTML = ({start, home, mestre, conta, create, sheet, wip, grim, minv, npc: npcv, cmb: cmbv})[S.v]();
+  $('#app').innerHTML = ({start, home, mestre, conta, create, sheet, wip, grim, minv, npc: npcv, cmb: cmbv, thr, thd})[S.v]();
+  thTheme();
   save();
   if (S.lv && S.v == 'sheet') lvStep()
 }

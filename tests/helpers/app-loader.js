@@ -53,7 +53,7 @@ function loadApp(opts = {}) {
     documentElement: { dataset: {} },
     createElement: () => ({ click() {}, remove() {} }),
     head: { appendChild(node) { if (node.onload) node.onload(); } },
-    body: { appendChild() {} },
+    body: { appendChild() {}, dataset: {} },
   };
   const ctx = vm.createContext({
     document: documentStub, localStorage: memoryStorage(), sessionStorage: memoryStorage(),

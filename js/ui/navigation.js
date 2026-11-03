@@ -8,6 +8,7 @@ function go(m) {
     m == 'Inventário de Itens e Armas' ? 'minv' :
     m == 'NPCs'                        ? 'npc' :
     m == 'Criador de Combates'         ? 'cmb' :
+    m == 'Monstruário (Ameaças)'       ? 'thr' :
                                          'wip';
   S.w = m;
   R()
