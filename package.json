@@ -1,0 +1,11 @@
+{
+  "name": "ordem-paranormal-rpg",
+  "version": "0.2.0",
+  "private": true,
+  "description": "App mobile-first para jogar Ordem Paranormal RPG (ficha do jogador e área do Mestre).",
+  "scripts": {
+    "test": "node tests/run.js",
+    "test:update": "UPDATE=1 node tests/smoke.test.js"
+  },
+  "engines": { "node": ">=18" }
+}
