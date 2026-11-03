@@ -31,8 +31,8 @@ function K(c) {
     pv: z[0] + (c.origem == 'Desgarrado' ? lv : 0) + (c.trail == 'Tropa de Choque' && n >= 10 ? lv : 0),
       pe: z[1] + (c.origem == 'Universitário' ? uni(n) : 0), san: z[2] + (c.origem == 'Vítima' ? lv : 0) - (c.stn || 0),
       rod: pr_ + (c.origem == 'Universitário' ? 1 : 0),
-      dt: (((o ? o[1] : '') + ',' + cl.fix + ',' + (c.trained || [])).split(',').includes('Ocultismo') ? 5 : 0) +
-      5 * v.PRE + (hasAb(c, 'Rituais Eficientes') ? 5 : 0),
+      // DT de ritual = 10 + limite de PE por rodada + atributo-base (Presença) (+5 com Rituais Eficientes)
+      dt: 10 + pr_ + (c.origem == 'Universitário' ? 1 : 0) + v.PRE + (hasAb(c, 'Rituais Eficientes') ? 5 : 0),
       def: 10 + v.AGI + pr.d + td + pd + (hasAb(c, 'Reflexos Defensivos') ? 2 : 0) + ((c.t && c.t.def) || 0), pdef: pd,
       tdef: td,
       carga: (v.FOR + (hasAb(c, 'Inventário Otimizado') ? v.INT : 0)) ?
