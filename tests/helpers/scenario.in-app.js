@@ -38,6 +38,19 @@
     for (let tab = 0; tab < 5; tab++) safe(`ficha:${k}:aba${tab}`, () => { S.lv = null; S.cid = c.id; S.v = 'sheet'; S.tab = tab; R(); return screen(); });
   });
 
+  // --- DT de ritual = 10 + PE/rodada + Presença ---
+  safe('dt:rituais', () => casos.map(([cl, nex, attr, items]) => cl + nex + '=' + K(mk(cl, nex, attr, items)).dt).join(','));
+
+  // --- editar nome, jogador e foto na ficha ---
+  safe('edicao:ficha', () => {
+    const c = mk('Combatente', 5, {}, []); S.cid = c.id; S.v = 'sheet'; S.tab = 0;
+    edOpen(); S.ed.name = 'Novo Nome'; S.ed.player = 'Maria'; S.ed.photo = 'data:image/jpeg;base64,xx'; edSave();
+    const a = [c.name, c.player, !!c.photo].join('|');
+    edOpen(); edNoPhoto(); edSave();
+    edOpen(); S.ed.name = '  '; edSave(); // nome vazio é recusado
+    return a + ' || ' + [c.name, c.player, !!c.photo].join('|');
+  });
+
   // --- criação e level-up ---
   safe('criacao:novo', () => { newC(); S.v = 'create'; R(); return screen(); });
   safe('levelup:trilha', () => { const c = mk('Combatente', 10, {}, []); S.lv = { n: 10, sg: 0, i: 0, x: {}, st: [{ t: 'trail' }] }; const h = vTrail(0); S.lv = null; return hash(h); });

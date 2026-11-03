@@ -3,22 +3,63 @@
  */
 
 // Foto do personagem
-function photo(i) {
-  let f = i.files[0];
-  if (!f) return;
-  let r = new FileReader();
+// Lê uma imagem, recorta o centro em quadrado e entrega um JPEG pequeno (data URL) a `done`
+function photoFrom(file, size, done) {
+  if (!file) return;
+  const r = new FileReader();
   r.onload = () => {
-    let im = new Image();
+    const im = new Image();
     im.onload = () => {
-      let c = document.createElement('canvas');
-      c.width = c.height = 160;
-      c.getContext('2d').drawImage(im, 0, 0, 160, 160);
-      S.d.photo = c.toDataURL('image/jpeg', .7);
-      toast('Foto carregada')
+      const c = document.createElement('canvas'), m = Math.min(im.width, im.height) || 1;
+      c.width = c.height = size;
+      c.getContext('2d').drawImage(im, (im.width - m) / 2, (im.height - m) / 2, m, m, 0, 0, size, size);
+      done(c.toDataURL('image/jpeg', .7))
     };
     im.src = r.result
   };
-  r.readAsDataURL(f)
+  r.readAsDataURL(file)
+}
+function photo(i) {
+  photoFrom(i.files[0], 160, d => {
+    S.d.photo = d;
+    toast('Foto carregada')
+  })
+}
+
+// Edição na ficha: nome do personagem, nome do jogador e foto (trocar/remover)
+function edOpen() {
+  const c = cur();
+  S.ed = {name: c.name || '', player: c.player || '', photo: c.photo || ''};
+  edDraw()
+}
+function edDraw() {
+  const e = S.ed;
+  modal(`<div class=bar>Editar ficha</div><label>Nome do personagem</label><input id=ednm value="${
+      esc(e.name)}" oninput="S.ed.name=this.value"><label>Nome do jogador</label><input id=edpl value="${
+      esc(e.player)}" oninput="S.ed.player=this.value"><label>Foto</label><div class=row style="gap:12px;margin:6px 0">${
+      ph(e)}<div style="flex:1"><input type=file accept="image/*" onchange="edPhoto(this)">${
+      e.photo ? '<button onclick="edNoPhoto()" style="margin-top:6px">Remover foto</button>' : ''}</div></div><div class=grid2 style="margin-top:10px"><button onclick="cm()">Cancelar</button><button class=btn onclick="edSave()">Salvar</button></div>`)
+}
+function edPhoto(i) {
+  photoFrom(i.files[0], 160, d => {
+    S.ed.photo = d;
+    edDraw()
+  })
+}
+function edNoPhoto() {
+  S.ed.photo = '';
+  edDraw()
+}
+function edSave() {
+  const e = S.ed, nm = (e.name || '').trim();
+  if (!nm) return toast('O personagem precisa de um nome.');
+  mut(c => {
+    c.name = nm;
+    c.player = (e.player || '').trim();
+    if (e.photo) c.photo = e.photo; else delete c.photo
+  });
+  S.ed = null;
+  cm()
 }
 function at(x, s) {
   let d = S.d, v = d.attr[x] + s, rem = 9 - A.reduce((a, y) => a + d.attr[y], 0);
@@ -101,7 +142,7 @@ function sheet() {
   const nn = c.nex >= 95 ? 99 : c.nex + 5,
         head = `<div class=row style="margin:12px 0 22px;gap:14px">${
           ph(c)}<div style="flex:1"><b style="font:42px 'Bebas Neue';line-height:1.05">${
-          c.name}</b><br><small style="font-size:17px">JOGADOR: ${
+          c.name}</b> <button onclick="edOpen()" aria-label="Editar nome, jogador e foto" title="Editar" style="width:auto;margin:0;padding:2px 8px;font-size:18px">✎</button><br><small style="font-size:17px">JOGADOR: ${
           c.player}</small></div><button class=up onclick="up()" ${c.nex >= 99 ? 'disabled' : ''}>▲<br>NEX ${
           nn}%</button></div>`;
   let b = '';

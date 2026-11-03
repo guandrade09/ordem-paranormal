@@ -32,6 +32,11 @@ function main() {
   const ordem = result['combate:ordem'] || '';
   check('combate: ordena por dado+bônus (empate: maior bônus), atraso 17→13 e limite = min(10+bônus, valor−1)', /^Ana17,Bruno15,Caio14,Davi14 \| Bruno15,Caio14,Davi14,Ana13 \| limiteCaio=13$/.test(ordem), ordem);
 
+  check('DT de ritual = 10 + PE/rodada + Presença (Ocultista 5%/PRE3 = 14; 99%/PRE5 = 35; Combatente 70%/PRE1 = 25)',
+    result['dt:rituais'] === 'Combatente5=12,Combatente70=25,Especialista35=18,Ocultista5=14,Ocultista99=35', result['dt:rituais']);
+  check('editar ficha: salva nome/jogador/foto, remove a foto e recusa nome vazio',
+    result['edicao:ficha'] === 'Novo Nome|Maria|true || Novo Nome|Maria|false', result['edicao:ficha']);
+
   if (process.env.UPDATE) {
     fs.writeFileSync(SNAPSHOT, JSON.stringify(result, null, 1) + '\n');
     console.log('snapshot regravado:', Object.keys(result).length, 'resultados');
