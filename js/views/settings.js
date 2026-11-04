@@ -18,7 +18,7 @@ function cfgC() {
 }
 
 // Versão exibida nas configurações
-const VER = 'Beta 0.1 · ' + new Date().toISOString().slice(0, 10);
+const VER = 'Beta ' + APP_VERSION + ' · ' + new Date().toISOString().slice(0, 10);
 
 // Exportar backup (JSON)
 function dExp() {

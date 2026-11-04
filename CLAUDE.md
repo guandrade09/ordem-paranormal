@@ -17,8 +17,9 @@ Base de regras: livro v1.1 + ficha oficial. Hospedagem: GitHub Pages. Login e ba
 1. Estado global `S` (salvo em `localStorage` chave `op` e, com login, sincronizado no Supabase). Telas por `S.v`; `R()` redesenha.
 2. Novo arquivo JS: adicione o `<script>` no `index.html` na posição certa (depois do que ele usa).
 3. Depois de qualquer mudança: `npm test`. Se a mudança de comportamento for INTENCIONAL, rode `npm run test:update` e comite o `tests/snapshot.json` junto.
-4. Commits no padrão Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`).
-5. Nunca coloque a *secret/service_role key* do Supabase no código. A chave "publishable" em `js/config.js` é pública por design.
+4. Versão: a cada publicação (push) suba `APP_VERSION` em `js/config.js` (aparece ao lado de BETA na tela inicial; o usuário usa para saber se a versão nova já chegou).
+5. Commits no padrão Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`).
+6. Nunca coloque a *secret/service_role key* do Supabase no código. A chave "publishable" em `js/config.js` é pública por design.
 
 ## Decisões de regra do projeto (definidas pelo Mestre/usuário)
 - Atrasar ação (iniciativa): por rodada, limite = 10 + bônus de Iniciativa; iniciativa mínima 1; o limite volta a cada rodada. A tela mostra só o número (dado + bônus).
