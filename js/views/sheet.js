@@ -257,7 +257,7 @@ ${rsheet(c, k)}`
       CC[cr]}">${cr}</b>${
       c.origem == 'Magnata' ? ' <small>(+1 Magnata)</small>' : ''}</div><div class=catb style="margin-top:14px">${
         [1, 2, 3, 4]
-          .map(n => `<div class="cb ${cn[n] > P[3][n - 1] ? 'over' : ''}"><small>Categoria ${RM[n]}</small><b>${
+          .map(n => `<div class="cb ${cn[n] > P[3][n - 1] ? 'over' : ''}"><small>Cat. ${RM[n]}</small><b>${
                  cn[n]}/${P[3][n - 1]}</b></div>`)
           .join('')}</div>${
         [1, 2, 3, 4].some(n => cn[n] > P[3][n - 1]) ?
@@ -330,7 +330,7 @@ function pp(s) {
 // Itens personalizados
 function cust() {
   modal(`<b>Outro item</b><input id=cn placeholder="Nome"><textarea id=cd placeholder="Descrição"></textarea><input id=ce type=number value=1 min=0 placeholder="Espaços"><select id=cc>${
-    RM.map((r, i) => `<option value=${i}>Categoria ${r}</option>`)
+    RM.map((r, i) => `<option value=${i}>Cat. ${r}</option>`)
       .join(
         '')}</select><button class=btn onclick="cm();mut(c=>c.inv.push({n:$('#cn').value||'Item',ds:$('#cd').value,e:+$('#ce').value||0,cat:+$('#cc').value}))">Adicionar</button>`)
 }

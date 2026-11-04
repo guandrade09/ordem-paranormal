@@ -25,7 +25,7 @@ const itemCard = (it, i) => `<div class="card row"><div style="flex:1"><b>${
           .map(ci => `<button onclick="event.stopPropagation();seloMk(${ci})">${ci}º círculo · <b class=pec>${
                  BC[ci]} PE</b>${(RT.find(z => z.n == it.sl.split('|')[0]) || {}).ci == ci ? ' ★' : ''}</button>`)
           .join('')}</div><small>★ = círculo do ritual</small></div>` :
-    ''}</div><div class=ib><div><small>Categoria</small><b>${
+    ''}</div><div class=ib><div><small>Cat.</small><b>${
   RM[ecat(cur(), it)]}</b></div><div><small>Espaços</small><b>${ee(cur(), it)}</b></div>${
   it.w ? `<div><small>Dano</small><b>${weff(cur(), it).d}${wEx(weff(cur(), it))}</b></div><div><small>Crítico</small><b>${
            weff(cur(), it).c}/x${it.w.x}</b></div>` :

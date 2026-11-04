@@ -34,7 +34,7 @@ function cat(k) {
 function mcard(x) {
   let w = x[3], d = IDESC[x[0]] || x[4] || 'Item do livro (descrição em breve).', p = PR[x[0]];
   return `<div class=card><div class=row><div style="flex:1"><b style="font:22px 'Bebas Neue'">${x[0]}</b>${
-    w.d ? `<br><small>${wgName(x[0])}</small>` : ''}</div><div class=ib><div><small>Categoria</small><b>${
+    w.d ? `<br><small>${wgName(x[0])}</small>` : ''}</div><div class=ib><div><small>Cat.</small><b>${
     RM[x[1]]}</b></div><div><small>Espaços</small><b>${x[2]}</b></div>${
     w.d ? `<div><small>Dano</small><b>${w.d}</b></div><div><small>Crítico</small><b>${w.c}/x${w.x}</b></div>` :
           ''}${w.q ? `<div><small>Ataques</small><b>${w.q}</b></div>` : ''}</div></div>${
