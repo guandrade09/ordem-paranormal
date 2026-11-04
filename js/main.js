@@ -10,3 +10,5 @@ document.addEventListener('visibilitychange', () => {
 });
 if (SB_ON) aInit();
 R();
+// App instalável: service worker (rede primeiro, com cópia para uso sem internet)
+if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
