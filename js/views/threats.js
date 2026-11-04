@@ -19,7 +19,11 @@ const THO = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Realidade: H
 // Para adicionar uma: salve a imagem em img/th/ e inclua o id aqui.
 const THART = new Set(['zumbi-de-sangue', 'aberracao-de-carne', 'dama-de-sangue', 'zumbi-de-sangue-bestial',
                        'mulher-afogada', 'enpap-x', 'tita-de-sangue', 'minotauro', 'carente', 'kerberos',
-                       'aniquilacao', 'o-diabo']),
+                       'aniquilacao', 'o-diabo', 'esqueleto-de-lodo', 'succ', 'aracnasita', 'escutado',
+                       'carnical-preto-da-morte', 'mumia-xipofaga', 'marionete', 'nidere', 'sempiternal',
+                       'ceifador-espiral', 'deus-da-morte']),
+      // Exceção: arte exibida menor que o padrão
+      THSM = new Set(['zumbi-de-sangue']),
       // Ícone do grupo: PNG do símbolo do elemento (img/sym-*.png) ou a imagem de Humanos/Natureza
       thIcon = (el, sz) => THIMG[el] ?
         `<span class=thic><img src="${THIMG[el]}" width=${sz} height=${sz} alt=""></span>` :
@@ -109,7 +113,7 @@ const thInfo = t => {
         hx = (x, i, p) => `<div class=hx style="left:${p[0]}px;top:${p[1]}px"><i><small>${AN[x]}</small><b>${
           thv(t.at[i])}</b><span>${x}</span></i></div>`,
         li = (l, v) => v ? `<div class=thl><span>${l}</span><b>${v}</b></div>` : '';
-  return `${THART.has(t.id) ? `<div class=thimgw><img class=thimg src="img/th/${t.id}.webp" alt="${t.n}"></div>` : ''}
+  return `${THART.has(t.id) ? `<div class=thimgw><img class="thimg${THSM.has(t.id) ? ' thsm' : ''}" src="img/th/${t.id}.webp" alt="${t.n}"></div>` : ''}
 <div class=bar>ATRIBUTOS</div><div class=hexbox>${hx('AGI', 0, [102, 0])}${hx('FOR', 1, [8, 62])}${
     hx('INT', 2, [196, 62])}${hx('PRE', 3, [40, 168])}${hx('VIG', 4, [164, 168])}<div class=core>ATRIBUTOS</div></div>${
     t.pr ? `<div class=bar>PRESENÇA PERTURBADORA</div><div class=thtx>DT <b>${dt}</b> • <b>${mental}</b>${

@@ -39,15 +39,15 @@ def sangue():
             "<stop offset='1' stop-color='#000' stop-opacity='.6'/></radialGradient>")
     o = "<rect width='%d' height='%d' fill='url(#b)'/>" % (W, H)
     # pingos escorrendo do topo
-    for i in range(11):
+    for i in range(6):
         x = rng.uniform(20, W - 20); w = rng.uniform(12, 28); L = rng.uniform(90, 380)
-        o += ("<path d='M%s 0 L%s 0 L%s %s Q%s %s %s %s Z' fill='#6e0710' fill-opacity='.8'/>"
+        o += ("<path d='M%s 0 L%s 0 L%s %s Q%s %s %s %s Z' fill='#4a050c' fill-opacity='.8'/>"
               % (f(x - w / 2), f(x + w / 2), f(x + w / 3), f(L), f(x), f(L + w), f(x - w / 3), f(L)))
-        o += "<circle cx='%s' cy='%s' r='%s' fill='#6e0710' fill-opacity='.8'/>" % (f(x), f(L + w * .4), f(w * .55))
+        o += "<circle cx='%s' cy='%s' r='%s' fill='#4a050c' fill-opacity='.8'/>" % (f(x), f(L + w * .4), f(w * .55))
     # respingos: núcleo irregular + braços afilados terminando em gota + gotas satélite
-    for i in range(23):
+    for i in range(9):
         cx = rng.uniform(0, W); cy = rng.uniform(0, H); r = rng.uniform(22, 72)
-        col = rng.choice(['#7a0812', '#8c0a16', '#650610', '#9a0c19'])
+        col = rng.choice(['#52060d', '#5e070f', '#450509', '#6a0811'])
         arms = rng.randint(7, 12); ph = rng.uniform(0, 6.28)
         for k in range(arms):
             a = ph + k * 2 * math.pi / arms + rng.uniform(-.18, .18)
@@ -63,18 +63,18 @@ def sangue():
             if rng.random() < .75:
                 o += "<circle cx='%s' cy='%s' r='%s' fill='%s' fill-opacity='.85'/>" % (f(cx + ca * (L + w * 1.4)), f(cy + sa * (L + w * 1.4)), f(w * rng.uniform(.5, 1.0)), col)
         o += "<path d='%s' fill='%s' fill-opacity='.9'/>" % (blob(rng, cx, cy, r * 1.05, 9, .2), col)
-        o += "<path d='%s' fill='#c4141f' fill-opacity='.4'/>" % blob(rng, cx - r * .2, cy - r * .2, r * .45, 7, .2)
+        o += "<path d='%s' fill='#8a0f18' fill-opacity='.22'/>" % blob(rng, cx - r * .2, cy - r * .2, r * .45, 7, .2)
         for k in range(rng.randint(6, 14)):
             a = rng.uniform(0, 2 * math.pi); d = r * rng.uniform(2.2, 5.5)
             o += "<circle cx='%s' cy='%s' r='%s' fill='%s' fill-opacity='.8'/>" % (f(cx + d * math.cos(a)), f(cy + d * math.sin(a)), f(rng.uniform(1.5, 6)), col)
     # gotas e borrifos pequenos
-    for i in range(260):
-        o += ("<circle cx='%s' cy='%s' r='%s' fill='#8a0a16' fill-opacity='%s'/>"
+    for i in range(80):
+        o += ("<circle cx='%s' cy='%s' r='%s' fill='#5a0710' fill-opacity='%s'/>"
               % (f(rng.uniform(0, W)), f(rng.uniform(0, H)), f(rng.uniform(.8, 4.2)), f(rng.uniform(.3, .75))))
     # gotas grandes caindo (forma de lágrima)
-    for i in range(18):
+    for i in range(7):
         x = rng.uniform(30, W - 30); y = rng.uniform(60, H - 60); s = rng.uniform(7, 16)
-        o += ("<path d='M%s %s Q%s %s %s %s Q%s %s %s %s Z' fill='#9a0c19' fill-opacity='.75'/>"
+        o += ("<path d='M%s %s Q%s %s %s %s Q%s %s %s %s Z' fill='#620810' fill-opacity='.7'/>"
               % (f(x), f(y - s * 2), f(x + s * 1.1), f(y - s * .2), f(x), f(y + s), f(x - s * 1.1), f(y - s * .2), f(x), f(y - s * 2)))
     o += "<rect width='%d' height='%d' fill='url(#v)'/>" % (W, H)
     return svg(o, defs)
@@ -97,16 +97,17 @@ def morte():
     defs = ("<radialGradient id='v' cx='50%' cy='50%' r='75%'><stop offset='.5' stop-color='#000' stop-opacity='0'/>"
             "<stop offset='1' stop-color='#000' stop-opacity='.55'/></radialGradient>")
     o = "<rect width='%d' height='%d' fill='#090909'/>" % (W, H)
-    # espirais grandes e apagadas ao fundo
-    for i in range(6):
-        o += ("<polyline points='%s' fill='none' stroke='#fff' stroke-opacity='%s' stroke-width='%s' stroke-linecap='round'/>"
-              % (spiral(rng.uniform(0, W), rng.uniform(0, H), rng.uniform(110, 190), rng.uniform(3, 4.5), rng.uniform(0, 6.28), rng.choice([1, -1])),
-                 f(rng.uniform(.04, .07)), f(rng.uniform(2.5, 3.5))))
-    # muitas espirais pequenas
-    for i in range(130):
-        o += ("<polyline points='%s' fill='none' stroke='#fff' stroke-opacity='%s' stroke-width='%s' stroke-linecap='round'/>"
-              % (spiral(rng.uniform(0, W), rng.uniform(0, H), rng.uniform(9, 52), rng.uniform(2.2, 3.8), rng.uniform(0, 6.28), rng.choice([1, -1])),
-                 f(rng.uniform(.12, .3)), f(rng.uniform(1.3, 2.6))))
+    # uma única espiral gigante cobrindo a tela inteira
+    o += ("<polyline points='%s' fill='none' stroke='#fff' stroke-opacity='.11' stroke-width='5' stroke-linecap='round'/>"
+          % spiral(W / 2, H / 2, 980, 9, 0.6, 1))
+    # espirais menores, claras e todas do mesmo tamanho, espalhadas ao acaso (sem encostar umas nas outras)
+    pos = []
+    while len(pos) < 70:
+        x, y = rng.uniform(25, W - 25), rng.uniform(25, H - 25)
+        if all((x - px) ** 2 + (y - py) ** 2 > 95 ** 2 for px, py in pos):
+            pos.append((x, y))
+            o += ("<polyline points='%s' fill='none' stroke='#fff' stroke-opacity='.38' stroke-width='2.2' stroke-linecap='round'/>"
+                  % spiral(x, y, 34, 3, rng.uniform(0, 6.28), rng.choice([1, -1])))
     o += "<rect width='%d' height='%d' fill='url(#v)'/>" % (W, H)
     return svg(o, defs)
 
@@ -283,11 +284,12 @@ def energia():
             off = k * rng.uniform(6, 10)
             o += ("<line x1='%s' y1='%s' x2='%s' y2='%s' stroke='#fff' stroke-opacity='.18' stroke-width='1.1'/>"
                   % (f(x + off * math.sin(a)), f(y - off * math.cos(a)), f(x + off * math.sin(a) + L * math.cos(a)), f(y - off * math.cos(a) + L * math.sin(a))))
+    o += "<rect width='%d' height='%d' fill='#04000c' fill-opacity='.58'/>" % (W, H)   # escurece tudo
     return svg(o, defs)
 
 
 if __name__ == '__main__':
-    for nome, fn in [('sangue', sangue), ('morte', morte), ('conhecimento', conhecimento), ('energia', energia)]:
+    for nome, fn in [('sangue', sangue), ('morte', morte), ('energia', energia)]:   # 'conhecimento' aprovado: não regerar
         s = fn()
         open(os.path.join(OUT, 'bg-%s.svg' % nome), 'w').write(s)
         print(nome, len(s) // 1024, 'KB')

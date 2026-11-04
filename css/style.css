@@ -995,6 +995,10 @@ small {
   max-height: 60vh;
   margin: 0 auto;
 }
+.thimg.thsm {
+  max-width: 72%;
+  max-height: 44vh;
+}
 .thtx {
   padding: 4px 2px;
   line-height: 1.5;
@@ -1140,6 +1144,17 @@ html[data-thel=medo] {
   background-color: #f4f4f4;
   background-image: radial-gradient(ellipse at center,rgba(255,255,255,0) 22%,rgba(0,0,0,.5) 62%,rgba(0,0,0,.9) 100%);
   background-attachment: fixed;
+}
+/* Medo: símbolo no centro do fundo, 50% de opacidade (PNG branco -> preto) */
+html[data-thel=medo]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .5;
+  background: url(../img/sym-medo.png) center/min(94vw,460px) no-repeat;
+  filter: brightness(0);
 }
 /* Realidade (Humanos / Natureza): símbolo no fundo com 15% de opacidade */
 body[data-thbg] {
