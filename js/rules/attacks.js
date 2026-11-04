@@ -15,7 +15,7 @@ function atk(u, pen, quiet) {
   let k = K(c), sa = w.m ? c.attr[w.st || 'FOR'] : c.attr.AGI, a = Math.max(0, sa - (pen || 0)), d = rd(a || 2, 20),
       r = a ? Math.max(...d) : Math.min(...d), b = gb(c, sk, k.tr.includes(sk)) + (w.ab || 0), cr = r >= w.c,
       fl = +(w.d.match(/[+-]\d+$/) || [0])[0],
-      dm = (rl(w.d) - fl) * (cr ? w.x : 1) + fl + (w.m ? c.attr[w.st || 'FOR'] : (w.pl ? c.attr[w.pl] : 0));
+      dm = (rl(w.d) - fl) * (cr ? w.x : 1) + fl + wAt(c, w)[0];
   if (!quiet) fx(w.t);
   if (w.am)
     mut(z => {

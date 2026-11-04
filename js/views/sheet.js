@@ -142,7 +142,7 @@ function sheet() {
   const nn = c.nex >= 95 ? 99 : c.nex + 5,
         head = `<div class=row style="margin:12px 0 22px;gap:14px">${
           ph(c)}<div style="flex:1"><b style="font:42px 'Bebas Neue';line-height:1.05">${
-          c.name}</b> <button onclick="edOpen()" aria-label="Editar nome, jogador e foto" title="Editar" style="width:auto;margin:0;padding:2px 8px;font-size:18px">✎</button><br><small style="font-size:17px">JOGADOR: ${
+          c.name}</b><br><small style="font-size:17px">${
           c.player}</small></div><button class=up onclick="up()" ${c.nex >= 99 ? 'disabled' : ''}>▲<br>NEX ${
           nn}%</button></div>`;
   let b = '';
@@ -169,8 +169,8 @@ function sheet() {
       fl('ORIGEM', c.origem)}${fl('CLASSE', c.classe + (c.trail ? ' — ' + c.trail : ''))}${
       c.af && AFC[c.af] ?
         afBox(c.af) :
-        ''}<div class=g3 style="gap:10px">${fl('NEX', c.nex + '%')}${fl('PE/RODADA', k.rod)}${fl('DESL', '9m')}</div>
-<div class=grid2 style="gap:14px">${vit('pv', 'PONTOS DE VIDA')}${vit('pe', 'PONTOS DE ESFORÇO')}</div>
+        ''}<div class=g3 style="gap:10px">${fl('NEX', c.nex + '%')}${fl('PE/RODADA', k.rodR > k.rod ? k.rod + ' (rituais ' + k.rodR + ')' : k.rod)}${fl('DESL', '9m')}</div>
+<div class=grid2 style="gap:14px">${vit('pv', 'PV')}${vit('pe', 'PE')}</div>
 <div class=grid2 style="gap:14px"><div class=vw><div class=vb>${(() => {
       let t = Math.min(k.def, (c.t && c.t.def) || 0), dn = k.def || 1;
       return `<i style="width:${(k.def - t) / dn * 100}%;background:#78909c"></i><i style="width:${
@@ -218,7 +218,7 @@ ${fl('PROTEÇÃO', k.pr.n + (c.inv.some(x => PR[x.n] && lack(c, x)) ? ' ⚠️' 
     b = `<div class=bar>Ataques</div>${
       ws.map(a => `<div class="card row"><div style="flex:1"><b class=an>${a.n}</b>${
                a.u >= 0 && !a.dm && lack(c, {n: a.n, w: a.w}) ? ' ⚠️' : ''}<div class=ib3><div><small>Dano</small><b>${
-               a.w.d}${a.w.m ? ` + ${c.attr[a.w.st || 'FOR']}` : (a.w.pl ? ` + ${c.attr.AGI}` : '')}</b></div>${
+               a.w.d}${a.w.d && a.w.t && !a.dm ? wAt(c, a.w)[1] : ''}</b></div>${
                a.dm ? '' : `<div><small>Crítico</small><b>${a.w.c}/x${a.w.x}</b></div>`}<div><small>Tipo</small><b>${
                a.w.t}</b></div></div>${
                a.w.mx ? '<div style="margin-top:6px">' + bulRow(a.w.am, a.w.mag, a.w.mx) + '</div>' :
@@ -266,7 +266,8 @@ ${rsheet(c, k)}`
           '')}<div class=grid2><button onclick="cat('arm')">📦 Itens</button><button onclick="cust()">Outro</button></div>${
       modSec(c)}`
   }
-  return `<div class=fade><button onclick="S.v=cur().npc?'npc':'home';R()">← ${c.npc ? 'NPCs' : 'Agentes'}</button>${
+  return `<div class=fade><div class=row style="gap:8px;align-items:stretch"><button style="flex:1;margin:0" onclick="S.v=cur().npc?'npc':'home';R()">← ${
+    c.npc ? 'NPCs' : 'Agentes'}</button><button onclick="edOpen()" aria-label="Editar nome, jogador e foto" title="Editar" style="width:auto;margin:0;padding:2px 14px;font-size:18px">✎</button></div>${
     head}${b}<div style="height:90px"></div></div><div class=tabs>${
       ['Ficha', 'Ações', 'Inventário']
         .map((n, i) => `<button class="${S.tab == i ? 'on' : ''}" onclick="S.tab=${i};R()">${n}</button>`)

@@ -37,6 +37,9 @@ function main() {
   check('editar ficha: salva nome/jogador/foto, remove a foto e recusa nome vazio',
     result['edicao:ficha'] === 'Novo Nome|Maria|true || Novo Nome|Maria|false', result['edicao:ficha']);
 
+  // lv de NEX 15% = 3: Sangue de Ferro = +3 +3 PV; Presença Poderosa soma PRE(4) só ao limite de rituais; Mira de Elite soma INT(3) e Tiro Certeiro AGI(2)
+  check('habilidades: Sangue de Ferro (PV), Presença Poderosa (rituais) e Mira de Elite/Tiro Certeiro (dano) usam os atributos',
+    result['habilidades:atributos'] === '6|4|0|0|5| + 2 (AGI) + 3 (INT)', result['habilidades:atributos']);
   check('monstruário: 66 ameaças, grupos na ordem do livro e VD crescente em cada grupo',
     result['monstruario:lista'] === '66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true', result['monstruario:lista']);
   check('monstruário: todas as fichas (abas Info e Ações) desenham sem undefined/NaN', result['monstruario:fichas'] === 'ok', result['monstruario:fichas']);

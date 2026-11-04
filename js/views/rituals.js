@@ -142,7 +142,7 @@ function cast(id, j, pv) {
           (j == 1    ? r.d[0] :
               j == 2 ? r.v[0] :
                        0));
-  if (co > K(c).rod) return toast(`⚠ Custo de ${co} PE acima do limite de ${K(c).rod} PE por rodada (NEX ${c.nex}%).`);
+  if (co > K(c).rodR) return toast(`⚠ Custo de ${co} PE acima do limite de ${K(c).rodR} PE por rodada (NEX ${c.nex}%).`);
   if (pv ? c.pv <= co * 2 : c.pe < co) return toast(pv ? 'PV insuficiente' : 'PE insuficiente');
   fx(e);
   mut(z => {

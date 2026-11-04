@@ -65,8 +65,16 @@ const weff = (c, it) => {
     w = {...w, ab: am, c: cm ? Math.max(2, w.c - cm) : w.c}
   }
   w = w.m ? {...w, st: (it.n && it.e == 1 && hasAb(c, 'Acuidade com Arma')) ? 'AGI' : 'FOR'} :
-            (w.am && hasAb(c, 'Tiro Certeiro') ? {...w, pl: 'AGI'} : w);
+            (w.am ? {...w, pl: [hasAb(c, 'Tiro Certeiro') ? 'AGI' : '', w.am == 'Balas longas' && hasAb(c, 'Mira de Elite') ? 'INT' : '']
+                           .filter(Boolean)} : w);
   return w
+};
+
+// Atributos somados ao dano da arma (corpo a corpo: FOR/AGI; disparo: Tiro Certeiro = AGI, Mira de Elite = INT).
+// Retorna [total, "+ 3 (AGI) + 2 (INT)"]; o bônus fixo não é multiplicado por crítico.
+const wAt = (c, w) => {
+  const l = w.m ? [w.st || 'FOR'] : (w.pl || []);
+  return [l.reduce((a, x) => a + c.attr[x], 0), l.map(x => ` + ${c.attr[x]} (${x})`).join('')]
 };
 
 // Dado de ataque desarmado

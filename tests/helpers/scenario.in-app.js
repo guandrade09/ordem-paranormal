@@ -63,6 +63,20 @@
   // --- ataque com dado fixo ---
   safe('ataque:pistola', () => { const c = mk('Combatente', 15, { AGI: 3 }, ['Pistola']); S.cid = c.id; S.v = 'sheet'; S.tab = 1; R(); atk(0); return hash(document.querySelector('#t').textContent + document.querySelector('#app').innerHTML); });
 
+  // --- atributos em habilidades ---
+  safe('habilidades:atributos', () => {
+    const c = mk('Combatente', 15, { AGI: 2, INT: 3, PRE: 4, VIG: 1 }, ['Pistola']);
+    const pv0 = K(c).pv, rod0 = K(c).rod;
+    const dano = () => weff(c, c.inv[0]);
+    const a0 = wAt(c, dano())[0];
+    c.ab = [{ n: 'Sangue de Ferro' }, { n: 'Presença Poderosa' }];
+    const k = K(c);
+    c.inv[0].w = { ...c.inv[0].w, am: 'Balas longas' };
+    c.ab.push({ n: 'Mira de Elite' }, { n: 'Tiro Certeiro' });
+    const a1 = wAt(c, dano());
+    return [k.pv - pv0, k.rodR - rod0, k.rod - rod0, a0, a1[0], a1[1]].join('|');
+  });
+
   // --- criador de combates ---
   const campos = { '#cmn': { value: '' }, '#cmr': { value: '' }, '#cmb': { value: '' }, '#cda': { value: '' } };
   safe('combate:ordem', () => {

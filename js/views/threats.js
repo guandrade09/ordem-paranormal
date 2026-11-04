@@ -35,7 +35,11 @@ const thImgs = () => {
         `<span class=thic><img src="${THIMG[el]}" width=${sz} height=${sz} alt=""></span>` :
         `<svg viewBox="0 0 100 100" width=${sz} height=${sz}>${SYM[el]('currentColor')}</svg>`,
       // Tags do livro: elementos em maiúsculas (em negrito) + tipo e tamanho
-      thTags = t => t.tg.map(x => x == x.toUpperCase() ? `<b>${x}</b>` : x).join(' · '),
+      // (o elemento vira uma etiqueta com o fundo e a fonte da cor do próprio elemento)
+      thTags = t => t.tg.map(x => {
+        const k = x == x.toUpperCase() && THO.find(e => e.toUpperCase() == x), c = k && THC[k];
+        return c ? `<b class=thel style="background:${c[0]};color:${c[1]}">${x}</b>` : x
+      }).join(' '),
       thSorted = el =>
         THREATS.filter(t => t.el == el).sort((a, b) => a.vd - b.vd || a.n.localeCompare(b.n, 'pt')),
       thv = x => x == null || x === '' ? '—' : x,
@@ -126,11 +130,10 @@ const thInfo = t => {
         hx = (x, i, p) => `<div class=hx style="left:${p[0]}px;top:${p[1]}px"><i><small>${AN[x]}</small><b>${
           thv(t.at[i])}</b><span>${x}</span></i></div>`,
         li = (l, v) => v ? `<div class=thl><span>${l}</span><b>${v}</b></div>` : '';
-  return `<div class=thimgw>${
+  return `<div class=thimgw><label class=thpick title="${img ? 'Trocar imagem' : 'Enviar imagem'}">${
     img ? `<img class=thimg src="${img}" alt="${t.n}">` :
-          '<div class="thimg thnoimg">Sem imagem</div>'}<div class=row style="gap:6px;justify-content:center"><label class="thup">📷 ${
-    img ? 'Trocar imagem' : 'Enviar imagem'}<input type=file accept="image/*" hidden onchange="thPhoto(this)"></label>${
-    img ? '<button onclick="thNoPhoto()">Remover</button>' : ''}</div></div>
+          '<div class="thimg thnoimg">Toque para<br>enviar uma imagem</div>'}<input type=file accept="image/*" hidden onchange="thPhoto(this)"></label>${
+    img ? '<button class=thrm onclick="thNoPhoto()">✕ Remover imagem</button>' : ''}</div>
 <div class=bar>ATRIBUTOS</div><div class=hexbox>${hx('AGI', 0, [102, 0])}${hx('FOR', 1, [8, 62])}${
     hx('INT', 2, [196, 62])}${hx('PRE', 3, [40, 168])}${hx('VIG', 4, [164, 168])}<div class=core>ATRIBUTOS</div></div>${
     t.pr ? `<div class=bar>PRESENÇA PERTURBADORA</div><div class=thtx>DT <b>${dt}</b> • <b>${mental}</b>${

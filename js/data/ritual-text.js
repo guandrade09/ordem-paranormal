@@ -214,9 +214,9 @@ Zerar Entropia|Você zera completamente a entropia do alvo em relação ao ambie
   },
   md = t =>
     t.replace(
-       /(Força|Agilidade|Vigor|Intelecto|Presença)(?!\s*\(\d)(?! do Medo)|([+−–]?\d+d\d+(?:[+-]\d+)?|[+−–]?\d+d(?![A-Za-zÀ-ÿ\d])|[+−]?\d+(?:[.,]\d+)?%?)/g,
+       /(Força|Agilidade|Vigor|Intelecto|Presença|\b(?:AGI|FOR|INT|PRE|VIG)\b)(?!\s*\(\d)(?! do Medo)|([+−–]?\d+d\d+(?:[+-]\d+)?|[+−–]?\d+d(?![A-Za-zÀ-ÿ\d])|[+−]?\d+(?:[.,]\d+)?%?)/g,
        (m, a, n) =>
-         a ? `<b class=nm>${a}${MDC && MDC.attr ? ` (${MDC.attr[ATN[a]]})` : ''}</b>` : `<b class=nm>${n}</b>`)
+         a ? `<b class=nm>${a}${MDC && MDC.attr ? ` (${MDC.attr[ATN[a] || a]})` : ''}</b>` : `<b class=nm>${n}</b>`)
       .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
 
 // Descrição de ritual
