@@ -23,7 +23,9 @@ const THART = new Set(['zumbi-de-sangue', 'aberracao-de-carne', 'dama-de-sangue'
                        'carnical-preto-da-morte', 'mumia-xipofaga', 'marionete', 'nidere', 'sempiternal',
                        'ceifador-espiral', 'deus-da-morte', 'existido', 'vulto', 'parasita-de-culpa', 'lembrado',
                        'rastejador-sombrio', 'espreitador', 'ocioso', 'bicho-papao', 'glifado', 'silhueta', 'anjo',
-                       'mascara-do-desespero']),
+                       'mascara-do-desespero', 'anarquico', 'perturbado-de-energia', 'ciborgue', 'anarquico-descontrolado',
+                       'sukkalgir', 'viajante', 'anomiatico', 'infecticidio', 'telopsia', 'tempestuoso', 'anomalia',
+                       'anfitriao']),
       // Exceção: arte exibida menor que o padrão
       THSM = new Set(['zumbi-de-sangue']),
       // Ícone do grupo: PNG do símbolo do elemento (img/sym-*.png) ou a imagem de Humanos/Natureza
@@ -49,8 +51,8 @@ const THART = new Set(['zumbi-de-sangue', 'aberracao-de-carne', 'dama-de-sangue'
 // Realidade não tem paleta: só ganha o símbolo (Humanos/Natureza) no fundo (data-thbg)
 function thTheme() {
   const t = S.v == 'thd' ? thSel() : null, k = t ? THK[t.el] || '' : '', bg = t ? THBG[t.el] || '' : '',
-        rl = t && k && thRel(t) ? '1' : '', d = document.documentElement, b = document.body;
-  [[k, 'thel'], [bg, 'thbg'], [rl, 'threl']].forEach(([v, a]) => {
+        d = document.documentElement, b = document.body;
+  [[k, 'thel'], [bg, 'thbg']].forEach(([v, a]) => {
     if (v) {
       d.dataset[a] = v;
       b.dataset[a] = v
