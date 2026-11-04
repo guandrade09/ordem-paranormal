@@ -162,7 +162,7 @@ function sheet() {
         c.t[x] || ''}" onchange="setT('${x}')"><button onclick="mut(z=>z.t['${
         x}']=0)" title="Remover temporários">✕</button></div></div></div>`,
       hx = (x, p) => `<div class=hx style="left:${p[0]}px;top:${p[1]}px"><i><small>${AN[x]}</small><b>${
-        c.attr[x]}</b><span>${x}</span></i></div>`,
+        ea(c)[x]}${ea(c)[x] > c.attr[x] ? '<sup style="font-size:.45em">+' + (ea(c)[x] - c.attr[x]) + '</sup>' : ''}</b><span>${x}</span></i></div>`,
       fl = (l, v) => `<div class=fl><span class=bar>${l}</span><div class=box>${v}</div></div>`;
     b = `<div class=sheet><div class=hexbox>${hx('AGI', [102, 0])}${hx('FOR', [8, 62])}${hx('INT', [196,
       62])}${hx('PRE', [40, 168])}${hx('VIG', [164, 168])}<div class=core>ATRIBUTOS</div></div>${
@@ -176,7 +176,7 @@ function sheet() {
       return `<i style="width:${(k.def - t) / dn * 100}%;background:#78909c"></i><i style="width:${
         t / dn * 100}%;background:#fff"></i>`
     })()}</div><div class=vit><div class=bar>🛡 DEFESA</div><div class=big>${k.def}</div><small>= 10 + ${
-      c.attr.AGI} (AGI) + ${k.pr.d} (equip.) + ${k.def - 10 - c.attr.AGI - k.pr.d} (outros)</small>${
+      ea(c).AGI} (AGI) + ${k.pr.d} (equip.) + ${k.def - 10 - ea(c).AGI - k.pr.d} (outros)</small>${
       (k.tdef || (c.t && c.t.def)) ?
         '<br><span class=tmp>inclui bônus temporário</span>' :
         ''}<div class=row style="justify-content:center;gap:6px;margin:6px 6px 2px"><input id=tdef type=number min=0 class=tin style="color:#fff" placeholder="temp" value="${
@@ -194,14 +194,17 @@ ${
 ${fl('PROTEÇÃO', k.pr.n + (c.inv.some(x => PR[x.n] && lack(c, x)) ? ' ⚠️' : ''))}${
       fl('RESISTÊNCIAS',
         [
-          k.pr.r, ...(c.res || []).map(x => x + ' ' + (c.af == x ? 20 : 10)),
+          k.pr.r, ...Object.entries({
+            ...Object.fromEntries((c.res || []).map(x => [x, c.af == x ? 20 : 10])),
+            ...Object.fromEntries(Object.entries(k.cf.res).map(([e, v]) => [e, Math.max(v, c.af == e ? 20 : 0, (c.res || []).includes(e) ? 10 : 0)]))
+          }).map(([e, v]) => e + ' ' + v), ...(k.cf.rd ? ['Dano ' + k.cf.rd] : []),
           ...(c.origem == 'Teórico da Conspiração' ? ['Mental ' + c.attr.INT] : [])
         ].filter(Boolean)
             .join(' · ') ||
           '—')}${fl('PROFICIÊNCIAS', k.cl.prof + profX(c))}${lackList(c)}
 <div class=bar style="text-align:center;font-size:26px">PERÍCIAS</div><div class="sk hd"><span>PERÍCIA</span><span>DADOS</span><span>BÔNUS</span><span>TREINO</span><span>OUTROS</span></div>${
       SK.map((s, i) => {
-          let tr = k.tr.includes(s.n), v = c.attr[s.a];
+          let tr = k.tr.includes(s.n), v = ea(c)[s.a];
           return `<div class="sk ${tr ? 't' : ''}" onclick="sk(${i})"><span>${IC[i]} ${s.n}${
             s.f}</span><span class=bx>${v || 2}d20</span><span class=bx>+${gb(c, s.n, tr)}</span><span>${
             tr ? gb(c, s.n, tr) : ''}</span><span>${ob(c, s.n) ? '+' + ob(c, s.n) : ''}</span></div>`
@@ -211,14 +214,14 @@ ${fl('PROTEÇÃO', k.pr.n + (c.inv.some(x => PR[x.n] && lack(c, x)) ? ' ⚠️' 
   if (S.tab == 1) {
     const ws = [
       {n: 'Desarmado', w: weff(c, {w: {m: 1, d: UNA(c), c: 20, x: 2, t: 'impacto'}}), u: -1},
-      ...c.inv.map((it, i) => it.w ? {n: it.n, w: weff(c, it), u: i} : null).filter(Boolean),
+      ...c.inv.map((it, i) => it.w ? {n: it.n, lb: cuNm(it), w: weff(c, it), u: i} : null).filter(Boolean),
       ...c.inv.map((it, i) => DMG[it.n] ? {n: it.n, w: {d: DMG[it.n].d, t: DMG[it.n].t}, u: i, dm: 1} : null)
         .filter(Boolean)
     ];
     b = `<div class=bar>Ataques</div>${
-      ws.map(a => `<div class="card row"><div style="flex:1"><b class=an>${a.n}</b>${
+      ws.map(a => `<div class="card row"><div style="flex:1"><b class=an>${a.lb || a.n}</b>${
                a.u >= 0 && !a.dm && lack(c, {n: a.n, w: a.w}) ? ' ⚠️' : ''}<div class=ib3><div><small>Dano</small><b>${
-               a.w.d}${a.w.d && a.w.t && !a.dm ? wAt(c, a.w)[1] : ''}</b></div>${
+               a.w.d}${a.w.d && a.w.t && !a.dm ? wAt(c, a.w)[1] + wEx(a.w) : ''}</b></div>${
                a.dm ? '' : `<div><small>Crítico</small><b>${a.w.c}/x${a.w.x}</b></div>`}<div><small>Tipo</small><b>${
                a.w.t}</b></div></div>${
                a.w.mx ? '<div style="margin-top:6px">' + bulRow(a.w.am, a.w.mag, a.w.mx) + '</div>' :
@@ -274,14 +277,14 @@ ${rsheet(c, k)}`
         .join('')}</div>`
 }
 
-const ob = (c, n) => (n == 'Iniciativa' && c.trail == 'Operações Especiais' && c.nex >= 10) ||
+const ob = (c, n) => ((n == 'Iniciativa' && c.trail == 'Operações Especiais' && c.nex >= 10) ||
     ((n == 'Atletismo' || n == 'Crime') && c.trail == 'Infiltrador' && c.nex >= 40) ?
   5 :
-  0;
+  0) + (cfx(c).sk[n] || 0);
 
 // Linha de perícia
 function sk(i) {
-  let c = cur(), s = SK[i], k = K(c), v = c.attr[s.a], d = rd(v || 2, 20), r = v ? Math.max(...d) : Math.min(...d),
+  let c = cur(), s = SK[i], k = K(c), v = ea(c)[s.a], d = rd(v || 2, 20), r = v ? Math.max(...d) : Math.min(...d),
       b = gb(c, s.n, k.tr.includes(s.n)) + ob(c, s.n);
   toast(`${s.n}: [${d}] → ${r}+${b} = ${r + b}`)
 }

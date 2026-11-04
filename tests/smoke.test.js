@@ -40,6 +40,8 @@ function main() {
   // lv de NEX 15% = 3: Sangue de Ferro = +3 +3 PV; Presença Poderosa soma PRE(4) só ao limite de rituais; Mira de Elite soma INT(3) e Tiro Certeiro AGI(2)
   check('habilidades: Sangue de Ferro (PV), Presença Poderosa (rituais) e Mira de Elite/Tiro Certeiro (dano) usam os atributos',
     result['habilidades:atributos'] === '6|4|0|0|5| + 2 (AGI) + 3 (INT)', result['habilidades:atributos']);
+  check('melhorias: maldições filtradas por tipo/elemento, categoria +II/+I, ➕/emoji no nome, dano extra, margem x2, Defesa (maior), PV, RD e atributo',
+    result['melhorias:maldicoes'] === 'true|false|true|false|true|true|0|2|false|true|false|3|18→15|[["1d8","Sangue",1]]|➕🩸 Pistola|true|5|15|2|3|2|1|0|0|true|true', result['melhorias:maldicoes']);
   check('monstruário: 66 ameaças, grupos na ordem do livro e VD crescente em cada grupo',
     result['monstruario:lista'] === '66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true', result['monstruario:lista']);
   check('monstruário: todas as fichas (abas Info e Ações) desenham sem undefined/NaN', result['monstruario:fichas'] === 'ok', result['monstruario:fichas']);

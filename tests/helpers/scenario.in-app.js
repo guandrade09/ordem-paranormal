@@ -77,6 +77,32 @@
     return [k.pv - pv0, k.rodR - rod0, k.rod - rod0, a0, a1[0], a1[1]].join('|');
   });
 
+  // --- melhorias: maldições (filtros, categoria, ícones e efeitos automáticos) ---
+  safe('melhorias:maldicoes', () => {
+    const c = mk('Combatente', 15, { AGI: 2, VIG: 1 }, ['Pistola', 'Faca', 'Proteção leve', 'Utensílio', 'Vestimenta']);
+    const [pi, fa, pr, ut, ve] = c.inv, o = [];
+    const has = (it, n) => cuOpts(it).some((d) => d.n == n);
+    o.push(has(pi, 'Lancinante'), has(pi, 'Empuxo'), has(fa, 'Empuxo'), has(pi, 'Cinética'), has(pr, 'Cinética'), has(ut, 'Carisma'), cuOpts(item('Kit de perícia')).length);
+    const k0 = K(c), cat0 = ecat(c, pi), crit0 = weff(c, pi).c;
+    curAdd(0, 'Lancinante');                  // 1ª maldição: +2 de categoria
+    o.push(ecat(c, c.inv[0]) - cat0);
+    o.push(has(c.inv[0], 'Consumidora'), has(c.inv[0], 'Energética'), has(c.inv[0], 'Lancinante')); // Sangue x Morte não combinam; Sangue + Energia sim
+    curAdd(0, 'Predadora');                   // 2ª: +1
+    o.push(ecat(c, c.inv[0]) - cat0, crit0 + '→' + weff(c, c.inv[0]).c, JSON.stringify(weff(c, c.inv[0]).ex));
+    modAdd(0, 'Certeira');                    // modificação + maldição: ícones
+    o.push(cuNm(c.inv[0]));
+    const m = atk(0, 0, 1); o.push(/\+ Sangue \d+ \[\dd8\]/.test(m));
+    curAdd(2, 'Cinética'); curAdd(3, 'Defesa'); curAdd(4, 'Vitalidade');
+    const k1 = K(c); o.push(k1.def - k0.def, k1.pv - k0.pv, k1.cf.rd);                     // Defesa não acumula (maior: +5); PV +15; RD 2
+    curAdd(3, 'Destreza');                                                                   // +1 AGI só em testes/Defesa
+    const k2 = K(c); o.push(ea(c).AGI, c.attr.AGI, k2.def - k1.def, k2.pv - k1.pv);
+    curDel(3, 1); curDel(3, 0); o.push((c.inv[3].cur || []).length);
+    S.v = 'sheet'; S.tab = 2; R(); const h = document.querySelector('#app').innerHTML;
+    o.push(/Melhorias/.test(h), /Maldi/.test(h) || /Lancinante/.test(h));
+    modPick(); modItem(0); curList(0); curEl(4); // os passos do modal abrem sem erro
+    return o.join('|');
+  });
+
   // --- criador de combates ---
   const campos = { '#cmn': { value: '' }, '#cmr': { value: '' }, '#cmb': { value: '' }, '#cda': { value: '' } };
   safe('combate:ordem', () => {

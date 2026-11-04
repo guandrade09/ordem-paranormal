@@ -12,10 +12,15 @@ function atk(u, pen, quiet) {
     } else if (!tot(c, w.am))
       return bad('⚠ Sem ' + w.am.toLowerCase() + ' no inventário.')
   }
-  let k = K(c), sa = w.m ? c.attr[w.st || 'FOR'] : c.attr.AGI, a = Math.max(0, sa - (pen || 0)), d = rd(a || 2, 20),
+  let k = K(c), sa = ea(c)[w.m ? w.st || 'FOR' : 'AGI'], a = Math.max(0, sa - (pen || 0)), d = rd(a || 2, 20),
       r = a ? Math.max(...d) : Math.min(...d), b = gb(c, sk, k.tr.includes(sk)) + (w.ab || 0), cr = r >= w.c,
       fl = +(w.d.match(/[+-]\d+$/) || [0])[0],
-      dm = (rl(w.d) - fl) * (cr ? w.x : 1) + fl + wAt(c, w)[0];
+      dm = (rl(w.d) - fl) * (cr ? w.x : 1) + fl + wAt(c, w)[0],
+      // dano extra de maldições (Lancinante multiplica os dados no crítico)
+      xs = (w.ex || []).map(([d, t, mu]) => {
+        const q = +d.split('d')[0] * (cr && mu ? w.x : 1), f = q + 'd' + d.split('d')[1];
+        return [rl(f), t, f]
+      });
   if (!quiet) fx(w.t);
   if (w.am)
     mut(z => {
@@ -24,7 +29,8 @@ function atk(u, pen, quiet) {
       else
         dec(z, w.am, 1)
     });
-  let m = `${sk}: [${d}] ${r}+${b} = ${r + b}${cr ? ' · CRÍTICO!' : ''} · Dano ${dm} (${w.t})`;
+  let m = `${sk}: [${d}] ${r}+${b} = ${r + b}${cr ? ' · CRÍTICO!' : ''} · Dano ${dm + xs.reduce((a, x) => a + x[0], 0)} (${w.t}${xs.length ? ' ' + dm : ''}${
+    xs.map(x => ` + ${x[1]} ${x[0]} [${x[2]}]`).join('')})`;
   return quiet ? m : toast(m)
 }
 

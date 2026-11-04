@@ -19,7 +19,7 @@ const FR = c => c.trail == 'Aniquilador' ? (c.nex >= 99    ? 3 :
         []).reduce((a, m) => a + ({'Blindada': 1, 'Reforçada': 1, 'Discreta': -1, 'Discreto': -1}[mb(m)] || 0), 0),
       ee = (c, i) => Math.max(0, i.e + msp(i) - (i.mu && !i.w && hasAb(c, 'Mochila de Utilidades') ? 1 : 0)),
       ecat = (c, it) => Math.max(0,
-        it.cat + (it.mods || []).length - (it.fav ? FR(c) : 0) -
+        it.cat + (it.mods || []).length + cuCat(it) - (it.fav ? FR(c) : 0) -
           (it.mu && !it.w && hasAb(c, 'Mochila de Utilidades') ? 1 : 0) -
           ((c.origem == 'Engenheiro' && it.eng && !it.w) ? 1 : 0) -
           (!it.w && !PR[it.n] && it.q == null && !it.am && hasAb(c, 'Remendão') ? 1 : 0));
@@ -29,6 +29,8 @@ const isFire = w => !!w && ['Balas curtas', 'Balas longas', 'Cartuchos'].include
 const weff = (c, it) => {
   let w = it.w;
   if (!w) return w;
+  // Predadora: a margem de ameaça duplica (antes de qualquer efeito que a aumente)
+  if (cuHas(it, 'Predadora')) w = {...w, c: Math.max(2, 2 * w.c - 21)};
   if (w.m && c.trail == 'Guerreiro' && c.nex >= 10) w = {...w, c: Math.max(2, w.c - 2)};
   if (c.origem == 'Operário' && it.op) {
     let m = w.d.match(/^(\d+d\d+)([+-]\d+)?$/), b = (m && m[2] ? +m[2] : 0) + 1;
@@ -64,6 +66,10 @@ const weff = (c, it) => {
         cm = (ms.includes('Perigosa') ? 2 : 0) + (ms.includes('Mira Laser') ? 2 : 0);
     w = {...w, ab: am, c: cm ? Math.max(2, w.c - cm) : w.c}
   }
+  // dano extra de maldições: [dados, tipo, multiplica no crítico]
+  const ex = (it.cur || []).map(mb).flatMap(b => b == 'Lancinante' ? [['1d8', 'Sangue', 1]] :
+                                                   b == 'Erosiva'    ? [['1d8', 'Morte', 0]] : []);
+  if (ex.length) w = {...w, ex};
   w = w.m ? {...w, st: (it.n && it.e == 1 && hasAb(c, 'Acuidade com Arma')) ? 'AGI' : 'FOR'} :
             (w.am ? {...w, pl: [hasAb(c, 'Tiro Certeiro') ? 'AGI' : '', w.am == 'Balas longas' && hasAb(c, 'Mira de Elite') ? 'INT' : '']
                            .filter(Boolean)} : w);
@@ -73,8 +79,8 @@ const weff = (c, it) => {
 // Atributos somados ao dano da arma (corpo a corpo: FOR/AGI; disparo: Tiro Certeiro = AGI, Mira de Elite = INT).
 // Retorna [total, "+ 3 (AGI) + 2 (INT)"]; o bônus fixo não é multiplicado por crítico.
 const wAt = (c, w) => {
-  const l = w.m ? [w.st || 'FOR'] : (w.pl || []);
-  return [l.reduce((a, x) => a + c.attr[x], 0), l.map(x => ` + ${c.attr[x]} (${x})`).join('')]
+  const a = ea(c), l = w.m ? [w.st || 'FOR'] : (w.pl || []);
+  return [l.reduce((s, x) => s + a[x], 0), l.map(x => ` + ${a[x]} (${x})`).join('')]
 };
 
 // Dado de ataque desarmado

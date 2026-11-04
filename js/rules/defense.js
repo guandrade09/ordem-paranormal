@@ -4,7 +4,7 @@
 
 // Cálculo de Defesa, PV, PE, SAN e deslocamento da ficha
 function K(c) {
-  const cl = CL[c.classe] || {pv: [0, 0], pe: [0, 0], san: [0, 0], fix: [], per: 0}, v = c.attr, n = c.nex,
+  const cl = CL[c.classe] || {pv: [0, 0], pe: [0, 0], san: [0, 0], fix: [], per: 0}, v = c.attr, ve = ea(c), cf = cfx(c), n = c.nex,
         lv = n >= 99 ? 20 : n / 5, s = Math.max(0, lv - 1), o = OR.find(x => x[0] == c.origem),
         iv = (c.inv || []).map(x => x.n),
         bs = iv.includes('Proteção pesada') ? 'Proteção pesada' :
@@ -29,15 +29,15 @@ function K(c) {
         td = (c.sust || []).reduce((a, x) => a + (x.tdef || 0), 0);
   return {
     pv: z[0] + (c.origem == 'Desgarrado' ? lv : 0) + (c.trail == 'Tropa de Choque' && n >= 10 ? lv : 0) +
-        (hasAb(c, 'Sangue de Ferro') ? 3 + lv : 0),
-      pe: z[1] + (c.origem == 'Universitário' ? uni(n) : 0), san: z[2] + (c.origem == 'Vítima' ? lv : 0) - (c.stn || 0),
+        (hasAb(c, 'Sangue de Ferro') ? 3 + lv : 0) + cf.pv,
+      pe: z[1] + (c.origem == 'Universitário' ? uni(n) : 0) + cf.pe, san: z[2] + (c.origem == 'Vítima' ? lv : 0) - (c.stn || 0),
       rod: pr_ + (c.origem == 'Universitário' ? 1 : 0),
       // limite de PE por rodada só para rituais (Presença Poderosa soma a Presença)
       rodR: pr_ + (c.origem == 'Universitário' ? 1 : 0) + (hasAb(c, 'Presença Poderosa') ? v.PRE : 0),
       // DT de ritual = 10 + limite de PE por rodada + atributo-base (Presença) (+5 com Rituais Eficientes)
-      dt: 10 + pr_ + (c.origem == 'Universitário' ? 1 : 0) + v.PRE + (hasAb(c, 'Rituais Eficientes') ? 5 : 0),
-      def: 10 + v.AGI + pr.d + td + pd + (hasAb(c, 'Reflexos Defensivos') ? 2 : 0) + ((c.t && c.t.def) || 0), pdef: pd,
-      tdef: td,
+      dt: 10 + pr_ + (c.origem == 'Universitário' ? 1 : 0) + ve.PRE + (hasAb(c, 'Rituais Eficientes') ? 5 : 0) + cf.dt,
+      def: 10 + ve.AGI + pr.d + td + pd + (hasAb(c, 'Reflexos Defensivos') ? 2 : 0) + ((c.t && c.t.def) || 0) + cf.def, pdef: pd,
+      tdef: td, cf,
       carga: (v.FOR + (hasAb(c, 'Inventário Otimizado') ? v.INT : 0)) ?
       5 * (v.FOR + (hasAb(c, 'Inventário Otimizado') ? v.INT : 0)) :
       2,

@@ -1,5 +1,5 @@
 /**
- * Modificações de armas, proteções e acessórios.
+ * Melhorias de armas, proteções e acessórios: modificações (+1 categoria cada) e maldições (ver js/data/curses.js).
  */
 
 // Modificações de armas, proteções e acessórios
@@ -69,33 +69,73 @@ const modTxt = m => {
       b == 'Instrumental' && x         ? 'Funciona como kit de perícia de ' + x + '.' :
                                          MTX[b] || '')
 };
+// Seção "Melhorias" do Inventário: itens com modificações e/ou maldições
 const modSec = c => {
-  let l = c.inv.map((it, i) => [it, i]).filter(([it]) => (it.mods || []).length);
-  return `<div class=bar>Modificações</div>${
-    l.map(
-       ([it, i]) => `<div class=card><b>${it.n}</b> <small>Cat. ${RM[it.cat]} → <b>${RM[ecat(c, it)]}</b> · Espaços ${
-         it.e} → <b>${ee(c, it)}</b></small>${
-         it.mods
-           .map(
-             (m, j) => `<div class=row style="margin-top:6px;align-items:flex-start"><div style="flex:1"><b>${
-               m}</b><br><small>${modTxt(m)}</small></div><button class=x onclick="modDel(${i},${j})">✕</button></div>`)
-           .join('')}</div>`)
+  let l = c.inv.map((it, i) => [it, i]).filter(([it]) => (it.mods || []).length || (it.cur || []).length);
+  return `<div class=bar>Melhorias</div>${
+    l.map(([it, i]) => {
+        const els = [...new Set((it.cur || []).map(cuEl).filter(e => CUPRECO[e]))];
+        return `<div class=card><b>${cuNm(it)}</b> <small>Cat. ${RM[it.cat]} → <b>${RM[ecat(c, it)]}</b> · Espaços ${
+          it.e} → <b>${ee(c, it)}</b></small>${
+          (it.mods || [])
+            .map(
+              (m, j) => `<div class=row style="margin-top:6px;align-items:flex-start"><div style="flex:1"><b>➕ ${
+                m}</b><br><small>${modTxt(m)}</small></div><button class=x onclick="modDel(${i},${j})">✕</button></div>`)
+            .join('')}${
+          (it.cur || [])
+            .map(
+              (m, j) => `<div class=row style="margin-top:6px;align-items:flex-start"><div style="flex:1"><b>${
+                CUEMO[cuEl(m)] || ''} ${m}</b> <span class=el style="background:${EC[cuEl(m)] || '#777'}">${
+                cuEl(m) || ''}</span><br><small>${md(curTxt(it, m))}</small></div><button class=x onclick="curDel(${i},${j})">✕</button></div>`)
+            .join('')}${
+          els.length ?
+            `<small style="display:block;margin-top:8px;opacity:.8"><b>Preço da maldição:</b> ${
+              els.map(e => `${e}: perde 2 de Sanidade ao falhar em teste de ${CUPRECO[e]}`).join('; ')}.</small>` :
+            ''}</div>`
+      })
       .join('') ||
-    '<small>Nenhuma modificação aplicada.</small>'}<div style="text-align:center"><button class=btn style="width:72px;font-size:34px;line-height:1;padding:0 0 4px" onclick="modPick()">+</button></div>`
+    '<small>Nenhuma melhoria aplicada.</small>'}<div style="text-align:center"><button class=btn style="width:72px;font-size:34px;line-height:1;padding:0 0 4px" onclick="modPick()">+</button></div>`
 };
+
+// Texto da maldição no item (alguns valores dependem do tipo de proteção)
+const curTxt = (it, m) => {
+  const d = cuDef(m), b = mb(m), el = cuEl(m);
+  if (!d) return '';
+  if (b == 'Cinética') return `+2 em Defesa e resistência a dano ${it.n == 'Proteção pesada' ? 5 : 2}.`;
+  if (b == 'Letárgica') return `+2 em Defesa; ${it.n == 'Proteção pesada' ? 50 : 25}% de chance de ignorar o dano extra de acertos críticos e ataques furtivos.`;
+  if (b == 'Proteção Elemental' && el) return `Resistência 10 contra ${el}. Conta como um item de ${el}.`;
+  return d.t
+};
+
+// Passo 1: escolher o item
 function modPick() {
   let c = cur(), l = c.inv.map((it, i) => [it, i]).filter(([it]) => modKind(it));
   modal(
-    `<button class=xc onclick="cm()">✕</button><b>Adicionar modificação — escolha o item</b><small> (armas, proteções e acessórios do Inventário)</small>${
-      l.map(([it, i]) => `<button class=card onclick="modItem(${i})"><b>${it.n}</b> <small>Cat. ${RM[ecat(c, it)]}${
-              (it.mods || []).length ? ' · ' + it.mods.length + ' modificação(ões)' : ''}</small></button>`)
+    `<button class=xc onclick="cm()">✕</button><b>Adicionar melhoria — escolha o item</b><small> (armas, proteções e acessórios do Inventário)</small>${
+      l.map(([it, i]) => `<button class=card onclick="modItem(${i})"><b>${cuNm(it)}</b> <small>Cat. ${RM[ecat(c, it)]}${
+              (it.mods || []).length ? ' · ' + it.mods.length + ' modificação(ões)' : ''}${
+              (it.cur || []).length ? ' · ' + it.cur.length + ' maldição(ões)' : ''}</small></button>`)
         .join('') ||
       '<p><small>Nenhuma arma, proteção ou acessório no Inventário.</small></p>'}`)
 }
+
+// Passo 2: modificações ou maldições
 function modItem(i) {
-  let c = cur(), it = c.inv[i], o = modOpts(it);
+  let c = cur(), it = c.inv[i], nm = modOpts(it).length, nc = cuOpts(it).length;
   modal(`<button class=xc onclick="cm()">✕</button><button onclick="modPick()">← Itens</button><br><b>${
-    it.n}</b><small> — cada modificação aumenta a categoria em +1</small>${
+    cuNm(it)}</b><small> — o que deseja aplicar?</small>
+<button class=card ${nm ? '' : 'disabled style="opacity:.5"'} onclick="modMods(${i})"><b>➕ Modificações</b><br><small>${
+    nm ? 'Cada modificação aumenta a categoria em +1.' : 'Nenhuma modificação disponível para este item.'}</small></button>
+<button class=card ${nc ? '' : 'disabled style="opacity:.5"'} onclick="curList(${i})"><b>🩸💀⭐👾 Maldições</b><br><small>${
+    nc ? 'A 1ª maldição aumenta a categoria em +II; cada uma das seguintes, em +I.' :
+         cuKind(it) ? 'Nenhuma maldição disponível para este item.' : 'Este item não aceita maldições.'}</small></button>`)
+}
+
+// Passo 3a: modificações disponíveis
+function modMods(i) {
+  let c = cur(), it = c.inv[i], o = modOpts(it);
+  modal(`<button class=xc onclick="cm()">✕</button><button onclick="modItem(${i})">← Voltar</button><br><b>➕ ${
+    cuNm(it)}</b><small> — cada modificação aumenta a categoria em +1</small>${
     o.map(m => `<button class=card onclick="${
             m == 'Função adicional' || m == 'Instrumental' ?
               `modSk(${i},'${m}')` :
@@ -104,14 +144,42 @@ function modItem(i) {
     '<p><small>Nenhuma modificação disponível para este item.</small></p>'}`)
 }
 function modSk(i, m) {
-  modal(`<button class=xc onclick="cm()">✕</button><button onclick="modItem(${i})">← Voltar</button><br><b>${
+  modal(`<button class=xc onclick="cm()">✕</button><button onclick="modMods(${i})">← Voltar</button><br><b>${
     m} — escolha a perícia</b><div class=scr>${
     SK.filter(z => !['Luta', 'Pontaria'].includes(z.n))
       .map(z => `<button class=card onclick="modAdd(${i},'${m} (${z.n})')"><b>${z.n}</b></button>`)
       .join('')}</div>`)
 }
 
-// Adicionar modificação
+// Passo 3b: maldições disponíveis (agrupadas por elemento)
+function curList(i) {
+  let c = cur(), it = c.inv[i], o = cuOpts(it);
+  modal(`<button class=xc onclick="cm()">✕</button><button onclick="modItem(${i})">← Voltar</button><br><b>${
+    cuNm(it)}</b><small> — a 1ª maldição aumenta a categoria em +II; as seguintes, em +I. Elementos opressores não combinam no mesmo item: só Sangue + Energia ou Conhecimento + Morte.</small>${
+    [...CUEL, 'Varia']
+      .map(e => {
+        const l = o.filter(d => d.el == e);
+        return l.length ?
+          `<div class=bar style="background:${EC[e] || '#555'};color:#fff;font-size:18px">${CUEMO[e] || '🌀'} ${
+            e == 'Varia' ? 'VARIA' : e.toUpperCase()}</div>${
+            l.map(d => `<button class=card onclick="${d.el == 'Varia' ? `curEl(${i})` : `curAdd(${i},'${d.n}')`}"><b>${
+                    d.n}</b><br><small>${md(curTxt(it, d.n))}</small></button>`)
+              .join('')}` :
+          ''
+      })
+      .join('')}`)
+}
+// Proteção Elemental: escolher o elemento
+function curEl(i) {
+  let it = cur().inv[i];
+  modal(`<button class=xc onclick="cm()">✕</button><button onclick="curList(${i})">← Voltar</button><br><b>Proteção Elemental — escolha o elemento</b>${
+    CUEL.filter(e => cuElOk(it, e))
+      .map(e => `<button class=card onclick="curAdd(${i},'Proteção Elemental (${e})')"><b>${CUEMO[e]} ${e}</b><br><small>Resistência 10 contra ${
+             e}.</small></button>`)
+      .join('')}`)
+}
+
+// Adicionar / remover
 function modAdd(i, m) {
   cm();
   mut(c => {
@@ -122,4 +190,15 @@ function modAdd(i, m) {
 }
 function modDel(i, j) {
   mut(c => {c.inv[i].mods.splice(j, 1)})
+}
+function curAdd(i, m) {
+  cm();
+  mut(c => {
+    let it = c.inv[i];
+    it.cur = it.cur || [];
+    if (!it.cur.some(x => mb(x) == mb(m))) it.cur.push(m)
+  })
+}
+function curDel(i, j) {
+  mut(c => {c.inv[i].cur.splice(j, 1)})
 }

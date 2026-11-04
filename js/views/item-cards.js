@@ -12,7 +12,7 @@ function dis(id, i) {
 
 // Card de item
 const itemCard = (it, i) => `<div class="card row"><div style="flex:1"><b>${
-  it.el ? it.n.replace(/ de (Conhecimento|Energia|Morte|Sangue|Medo)$/, '') : it.n}</b>${
+  cuIcon(it) ? cuIcon(it) + ' ' : ''}${it.el ? it.n.replace(/ de (Conhecimento|Energia|Morte|Sangue|Medo)$/, '') : it.n}</b>${
   it.el ? ` <span class=el style="background:${EC[it.el]}">${it.el}</span>` : ''}${lack(cur(), it) ? ' ⚠️' : ''}${
   it.w && it.w.mx ?
     ` <small>pente ${it.w.mag}/${it.w.mx}</small> <button onclick="rc(${i})">Recarregar</button>` :
@@ -27,7 +27,7 @@ const itemCard = (it, i) => `<div class="card row"><div style="flex:1"><b>${
           .join('')}</div><small>★ = círculo do ritual</small></div>` :
     ''}</div><div class=ib><div><small>Categoria</small><b>${
   RM[ecat(cur(), it)]}</b></div><div><small>Espaços</small><b>${ee(cur(), it)}</b></div>${
-  it.w ? `<div><small>Dano</small><b>${weff(cur(), it).d}</b></div><div><small>Crítico</small><b>${
+  it.w ? `<div><small>Dano</small><b>${weff(cur(), it).d}${wEx(weff(cur(), it))}</b></div><div><small>Crítico</small><b>${
            weff(cur(), it).c}/x${it.w.x}</b></div>` :
          ''}</div><button class=x onclick="mut(z=>z.inv.splice(${i},1))">✕</button></div>`;
 const tot = (c, n) => c.inv.filter(x => x.n == n && x.q > 0).reduce((a, x) => a + x.q, 0), dec = (z, n, k) => {

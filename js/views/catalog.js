@@ -87,7 +87,7 @@ function peritoMenu(co) {
     dd}</b></div><small> — escolha a perícia</small>${
     c.perito
       .map(n => {
-        let z = SK.find(q => q.n == n), v = c.attr[z.a];
+        let z = SK.find(q => q.n == n), v = ea(c)[z.a];
         return `<button class=card onclick="usePerito('${n}',${co},${dd})"><b>${n}</b><br><small>${v || 2}d20 +${
           gb(c, n, 1)} (+1d${dd})</small></button>`
       })
@@ -98,7 +98,7 @@ function usePerito(n, co, dd) {
   let c = cur(), k = K(c);
   if (co > k.rod) return toast(`⚠ Custo de ${co} PE acima do limite de ${k.rod} PE por rodada (NEX ${c.nex}%).`);
   if (c.pe < co) return toast('PE insuficiente');
-  let z = SK.find(q => q.n == n), v = c.attr[z.a], d = rd(v || 2, 20), r = v ? Math.max(...d) : Math.min(...d),
+  let z = SK.find(q => q.n == n), v = ea(c)[z.a], d = rd(v || 2, 20), r = v ? Math.max(...d) : Math.min(...d),
       b = gb(c, n, 1), x = rd(1, dd)[0];
   fx('ico', '🎯');
   mut(q => {q.pe -= co});

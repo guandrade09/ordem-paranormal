@@ -9,6 +9,7 @@ Base de regras: livro v1.1 + ficha oficial. Hospedagem: GitHub Pages. Login e ba
 - `js/` — scripts clássicos no escopo global (os `onclick="..."` do HTML chamam funções globais):
   `config` · `core` (estado, utilitários) · `data` (tabelas do livro) · `rules` (cálculos) · `ui` (roteador R, gestos) · `views` (telas) · `account` (login e sincronização) · `main.js` (inicia o app).
 - `js/data/threats.js` — ameaças do livro (`THREATS`); `js/views/threats.js` — Monstruário (lista `thr` e ficha `thd`, abas Info/Ações). Paletas por elemento em `css/style.css` (seção "Monstruário"), aplicadas por `thTheme()` e independentes do tema claro/escuro. Ícones de Humanos/Natureza em `img/`.
+- `js/data/curses.js` + `js/rules/curses.js` + `js/views/modifications.js` — Melhorias do Inventário: modificações (+1 categoria) e maldições do livro (`it.cur`; 1ª maldição +II de categoria, demais +I; elementos opressores não combinam). Efeitos automáticos em `cfx(c)` (Defesa, PV, PE, DT, resistências, perícias, atributos via `ea(c)`) e em `weff` (Lancinante/Erosiva = dano extra, Predadora = margem x2). Nome do item ganha ➕ (modificação) e 🩸💀⭐👾 (elemento da maldição).
 - `supabase.sql` — tabelas + RLS (cada usuário só acessa as próprias linhas).
 - `tests/` — `npm test` (ou `node tests/run.js`). Sem dependências.
 
@@ -27,7 +28,7 @@ Base de regras: livro v1.1 + ficha oficial. Hospedagem: GitHub Pages. Login e ba
 - Fundo escuro do tema: `#121212`.
 
 ## Pendências conhecidas
-Escudo do Mestre, Criador de Cenas; Monstruário: faltam os Perigos (armadilhas/doenças), a Máscara do Desespero não tem o texto do Enigma de Medo, imagens das ameaças só ficam no aparelho (`op_thimg`, não sincronizam); DT +2 do Especialista em Elemento; excluir conta pelo app; compartilhar fichas/campanhas entre contas.
+Escudo do Mestre, Criador de Cenas; Melhorias: itens amaldiçoados especiais ainda não existem e maldições com ativação (gasta PE) só aparecem como texto; Monstruário: faltam os Perigos (armadilhas/doenças), a Máscara do Desespero não tem o texto do Enigma de Medo, imagens das ameaças só ficam no aparelho (`op_thimg`, não sincronizam); DT +2 do Especialista em Elemento; excluir conta pelo app; compartilhar fichas/campanhas entre contas.
 
 ## Limites dos testes
 Simulam navegador e servidor (Supabase falso). Não cobrem aparência visual nem o Supabase real: depois de publicar, teste o login uma vez de verdade.
