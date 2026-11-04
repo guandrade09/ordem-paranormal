@@ -306,8 +306,210 @@ def energia():
     return svg(o, defs)
 
 
+# ---------------------------------------------------------------- RELÍQUIAS (VD 400)
+# Fundos mais ricos, inspirados nas referências do usuário: um símbolo do elemento no centro.
+def symuri(nome, size=300):
+    """Símbolo oficial (img/sym-*.png, branco) reduzido e embutido em base64 (SVG usado como fundo não carrega arquivos externos)."""
+    import base64, io
+    from PIL import Image
+    im = Image.open(os.path.join(OUT, 'sym-%s.png' % nome)).convert('RGBA')
+    im.thumbnail((size, size), Image.LANCZOS)
+    b = io.BytesIO(); im.save(b, 'PNG', optimize=True)
+    return 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode(), im.size
+
+
+def symimg(nome, cx, cy, size, tint=None, opacity=1, glow=0):
+    uri, (w, h) = symuri(nome, 360)
+    k = size / max(w, h); w, h = w * k, h * k
+    fl = " filter='url(#tint)'" if tint else ''
+    out = ''
+    if glow:
+        out += "<image href='%s' x='%s' y='%s' width='%s' height='%s' filter='url(#glow)' opacity='%s'/>" % (uri, f(cx - w / 2), f(cy - h / 2), f(w), f(h), glow)
+    return out + "<image href='%s' x='%s' y='%s' width='%s' height='%s'%s opacity='%s'/>" % (uri, f(cx - w / 2), f(cy - h / 2), f(w), f(h), fl, opacity)
+
+
+def tintdefs(rgb):
+    return ("<filter id='tint'><feColorMatrix values='0 0 0 0 %s 0 0 0 0 %s 0 0 0 0 %s 0 0 0 1 0'/></filter>"
+            "<filter id='glow' x='-40%%' y='-40%%' width='180%%' height='180%%'><feGaussianBlur stdDeviation='14'/></filter>" % tuple(rgb.split()))
+
+
+def smooth(pts, close=False):
+    """Caminho suave por quadráticas passando pelos pontos médios."""
+    if close:
+        d = 'M%s %s' % (f((pts[-1][0] + pts[0][0]) / 2), f((pts[-1][1] + pts[0][1]) / 2))
+        for i in range(len(pts)):
+            p, q = pts[i], pts[(i + 1) % len(pts)]
+            d += 'Q%s %s %s %s' % (f(p[0]), f(p[1]), f((p[0] + q[0]) / 2), f((p[1] + q[1]) / 2))
+        return d + 'Z'
+    d = 'M%s %s' % (f(pts[0][0]), f(pts[0][1]))
+    for i in range(1, len(pts) - 1):
+        p, q = pts[i], pts[i + 1]
+        d += 'Q%s %s %s %s' % (f(p[0]), f(p[1]), f((p[0] + q[0]) / 2), f((p[1] + q[1]) / 2))
+    return d + 'L%s %s' % (f(pts[-1][0]), f(pts[-1][1]))
+
+
+def rel_morte():
+    rng = random.Random(101)
+    defs = tintdefs('1 1 1') + ("<radialGradient id='c' cx='50%' cy='50%' r='50%'><stop offset='.55' stop-color='#000' stop-opacity='.95'/>"
+                                 "<stop offset='1' stop-color='#000' stop-opacity='0'/></radialGradient>"
+                                 "<radialGradient id='v' cx='50%' cy='50%' r='75%'><stop offset='.5' stop-color='#000' stop-opacity='0'/>"
+                                 "<stop offset='1' stop-color='#000' stop-opacity='.6'/></radialGradient>")
+    o = "<rect width='%d' height='%d' fill='#0a0a0a'/>" % (W, H)
+    # aglomerados de anéis grossos e irregulares (como anéis de tronco)
+    for cx, cy, mr in [(150, 230, 320), (720, 120, 360), (800, 640, 300), (90, 900, 260), (860, 1010, 230), (420, -40, 300)]:
+        ph = [rng.uniform(0, 6.28) for _ in range(3)]
+        for k in range(int(mr / 36)):
+            r = 22 + k * 36; pts = []
+            for i in range(56):
+                a = i * 2 * math.pi / 56
+                rr = r + 7 * math.sin(a * 3 + ph[0] + k) + 5 * math.sin(a * 5 + ph[1]) + rng.uniform(-3.5, 3.5) + 10 * math.sin(a * 2 + ph[2])
+                pts.append((cx + rr * math.cos(a) + k * 2.4, cy + rr * math.sin(a)))
+            o += "<path d='%s' fill='none' stroke='#8f8f8f' stroke-width='%s' stroke-opacity='.95' stroke-linejoin='round'/>" % (smooth(pts, True), f(rng.uniform(12, 17)))
+    o += "<rect width='%d' height='%d' fill='#000' fill-opacity='.35'/>" % (W, H)
+    o += "<ellipse cx='450' cy='640' rx='300' ry='300' fill='url(#c)'/>"
+    # dálias negras na base
+    flores = sorted([(rng.uniform(30, 870), rng.uniform(1300, 1650), rng.uniform(140, 230)) for _ in range(12)], key=lambda t: t[1])
+    for fx, fy, R in flores:
+        o += "<g transform='translate(%s %s)'>" % (f(fx), f(fy))
+        for lay, (frac, fill) in enumerate([(1, '#0d1416'), (.74, '#131c1e'), (.5, '#1a2628')]):
+            n = 14 - lay * 2; ph = rng.uniform(0, 6.28); L = R * frac; w = R * .26 * (1 - lay * .1)
+            for i in range(n):
+                a = ph + i * 2 * math.pi / n * 1.0
+                o += ("<path transform='rotate(%s)' d='M0 0C%s %s %s %s 0 %sC%s %s %s %s 0 0Z' fill='%s' stroke='#334749' stroke-width='2.2'/>"
+                      % (f(math.degrees(a)), f(w), f(-L * .3), f(w * .7), f(-L * .8), f(-L), f(-w * .7), f(-L * .8), f(-w), f(-L * .3), fill))
+        o += "<circle r='%s' fill='#3a1c1b'/><circle r='%s' fill='none' stroke='#6b3a33' stroke-width='3'/></g>" % (f(R * .13), f(R * .08))
+    o += symimg('morte', 450, 640, 330, glow=.5)
+    o += "<rect width='%d' height='%d' fill='url(#v)'/>" % (W, H)
+    return svg(o, defs)
+
+
+def rel_conhecimento():
+    rng = random.Random(102)
+    defs = tintdefs('.93 .87 .7') + ("<radialGradient id='g' cx='50%' cy='48%' r='45%'><stop offset='0' stop-color='#7a6726' stop-opacity='.8'/>"
+                                      "<stop offset='1' stop-color='#6b5b22' stop-opacity='0'/></radialGradient>"
+                                      "<filter id='n' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='4'/>"
+                                      "<feColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .8 1.4 0 0 0 -.62'/></filter>"
+                                      "<radialGradient id='v' cx='50%' cy='50%' r='75%'><stop offset='.5' stop-color='#000' stop-opacity='0'/>"
+                                      "<stop offset='1' stop-color='#000' stop-opacity='.6'/></radialGradient>")
+    cx, cy = 450, 790
+    o = "<rect width='%d' height='%d' fill='#0d0b08'/><rect width='%d' height='%d' fill='url(#g)'/>" % (W, H, W, H)
+    o += "<rect width='%d' height='%d' filter='url(#n)' opacity='.35'/>" % (W, H)
+
+    def glyph(x, y, sc, rot, op, w=1.4):
+        return ("<path transform='translate(%s %s) rotate(%s) scale(%s)' d='%s' fill='none' stroke='#efe6cf' stroke-opacity='%s' stroke-width='%s' stroke-linecap='round'/>"
+                % (f(x), f(y), f(rot), f(sc), glyph_path(rng, -4, -6), f(op), f(w / sc)))
+    for i in range(150):                                  # glifos espalhados, apagados
+        o += glyph(rng.uniform(10, W - 10), rng.uniform(10, H - 10), rng.uniform(2.0, 3.6), rng.uniform(-40, 40), rng.uniform(.14, .32), 1.8)
+    for i in range(115):                                  # espiral de glifos brilhantes ao redor do símbolo
+        t = i / 115; ang = t * 5.2 * 2 * math.pi; r = 50 + 300 * t ** .85
+        o += glyph(cx + r * math.cos(ang), cy + r * math.sin(ang), .9 + 2.2 * t ** .7, math.degrees(ang) + 90, .6 + .4 * (1 - t), 2.2)
+    # linhas fluidas
+    for k in range(6):
+        x0, y0 = rng.choice([(-20, rng.uniform(0, 500)), (W + 20, rng.uniform(300, 900)), (rng.uniform(0, W), -20), (rng.uniform(0, W), H + 20)])
+        x1, y1 = rng.uniform(100, 800), rng.uniform(300, 1300)
+        for j in range(2):
+            off = j * 7
+            o += ("<path d='M%s %sC%s %s %s %s %s %s' fill='none' stroke='#e9e3d0' stroke-opacity='%s' stroke-width='%s' stroke-linecap='round'/>"
+                  % (f(x0 + off), f(y0), f(rng.uniform(0, W)), f(rng.uniform(0, H)), f(rng.uniform(0, W)), f(rng.uniform(0, H)), f(x1 + off), f(y1), f(.6 - j * .2), f(4.2 - j * 1.8)))
+    o += symimg('conhecimento', cx, cy, 190, glow=.7)
+    o += ("<text x='450' y='1390' text-anchor='middle' font-family=\"'Segoe Script','Brush Script MT','Snell Roundhand',cursive\" font-style='italic' "
+          "font-size='32' fill='#d9d2bb' fill-opacity='.6'>saber tudo é perder tudo.</text>")
+    o += "<rect width='%d' height='%d' fill='#000' fill-opacity='.22'/><rect width='%d' height='%d' fill='url(#v)'/>" % (W, H, W, H)
+    return svg(o, defs)
+
+
+def vein(rng, x, y, ang, L, depth=0):
+    """Veia sinuosa: lista de pontos + ramificações."""
+    pts = [(x, y)]; a = ang; out = []
+    for i in range(int(L / 30)):
+        a += rng.uniform(-.2, .2) - (a - ang) * .22
+        x += 30 * math.cos(a); y += 30 * math.sin(a); pts.append((x, y))
+        if depth < 2 and i > 5 and rng.random() < .1:
+            out += vein(rng, x, y, a + rng.choice([-1, 1]) * rng.uniform(.5, 1.1), L * rng.uniform(.3, .5), depth + 1)
+    return [pts] + out
+
+
+def rel_energia():
+    rng = random.Random(103)
+    defs = tintdefs('1 .42 .88') + ("<linearGradient id='b' x1='0' y1='0' x2='.5' y2='1'><stop offset='0' stop-color='#3a0f6c'/><stop offset='.5' stop-color='#6a29b0'/>"
+                                     "<stop offset='1' stop-color='#42167c'/></linearGradient>"
+                                     "<filter id='t' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.012 .02' numOctaves='4' seed='3'/>"
+                                     "<feColorMatrix values='0 0 0 0 .85 0 0 0 0 .55 0 0 0 0 1 1.3 0 0 0 -.4'/></filter>"
+                                     "<filter id='g2' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='9'/>"
+                                     "<feColorMatrix values='0 0 0 0 1 0 0 0 0 .9 0 0 0 0 1 1.6 0 0 0 -.8'/></filter>"
+                                     "<filter id='bl' x='-20%' y='-20%' width='140%' height='140%'><feGaussianBlur stdDeviation='5'/></filter>"
+                                     "<radialGradient id='v' cx='50%' cy='50%' r='75%'><stop offset='.5' stop-color='#000' stop-opacity='0'/>"
+                                     "<stop offset='1' stop-color='#000' stop-opacity='.55'/></radialGradient>")
+    o = "<rect width='%d' height='%d' fill='url(#b)'/><rect width='%d' height='%d' filter='url(#t)' opacity='.4'/>" % (W, H, W, H)
+    o += "<rect width='%d' height='%d' filter='url(#g2)' opacity='.5'/>" % (W, H)
+    for k in range(3):                                    # faixas de luz diagonais
+        o += "<polygon points='%s' fill='#fff' fill-opacity='.05'/>" % ' '.join('%s,%s' % (f(x), f(y)) for x, y in [(rng.uniform(-300, 300), 0), (rng.uniform(400, 700), 0), (W + 200, rng.uniform(500, 900)), (W + 200, rng.uniform(1000, 1400))])
+    cols = ['#ff7ad9', '#e667ff', '#7f9bff', '#ff9be8']
+    glow = ''; core = ''
+    starts = [(60 + i * 150 + rng.uniform(-40, 40), -20, math.pi / 2 + rng.uniform(-.28, .28)) for i in range(6)] + \
+             [(rng.uniform(100, 800), H + 20, -math.pi / 2 + rng.uniform(-.3, .3)) for _ in range(3)]
+    for sx, sy, sa in starts:
+        for pts in vein(rng, sx, sy, sa, rng.uniform(1100, 1700)):
+            nstr = rng.randint(4, 8); col = rng.choice(cols)
+            for j in range(nstr):
+                off = (j - nstr / 2) * rng.uniform(2, 3.6)
+                q = [(x + off * math.sin(0 + i * .07 + j), y + off * math.cos(i * .07 + j)) for i, (x, y) in enumerate(pts)]
+                w = (3.6 if j == nstr // 2 else rng.uniform(.8, 1.8))
+                core += "<path d='%s' fill='none' stroke='%s' stroke-opacity='%s' stroke-width='%s' stroke-linecap='round'/>" % (smooth(q), col if j % 3 else '#8aa2ff', f(rng.uniform(.6, .95)), f(w))
+            glow += "<path d='%s' fill='none' stroke='%s' stroke-opacity='.45' stroke-width='9'/>" % (smooth(pts), col)
+    o += "<g filter='url(#bl)'>%s</g>%s" % (glow, core)
+    o += "<rect width='%d' height='%d' fill='#000' fill-opacity='.2'/>" % (W, H)
+    o += symimg('energia', 450, 800, 210, tint=True, opacity=.95, glow=.8)
+    o += "<rect width='%d' height='%d' fill='url(#v)'/>" % (W, H)
+    return svg(o, defs)
+
+
+def rel_sangue():
+    rng = random.Random(104)
+    defs = tintdefs('.93 .12 .17') + ("<radialGradient id='v' cx='50%' cy='50%' r='75%'><stop offset='.5' stop-color='#000' stop-opacity='0'/>"
+                                       "<stop offset='1' stop-color='#000' stop-opacity='.6'/></radialGradient>")
+    cx, cy = 450, 770
+    o = "<rect width='%d' height='%d' fill='#090203'/>" % (W, H)
+
+    def organico(x, y, rx, ry, rot, k):
+        pts = []
+        for i in range(14):
+            a = i * 2 * math.pi / 14; j = 1 + rng.uniform(-.28, .28)
+            px, py = rx * k * math.cos(a) * j, ry * k * math.sin(a) * j
+            pts.append((x + px * math.cos(rot) - py * math.sin(rot), y + px * math.sin(rot) + py * math.cos(rot)))
+        return smooth(pts, True)
+    for i in range(110):                                  # manchas orgânicas alongadas em direção ao centro (curvas de nível)
+        x, y = rng.uniform(-60, W + 60), rng.uniform(-60, H + 60)
+        rot = math.atan2(y - cy, x - cx) + rng.uniform(-.5, .5); rx, ry = rng.uniform(70, 210), rng.uniform(20, 70)
+        col = rng.choice(['#a31230', '#8f0f28', '#b8173a'])
+        o += "<path d='%s' fill='%s' fill-opacity='.9'/>" % (organico(x, y, rx, ry, rot, 1), col)
+        o += "<path d='%s' fill='#0b0203' fill-opacity='.88'/>" % organico(x, y, rx, ry, rot, .62)
+        o += "<path d='%s' fill='%s' fill-opacity='.85'/>" % (organico(x, y, rx, ry, rot, .34), col)
+    for i in range(240):
+        o += "<circle cx='%s' cy='%s' r='%s' fill='#a31230' fill-opacity='%s'/>" % (f(rng.uniform(0, W)), f(rng.uniform(0, H)), f(rng.uniform(.8, 3.2)), f(rng.uniform(.3, .8)))
+    o += "<rect width='%d' height='%d' fill='#000' fill-opacity='.3'/>" % (W, H)
+    # círculo ritual
+    red = '#e3212c'
+    o += "<circle cx='%d' cy='%d' r='296' fill='#080102' fill-opacity='.9'/>" % (cx, cy)
+    for r, w in [(292, 3.5), (272, 1.6), (252, 1.2), (160, 1.4), (132, 1.2), (104, 1.2), (78, 1.6)]:
+        o += "<circle cx='%d' cy='%d' r='%s' fill='none' stroke='%s' stroke-width='%s'/>" % (cx, cy, r, red, w)
+    hexp = [(cx + 232 * math.cos(math.radians(-90 + 60 * k)), cy + 232 * math.sin(math.radians(-90 + 60 * k))) for k in range(6)]
+    o += "<polygon points='%s' fill='none' stroke='%s' stroke-width='1.3' stroke-opacity='.8'/>" % (' '.join('%s,%s' % (f(x), f(y)) for x, y in hexp), red)
+    for x, y in hexp:
+        o += "<circle cx='%s' cy='%s' r='64' fill='#0a0203' stroke='%s' stroke-width='4.5'/><circle cx='%s' cy='%s' r='52' fill='none' stroke='%s' stroke-width='2'/>" % (f(x), f(y), red, f(x), f(y), red)
+        for m in range(3):
+            a0 = rng.uniform(0, 6.28)
+            q = [(x + (8 + 8 * t) * math.cos(a0 + t * 2.2 + m * 2.1) , y + (8 + 8 * t) * math.sin(a0 + t * 2.2 + m * 2.1)) for t in range(1, 5)]
+            q = [(x + (6 + 7 * t) * math.cos(a0 + t * 1.3 + m * 2.09), y + (6 + 7 * t) * math.sin(a0 + t * 1.3 + m * 2.09)) for t in range(0, 6)]
+            o += "<path d='%s' fill='none' stroke='%s' stroke-width='5' stroke-linecap='round'/>" % (smooth(q), red)
+    o += "<circle cx='%s' cy='%s' r='9' fill='%s'/>" % (f(cx + 262), f(cy + 100), red)
+    o += symimg('sangue', cx, cy, 250, tint=True, opacity=.95, glow=.7)
+    o += "<rect width='%d' height='%d' fill='url(#v)'/>" % (W, H)
+    return svg(o, defs)
+
+
 if __name__ == '__main__':
-    for nome, fn in [('sangue', sangue), ('morte', morte), ('energia', energia)]:   # 'conhecimento' aprovado: não regerar
+    for nome, fn in [('sangue', sangue), ('morte', morte), ('energia', energia), ('rel-morte', rel_morte), ('rel-conhecimento', rel_conhecimento), ('rel-energia', rel_energia), ('rel-sangue', rel_sangue)]:   # 'conhecimento' aprovado: não regerar
         s = fn()
         open(os.path.join(OUT, 'bg-%s.svg' % nome), 'w').write(s)
         print(nome, len(s) // 1024, 'KB')

@@ -985,9 +985,14 @@ small {
 .thh .thvd b {
   font-size: 46px;
 }
+.thti {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
 .thdot {
   opacity: .6;
-  margin: 0 1px;
 }
 .thimgw {
   margin: 8px 0;
@@ -1229,4 +1234,117 @@ body[data-thel=conhecimento] .hx i {
 }
 body[data-thel=conhecimento] .thh .thsy img {
   filter: brightness(0) !important;
+}
+
+/* ---------- Relíquias (VD 400) ---------- */
+/* Fundo da ficha: arte própria por elemento (img/bg-rel-*.svg, gerada por tools/gen-fundos.py) */
+html[data-thel=sangue][data-threl] {
+  background: #090203 url(../img/bg-rel-sangue.svg) center/cover no-repeat fixed;
+}
+html[data-thel=morte][data-threl] {
+  background: #0a0a0a url(../img/bg-rel-morte.svg) center/cover no-repeat fixed;
+}
+html[data-thel=conhecimento][data-threl] {
+  background: #0d0b08 url(../img/bg-rel-conhecimento.svg) center/cover no-repeat fixed;
+}
+html[data-thel=energia][data-threl] {
+  background: #3a0f6c url(../img/bg-rel-energia.svg) center/cover no-repeat fixed;
+}
+/* Conhecimento: o fundo da relíquia é escuro, então o texto fica claro */
+body[data-thel=conhecimento][data-threl] {
+  --fg: #efe6cf;
+  --mut: #cfc4a5;
+  --card: #2b2416;
+  --thn: #f0c33c;
+}
+body[data-thel=conhecimento][data-threl] .hx i {
+  color: #efe6cf;
+}
+body[data-thel=conhecimento][data-threl] .hx b {
+  color: #f0c33c;
+}
+/* Card da relíquia na lista */
+.thc.threl {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--rb);
+  border-left-width: 8px;
+  padding: 14px 12px;
+  color: var(--rf);
+  background: linear-gradient(110deg, var(--r1), var(--r2));
+  box-shadow: 0 0 0 1px #000 inset, 0 0 14px var(--rg), 0 3px 10px #0008;
+}
+.thc.threl::before {
+  content: '';
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  width: 120px;
+  height: 120px;
+  margin-top: -60px;
+  background: var(--rs) center/contain no-repeat;
+  opacity: .22;
+  pointer-events: none;
+}
+.thc.threl::after {
+  content: 'RELÍQUIA';
+  position: absolute;
+  left: 10px;
+  bottom: 2px;
+  font: 700 8px/1 'Special Elite', monospace;
+  letter-spacing: 2px;
+  opacity: .7;
+}
+.thc.threl .thn {
+  font-size: 19px;
+  letter-spacing: .5px;
+  text-shadow: 0 1px 3px #0009;
+}
+.thc.threl .thvd b {
+  font-size: 30px;
+}
+.thc.threl .thsy img {
+  filter: none;
+}
+.thc[data-el=sangue].threl {
+  --r1: #e0262f;
+  --r2: #3d070c;
+  --rb: #ff6a5c;
+  --rg: #d32f2f99;
+  --rf: #fff;
+  --rs: url(../img/sym-sangue.png);
+}
+.thc[data-el=morte].threl {
+  --r1: #9a9a9a;
+  --r2: #141414;
+  --rb: #d6d6d6;
+  --rg: #bdbdbd77;
+  --rf: #fff;
+  --rs: url(../img/sym-morte.png);
+}
+.thc[data-el=conhecimento].threl {
+  --r1: #f3c640;
+  --r2: #7a5710;
+  --rb: #ffe58a;
+  --rg: #f0c33c99;
+  --rf: #1b1204;
+  --rs: url(../img/sym-conhecimento.png);
+}
+.thc[data-el=conhecimento].threl .thsy img {
+  filter: brightness(0);
+}
+.thc[data-el=conhecimento].threl::before {
+  filter: brightness(0);
+  opacity: .16;
+}
+.thc[data-el=energia].threl {
+  --r1: #b25cff;
+  --r2: #2f0a66;
+  --rb: #e0b3ff;
+  --rg: #a855f799;
+  --rf: #fff;
+  --rs: url(../img/sym-energia.png);
+}
+.thc[data-el=conhecimento].threl .thn {
+  text-shadow: none;
 }

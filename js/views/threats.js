@@ -32,21 +32,25 @@ const THART = new Set(['zumbi-de-sangue', 'aberracao-de-carne', 'dama-de-sangue'
         `<span class=thsy><img src="img/sym-${SYMF[el]}.png" width=${sz} height=${sz} alt=""></span>`,
       // Tags do livro: elementos em maiúsculas (em negrito) + tipo e tamanho
       // (o elemento vira uma etiqueta com o fundo e a fonte da cor do próprio elemento)
-      thTags = t => t.tg.map(x => {
-        const k = x == x.toUpperCase() && THO.find(e => e.toUpperCase() == x), c = k && THC[k];
-        return c ? `<b class=thel style="background:${c[0]};color:${c[1]}">${x}</b>` : x
-      }).join('<span class=thdot>&nbsp;·</span> '),
+      thTags = t => t.tg.map((x, i) => {
+        const k = x == x.toUpperCase() && THO.find(e => e.toUpperCase() == x), c = k && THC[k],
+              tag = c ? `<b class=thel style="background:${c[0]};color:${c[1]}">${x}</b>` : x;
+        // cada tag leva o seu "·" junto (a lista é flex: o ponto não pode ficar sozinho no começo da linha)
+        return `<span class=thti>${tag}${i < t.tg.length - 1 ? '<span class=thdot>·</span>' : ''}</span>`
+      }).join(''),
       thSorted = el =>
         THREATS.filter(t => t.el == el).sort((a, b) => a.vd - b.vd || a.n.localeCompare(b.n, 'pt')),
       thv = x => x == null || x === '' ? '—' : x,
+      // Relíquias (VD 400): card em destaque na lista e fundo próprio na ficha
+      thRel = t => t.vd >= 400,
       thSel = () => THREATS.find(t => t.id == S.thid);
 
 // Aplica (ou remove) a paleta do elemento no <html> e no <body>; chamada pelo roteador a cada tela.
 // Realidade não tem paleta: só ganha o símbolo (Humanos/Natureza) no fundo (data-thbg)
 function thTheme() {
   const t = S.v == 'thd' ? thSel() : null, k = t ? THK[t.el] || '' : '', bg = t ? THBG[t.el] || '' : '',
-        d = document.documentElement, b = document.body;
-  [[k, 'thel'], [bg, 'thbg']].forEach(([v, a]) => {
+        rl = t && k && thRel(t) ? '1' : '', d = document.documentElement, b = document.body;
+  [[k, 'thel'], [bg, 'thbg'], [rl, 'threl']].forEach(([v, a]) => {
     if (v) {
       d.dataset[a] = v;
       b.dataset[a] = v
@@ -69,7 +73,7 @@ function thFilter(q) {
 
 const thCard = t => {
   const col = THC[t.el] ? THC[t.el][0] : 'var(--fg)';
-  return `<button class="card thc" data-n="${nz(t.n)}" style="border-left:8px solid ${col}" onclick="thOpen('${
+  return `<button class="card thc${thRel(t) && THK[t.el] ? ' threl' : ''}" data-el="${THK[t.el] || ''}" data-n="${nz(t.n)}" style="border-left:8px solid ${col}" onclick="thOpen('${
     t.id}')"><div class=row><div class=thsym style="color:${
     THC[t.el] && t.el != 'Medo' ? SC[t.el] : 'var(--fg)'}">${thIcon(t.el, 34)}</div><div class=thmid><b class=thn>${
     t.n}</b><div class=thtg>${thTags(t)}</div></div><div class=thvd><small>VD</small><b>${
