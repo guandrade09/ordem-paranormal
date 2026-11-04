@@ -985,6 +985,10 @@ small {
 .thh .thvd b {
   font-size: 46px;
 }
+.thdot {
+  opacity: .6;
+  margin: 0 1px;
+}
 .thimgw {
   margin: 8px 0;
   text-align: center;
@@ -1087,12 +1091,12 @@ body[data-thel=morte] {
 }
 body[data-thel=conhecimento] {
   --thb: #4b3315;
-  --fg: #4b3315;
+  --fg: #000;
   --card: #fbf3da;
   --bar: #c79a1a;
   --bf: #000;
   --red: #a77700;
-  --mut: #6d5530;
+  --mut: #222;
   --thh: #c79a1a;
   --tht: #000;
   --thn: #000;
@@ -1135,7 +1139,7 @@ html[data-thel=morte] {
   background: #090909 url(../img/bg-morte.svg) center/cover no-repeat fixed;
 }
 html[data-thel=conhecimento] {
-  background: #d8c28a url(../img/bg-conhecimento.svg) center/cover no-repeat fixed;
+  background: linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1)) fixed, #d8c28a url(../img/bg-conhecimento.svg) center/cover no-repeat fixed;
 }
 html[data-thel=energia] {
   background: #4a1790 url(../img/bg-energia.svg) center/cover no-repeat fixed;
@@ -1219,6 +1223,9 @@ body[data-thel=energia] .hx small {
 }
 .thh .thsy img {
   filter: none !important;
+}
+body[data-thel=conhecimento] .hx i {
+  color: #4b3315;
 }
 body[data-thel=conhecimento] .thh .thsy img {
   filter: brightness(0) !important;

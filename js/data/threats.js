@@ -161,7 +161,7 @@ const THREATS=[
  pa:[['Aura Manifestada','Cercado por uma aura dourada de faces flutuantes que gritam. Personagens em alcance curto sofrem −2d20 em todos os testes.']],
  ac:[['Padrão','Agredir',[['Pancada','Corpo a corpo x2','2d20+5','2d4+7 impacto']],''],
  ['Padrão','Expandir Aura',[],'Seres em alcance curto sofrem 6d6 de dano mental (Vontade DT 20 reduz à metade).']]},
-{id:'glifado',n:'Ser dos Glifos',el:'Conhecimento',tg:['ENERGIA','MEDO','Criatura','Grande'],vd:340,pr:[40,'10d6 mental',99],sn:['5d20+25','3d20+20','Percepção às cegas'],df:[50,'3d20+15','3d20+20','5d20+25'],pv:[750,375],rs:'',vu:'Sangue',im:'Dano',at:[3,5,5,5,3],pe:'Ciência 5d20+20, Ocultismo 5d20+20, Furtividade 3d20+20',ds:'Voo 15m',
+{id:'glifado',n:'Estrangeiro',el:'Conhecimento',tg:['ENERGIA','MEDO','Criatura','Grande'],vd:340,pr:[40,'10d6 mental',99],sn:['5d20+25','3d20+20','Percepção às cegas'],df:[50,'3d20+15','3d20+20','5d20+25'],pv:[750,375],rs:'',vu:'Sangue',im:'Dano',at:[3,5,5,5,3],pe:'Ciência 5d20+20, Ocultismo 5d20+20, Furtividade 3d20+20',ds:'Voo 15m',
  pa:[['Enigma de Medo','Suas intenções são complexas e devem ser decifradas: investigar os sinais deixados pela criatura e aprender sua linguagem e mensagens crípticas é a única forma de se comunicar com ela e derrotá-la. Quando suas intenções são decifradas, perde a imunidade a dano (mas segue imune a dano de Conhecimento) e não pode usar Incubar.']],
  ac:[['Padrão','Agredir',[['Toque Sutil','Corpo a corpo x3','5d20+35','4d8+10 Conhecimento']],''],
  ['Padrão','Agredir',[['Rajada Psíquica','Distância x2, extremo','5d20+35','4d10+20 Conhecimento']],''],

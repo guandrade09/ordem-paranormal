@@ -21,7 +21,9 @@ const THART = new Set(['zumbi-de-sangue', 'aberracao-de-carne', 'dama-de-sangue'
                        'mulher-afogada', 'enpap-x', 'tita-de-sangue', 'minotauro', 'carente', 'kerberos',
                        'aniquilacao', 'o-diabo', 'esqueleto-de-lodo', 'succ', 'aracnasita', 'escutado',
                        'carnical-preto-da-morte', 'mumia-xipofaga', 'marionete', 'nidere', 'sempiternal',
-                       'ceifador-espiral', 'deus-da-morte']),
+                       'ceifador-espiral', 'deus-da-morte', 'existido', 'vulto', 'parasita-de-culpa', 'lembrado',
+                       'rastejador-sombrio', 'espreitador', 'ocioso', 'bicho-papao', 'glifado', 'silhueta', 'anjo',
+                       'mascara-do-desespero']),
       // Exceção: arte exibida menor que o padrão
       THSM = new Set(['zumbi-de-sangue']),
       // Ícone do grupo: PNG do símbolo do elemento (img/sym-*.png) ou a imagem de Humanos/Natureza
@@ -33,7 +35,7 @@ const THART = new Set(['zumbi-de-sangue', 'aberracao-de-carne', 'dama-de-sangue'
       thTags = t => t.tg.map(x => {
         const k = x == x.toUpperCase() && THO.find(e => e.toUpperCase() == x), c = k && THC[k];
         return c ? `<b class=thel style="background:${c[0]};color:${c[1]}">${x}</b>` : x
-      }).join(' '),
+      }).join('<span class=thdot>&nbsp;·</span> '),
       thSorted = el =>
         THREATS.filter(t => t.el == el).sort((a, b) => a.vd - b.vd || a.n.localeCompare(b.n, 'pt')),
       thv = x => x == null || x === '' ? '—' : x,
@@ -85,7 +87,10 @@ const thr = () => `<div class=fade><button onclick="S.v='mestre';R()">← Voltar
 
 // ---------- Navegação ----------
 
+// Posição da lista (rolagem + busca), para voltar exatamente onde estava
+let THPOS = null;
 function thOpen(id) {
+  if (S.v == 'thr') THPOS = {y: window.scrollY, q: ($('#thq') || {}).value || ''};
   S.thid = id;
   S.tht = 'i';
   S.v = 'thd';
@@ -98,7 +103,15 @@ function thTab(t) {
 }
 function thBack() {
   S.v = 'thr';
-  R()
+  R();
+  const p = THPOS;
+  if (p) {
+    if (p.q && $('#thq')) {
+      $('#thq').value = p.q;
+      thFilter(p.q)
+    }
+    window.scrollTo(0, p.y)
+  }
 }
 
 // ---------- Ficha: cabeçalho ----------

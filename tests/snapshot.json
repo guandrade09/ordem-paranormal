@@ -1,5 +1,5 @@
 {
- "tela:start": "1722556370:669",
+ "tela:start": "-492219341:669",
  "tela:home": "-1711281345:352",
  "tela:mestre": "-2141209049:872",
  "tela:conta": "-1651382494:231",
@@ -52,7 +52,7 @@
  "monstruario:lista": "66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true",
  "monstruario:fichas": "ok",
  "monstruario:tema": "morte||",
- "monstruario:imagem": "true|true|true|23",
+ "monstruario:imagem": "true|true|true|35",
  "dados:rd": "4,4,4|11",
  "estado:serializavel": true
 }

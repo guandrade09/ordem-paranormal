@@ -93,21 +93,39 @@ def spiral(cx, cy, r, turns, rot, cw):
 
 
 def morte():
+    """Uma única espiral grande e grossa, cobrindo a tela, distorcida em alguns pontos."""
     rng = random.Random(11)
     defs = ("<radialGradient id='v' cx='50%' cy='50%' r='75%'><stop offset='.5' stop-color='#000' stop-opacity='0'/>"
-            "<stop offset='1' stop-color='#000' stop-opacity='.55'/></radialGradient>")
+            "<stop offset='1' stop-color='#000' stop-opacity='.55'/></radialGradient>"
+            "<filter id='s' x='-5%' y='-5%' width='110%' height='110%'><feGaussianBlur stdDeviation='1.2'/></filter>")
     o = "<rect width='%d' height='%d' fill='#090909'/>" % (W, H)
-    # uma única espiral gigante cobrindo a tela inteira
-    o += ("<polyline points='%s' fill='none' stroke='#fff' stroke-opacity='.11' stroke-width='5' stroke-linecap='round'/>"
-          % spiral(W / 2, H / 2, 980, 9, 0.6, 1))
-    # espirais menores, claras e todas do mesmo tamanho, espalhadas ao acaso (sem encostar umas nas outras)
-    pos = []
-    while len(pos) < 70:
-        x, y = rng.uniform(25, W - 25), rng.uniform(25, H - 25)
-        if all((x - px) ** 2 + (y - py) ** 2 > 95 ** 2 for px, py in pos):
-            pos.append((x, y))
-            o += ("<polyline points='%s' fill='none' stroke='#fff' stroke-opacity='.38' stroke-width='2.2' stroke-linecap='round'/>"
-                  % spiral(x, y, 34, 3, rng.uniform(0, 6.28), rng.choice([1, -1])))
+    cx, cy = W * .5, H * .52
+    turns, R = 5.2, 1000.0
+    n = 1400
+    # pontos de distorção: (posição t ao longo da espiral, largura, deslocamento radial, engrossamento)
+    bumps = [(rng.uniform(.2, .95), rng.uniform(.018, .04), rng.choice([-1, 1]) * rng.uniform(35, 65), rng.uniform(.4, .9))
+             for _ in range(7)]
+    ph1, ph2 = rng.uniform(0, 6.28), rng.uniform(0, 6.28)
+    left, right = [], []
+    for i in range(n + 1):
+        t = i / n
+        th = t * turns * 2 * math.pi
+        rr = R * t
+        dr = 14 * math.sin(t * 23 + ph1) + 9 * math.sin(t * 61 + ph2)                      # tremor leve
+        wd = 1 + .22 * math.sin(t * 17 + ph2)                                               # espessura variando
+        for bt, bw, bd, bk in bumps:
+            g = math.exp(-((t - bt) / bw) ** 2)
+            dr += bd * g * math.sin((t - bt) * 220)                                         # trecho ondulado/distorcido
+            wd += bk * g
+        w = (24 + 14 * t) * wd * min(1, t * 14)                                              # grossa; afina só no centro
+        rr += dr
+        x, y = cx + rr * math.cos(th), cy + rr * math.sin(th)
+        nx, ny = math.cos(th), math.sin(th)                                                  # espessura no sentido radial
+        left.append((x + nx * w, y + ny * w)); right.append((x - nx * w, y - ny * w))
+    pts = left + right[::-1]
+    d = 'M' + ' L'.join('%s %s' % (f(x), f(y)) for x, y in pts) + 'Z'
+    o += "<path d='%s' fill='#fff' fill-opacity='.12' filter='url(#s)'/>" % d
+    o += "<path d='%s' fill='none' stroke='#fff' stroke-opacity='.18' stroke-width='2'/>" % d
     o += "<rect width='%d' height='%d' fill='url(#v)'/>" % (W, H)
     return svg(o, defs)
 

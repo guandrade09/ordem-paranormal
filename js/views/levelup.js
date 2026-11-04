@@ -429,12 +429,26 @@ function rlist2() {
              let off = ci > ac, hv = c.rit.some(z => typeof z == 'string' && z.split('|')[0] == r.n);
              return `<button class="card ${off || hv ? 'gy' : ''}" ${
                off || hv ? '' :
-                           `onclick="S.lv.x.r=${RT.indexOf(r)};lvStep()"`}><b>${r.n}</b>${hv ? ' ✔' : ''}<br><small>${
+                           `onclick="lvRSel(${RT.indexOf(r)})"`}><b>${r.n}</b>${hv ? ' ✔' : ''}<br><small>${
                r.s}</small>${off ? `<br><small class=pre>Requer acesso ao ${ci}º círculo</small>` : ''}</button>`
            })
             .join('')
     }
   return h || '<small>Nenhum ritual encontrado.</small>'
+}
+// Escolher ritual / voltar à lista no mesmo ponto da rolagem
+function lvRSel(i) {
+  const l = $('#lq');
+  S.lv.x.sy = [window.scrollY, l ? l.scrollTop : 0];
+  S.lv.x.r = i;
+  lvStep()
+}
+function lvRBack() {
+  const [y, t] = S.lv.x.sy || [0, 0];
+  S.lv.x.r = null;
+  lvStep();
+  window.scrollTo(0, y);
+  if ($('#lq')) $('#lq').scrollTop = t
 }
 function vRit() {
   let x = S.lv.x;
@@ -448,7 +462,7 @@ function vRit() {
             .join('') +
           '</div>' :
                     `<button class=btn onclick="lvRc('${
-                      r.n}')">Confirmar</button>`}<button onclick="S.lv.x.r=null;lvStep()">Voltar</button>`
+                      r.n}')">Confirmar</button>`}<button onclick="lvRBack()">Voltar</button>`
   }
   return `<input placeholder="🔎 Pesquisar ritual..." value="${
     esc(x.q || '')}" oninput="S.lv.x.q=this.value;$('#lq').innerHTML=rlist2()"><div id=lq class=scr>${rlist2()}</div>`
