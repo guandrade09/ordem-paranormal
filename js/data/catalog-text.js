@@ -170,7 +170,7 @@ const
     ],
   PARN = [
     ['Amarras de (Elemento)', 2, 1], ['Câmera de Aura Paranormal', 2, 1],
-    ['Componentes Ritualísticos de (Elemento)', 1, 1], ['Emissor de Pulsos Paranormais', 2, 1],
+    ['Componentes Ritualísticos de (Elemento)', 0, 1], ['Emissor de Pulsos Paranormais', 2, 1],
     ['Escuta de Ruídos Paranormais', 2, 1], ['Medidor de Estabilidade da Membrana', 2, 1],
     ['Scanner de Manifestação Paranormal de (Elemento)', 2, 1]
   ];

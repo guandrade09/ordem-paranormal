@@ -69,6 +69,51 @@ const modTxt = m => {
       b == 'Instrumental' && x         ? 'Funciona como kit de perícia de ' + x + '.' :
                                          MTX[b] || '')
 };
+// Card simplificado de maldição (como os de habilidades): nome, resumo e custo de PE à direita
+const curRow = (it, i, j) => {
+  const m = it.cur[j], b = mb(m), x = CUX[b] || {}, el = cuEl(m);
+  return `<div class="card ab" style="margin-top:6px" onclick="curCard(${i},${j})"><div class=abt><b>${
+    CUEMO[el] || ''} ${m}</b> <span class=el style="background:${EC[el] || '#777'}">${el || ''}</span><br><small>${
+    md(x.s || '')}</small></div>${x.pe ? `<b class=pec>${x.pe} PE</b>` : x.v ? '<small class=pec>PE var.</small>' : ''}</div>`
+};
+// Maldições na aba Ações (itens em uso: proteções só a vestida e o escudo)
+const curCards = c => {
+  const iv = c.inv.map(x => x.n), bs = iv.includes('Proteção pesada') ? 'Proteção pesada' :
+                                       iv.includes('Proteção leve')   ? 'Proteção leve' : '',
+        l = [];
+  c.inv.forEach((it, i) => {
+    if (cuKind(it) == 'prot' && it.n != bs && it.n != 'Escudo') return;
+    (it.cur || []).forEach((m, j) => l.push(curRow(it, i, j).replace('<b>', `<b>${it.n} · `)))
+  });
+  return l.length ? `<div class=bar>Maldições</div>${l.join('')}` : ''
+};
+// Detalhe da maldição: texto completo, botão Usar (desconta o PE) e remover
+function curCard(i, j) {
+  const c = cur(), it = c.inv[i], m = it.cur[j], b = mb(m), x = CUX[b] || {}, el = cuEl(m);
+  modal(`<button class=xc onclick="cm()">✕</button><div class=ahd><b style="font:26px 'Bebas Neue'">${CUEMO[el] || ''} ${
+    m}</b>${x.pe ? `<b class=pec>${x.pe} PE</b>` : ''}</div><small>${it.n} · <span class=el style="background:${
+    EC[el] || '#777'}">${el || ''}</span></small><p>${md(curTxt(it, m))}</p>${
+    x.pe ? `<button class=btn style="width:100%;font-size:24px;margin-top:6px" onclick="curUse(${i},${j})">Usar</button>` :
+    x.v  ? '<small>Custo de PE variável: é o custo do ritual (desconte-o no grimório ou à mão).</small>' :
+           '<small>Maldição passiva: os bônus já entram na ficha.</small>'}
+<button class=x style="margin-top:10px" onclick="cm();curDel(${i},${j})">✕ Remover maldição</button>`)
+}
+// Usar: desconta o PE (respeitando o limite por rodada), rola os dados e aplica cura em PV
+function curUse(i, j) {
+  const c = cur(), k = K(c), it = c.inv[i], m = it.cur[j], b = mb(m), x = CUX[b] || {}, n = x.pe || 0;
+  if (!n) return;
+  if (n > k.rod) return toast(`⚠ Custo de ${n} PE acima do limite de ${k.rod} PE por rodada (NEX ${c.nex}%).`);
+  if (c.pe < n) return toast('PE insuficiente');
+  cm();
+  fx('ico', CUEMO[cuEl(m)] || '✨');
+  const r = x.dx ? `${x.dx[1]}: ${rl(x.dx[0])} (${x.dx[0]})` : '', h = x.hp ? rl(x.hp) : 0;
+  mut(z => {
+    z.pe -= n;
+    if (h) z.pv = Math.min(K(z).pv, z.pv + h)
+  });
+  toast(`${b}${r ? ' · ' + r : ''}${h ? ` · +${h} PV` : ''} · −${n} PE`)
+}
+
 // Seção "Melhorias" do Inventário: itens com modificações e/ou maldições
 const modSec = c => {
   let l = c.inv.map((it, i) => [it, i]).filter(([it]) => (it.mods || []).length || (it.cur || []).length);
@@ -82,12 +127,7 @@ const modSec = c => {
               (m, j) => `<div class=row style="margin-top:6px;align-items:flex-start"><div style="flex:1"><b>➕ ${
                 m}</b><br><small>${modTxt(m)}</small></div><button class=x onclick="modDel(${i},${j})">✕</button></div>`)
             .join('')}${
-          (it.cur || [])
-            .map(
-              (m, j) => `<div class=row style="margin-top:6px;align-items:flex-start"><div style="flex:1"><b>${
-                CUEMO[cuEl(m)] || ''} ${m}</b> <span class=el style="background:${EC[cuEl(m)] || '#777'}">${
-                cuEl(m) || ''}</span><br><small>${md(curTxt(it, m))}</small></div><button class=x onclick="curDel(${i},${j})">✕</button></div>`)
-            .join('')}${
+          (it.cur || []).map((m, j) => curRow(it, i, j)).join('')}${
           els.length ?
             `<small style="display:block;margin-top:8px;opacity:.8"><b>Preço da maldição:</b> ${
               els.map(e => `${e}: perde 2 de Sanidade ao falhar em teste de ${CUPRECO[e]}`).join('; ')}.</small>` :
@@ -124,9 +164,9 @@ function modItem(i) {
   let c = cur(), it = c.inv[i], nm = modOpts(it).length, nc = cuOpts(it).length;
   modal(`<button class=xc onclick="cm()">✕</button><button onclick="modPick()">← Itens</button><br><b>${
     cuNm(it)}</b><small> — o que deseja aplicar?</small>
-<button class=card ${nm ? '' : 'disabled style="opacity:.5"'} onclick="modMods(${i})"><b>➕ Modificações</b><br><small>${
+<button class=card ${nm ? '' : 'disabled style="opacity:.5"'} onclick="modMods(${i})"><b>Modificações ➕</b><br><small>${
     nm ? 'Cada modificação aumenta a categoria em +1.' : 'Nenhuma modificação disponível para este item.'}</small></button>
-<button class=card ${nc ? '' : 'disabled style="opacity:.5"'} onclick="curList(${i})"><b>🩸💀⭐👾 Maldições</b><br><small>${
+<button class=card ${nc ? '' : 'disabled style="opacity:.5"'} onclick="curList(${i})"><b>Maldições 🩸💀⭐👾</b><br><small>${
     nc ? 'A 1ª maldição aumenta a categoria em +II; cada uma das seguintes, em +I.' :
          cuKind(it) ? 'Nenhuma maldição disponível para este item.' : 'Este item não aceita maldições.'}</small></button>`)
 }

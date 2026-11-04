@@ -103,6 +103,21 @@
     return o.join('|');
   });
 
+  // --- maldições com PE: usar desconta o PE (respeitando o limite por rodada) e Regenerativa cura PV ---
+  safe('melhorias:uso', () => {
+    const c = mk('Combatente', 15, { VIG: 2 }, ['Proteção leve', 'Faca']), o = [];
+    curAdd(0, 'Regenerativa'); curAdd(1, 'Energética');
+    c.pe = 10; c.pv = 1; const rod = K(c).rod;
+    curUse(0, 0); o.push(c.pe, c.pv > 1);                 // 1 PE e cura de 1d12
+    curUse(1, 0); o.push(c.pe);                           // Energética: 2 PE (limite por rodada de NEX 15% = 3)
+    c.pe = 1; curUse(1, 0); o.push(c.pe);                 // PE insuficiente: nada muda
+    S.v = 'sheet'; S.tab = 1; R(); o.push(/Maldições/.test(document.querySelector('#app').innerHTML), rod);
+    curCard(0, 0);
+    const comp = item('Faca'); comp.n = 'Componentes Ritualísticos de Sangue'; comp.cat = 1; comp.w = null;
+    o.push(ecat(c, comp));
+    return o.join('|');
+  });
+
   // --- criador de combates ---
   const campos = { '#cmn': { value: '' }, '#cmr': { value: '' }, '#cmb': { value: '' }, '#cda': { value: '' } };
   safe('combate:ordem', () => {

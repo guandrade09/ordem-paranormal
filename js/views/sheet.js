@@ -239,6 +239,7 @@ ${fl('PROTEÇÃO', k.pr.n + (c.inv.some(x => PR[x.n] && lack(c, x)) ? ' ⚠️' 
                md(p[4] || (p[3].replace(/\*\*/g, '').slice(0, 70) + (p[3].length > 70 ? '…' : '')))}</small></div>${
                p[1] ? `<b class=pec>${p[1]} PE</b>` : ''}</div>`)
         .join('')}
+${curCards(c)}
 ${rsheet(c, k)}`
   }
   if (S.tab == 2) {

@@ -42,6 +42,8 @@ function main() {
     result['habilidades:atributos'] === '6|4|0|0|5| + 2 (AGI) + 3 (INT)', result['habilidades:atributos']);
   check('melhorias: maldições filtradas por tipo/elemento, categoria +II/+I, ➕/emoji no nome, dano extra, margem x2, Defesa (maior), PV, RD e atributo',
     result['melhorias:maldicoes'] === 'true|false|true|false|true|true|0|2|false|true|false|3|18→15|[["1d8","Sangue",1]]|➕🩸 Pistola|true|5|15|2|3|2|1|0|0|true|true', result['melhorias:maldicoes']);
+  check('maldições com PE: Usar desconta PE (e respeita PE/rodada e PE insuficiente), Regenerativa cura, aba Ações lista maldições; componentes ritualísticos = categoria 0',
+    result['melhorias:uso'] === '9|true|7|1|true|3|0', result['melhorias:uso']);
   check('monstruário: 66 ameaças, grupos na ordem do livro e VD crescente em cada grupo',
     result['monstruario:lista'] === '66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true', result['monstruario:lista']);
   check('monstruário: todas as fichas (abas Info e Ações) desenham sem undefined/NaN', result['monstruario:fichas'] === 'ok', result['monstruario:fichas']);

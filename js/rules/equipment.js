@@ -19,7 +19,7 @@ const FR = c => c.trail == 'Aniquilador' ? (c.nex >= 99    ? 3 :
         []).reduce((a, m) => a + ({'Blindada': 1, 'Reforçada': 1, 'Discreta': -1, 'Discreto': -1}[mb(m)] || 0), 0),
       ee = (c, i) => Math.max(0, i.e + msp(i) - (i.mu && !i.w && hasAb(c, 'Mochila de Utilidades') ? 1 : 0)),
       ecat = (c, it) => Math.max(0,
-        it.cat + (it.mods || []).length + cuCat(it) - (it.fav ? FR(c) : 0) -
+        (/^Componentes Ritualísticos/.test(it.n || '') ? 0 : it.cat) + (it.mods || []).length + cuCat(it) - (it.fav ? FR(c) : 0) -
           (it.mu && !it.w && hasAb(c, 'Mochila de Utilidades') ? 1 : 0) -
           ((c.origem == 'Engenheiro' && it.eng && !it.w) ? 1 : 0) -
           (!it.w && !PR[it.n] && it.q == null && !it.am && hasAb(c, 'Remendão') ? 1 : 0));
