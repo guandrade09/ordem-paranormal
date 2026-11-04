@@ -1,5 +1,5 @@
 {
- "tela:start": "-626803467:669",
+ "tela:start": "1453388118:669",
  "tela:home": "-1711281345:352",
  "tela:mestre": "-2141209049:872",
  "tela:conta": "-1651382494:231",
@@ -49,10 +49,10 @@
  "melhorias:maldicoes": "true|false|true|false|true|true|0|2|false|true|false|3|18→15|[[\"1d8\",\"Sangue\",1]]|Pistola🩸➕|true|5|15|2|3|2|1|0|0|true|true",
  "melhorias:uso": "9|true|7|1|true|3|0",
  "combate:ordem": "Ana17,Bruno15,Caio14,Davi14 | Bruno15,Caio14,Davi14,Ana13 | limiteCaio=13",
- "monstruario:lista": "66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true",
+ "monstruario:lista": "67|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true",
  "monstruario:fichas": "ok",
  "monstruario:tema": "morte||",
- "monstruario:imagem": "true|true|true|47",
+ "monstruario:imagem": "true|true|true|48",
  "dados:rd": "4,4,4|11",
  "estado:serializavel": true
 }

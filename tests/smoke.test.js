@@ -44,11 +44,11 @@ function main() {
     result['melhorias:maldicoes'] === 'true|false|true|false|true|true|0|2|false|true|false|3|18→15|[["1d8","Sangue",1]]|Pistola🩸➕|true|5|15|2|3|2|1|0|0|true|true', result['melhorias:maldicoes']);
   check('maldições com PE: Usar desconta PE (e respeita PE/rodada e PE insuficiente), Regenerativa cura, aba Ações lista maldições; componentes ritualísticos = categoria 0',
     result['melhorias:uso'] === '9|true|7|1|true|3|0', result['melhorias:uso']);
-  check('monstruário: 66 ameaças, grupos na ordem do livro e VD crescente em cada grupo',
-    result['monstruario:lista'] === '66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true', result['monstruario:lista']);
+  check('monstruário: 67 ameaças, grupos na ordem do livro e VD crescente em cada grupo',
+    result['monstruario:lista'] === '67|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true', result['monstruario:lista']);
   check('monstruário: todas as fichas (abas Info e Ações) desenham sem undefined/NaN', result['monstruario:fichas'] === 'ok', result['monstruario:fichas']);
   check('monstruário: paleta do elemento só nas fichas (Realidade e lista voltam ao tema padrão)', result['monstruario:tema'] === 'morte||', result['monstruario:tema']);
-  check('monstruário: arte fixa das ameaças (sem upload, sem moldura)', result['monstruario:imagem'] === 'true|true|true|47', result['monstruario:imagem']);
+  check('monstruário: arte fixa das ameaças (sem upload, sem moldura)', result['monstruario:imagem'] === 'true|true|true|48', result['monstruario:imagem']);
 
   if (process.env.UPDATE) {
     fs.writeFileSync(SNAPSHOT, JSON.stringify(result, null, 1) + '\n');

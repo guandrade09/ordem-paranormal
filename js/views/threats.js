@@ -25,7 +25,7 @@ const THART = new Set(['zumbi-de-sangue', 'aberracao-de-carne', 'dama-de-sangue'
                        'rastejador-sombrio', 'espreitador', 'ocioso', 'bicho-papao', 'glifado', 'silhueta', 'anjo',
                        'mascara-do-desespero', 'anarquico', 'perturbado-de-energia', 'ciborgue', 'anarquico-descontrolado',
                        'sukkalgir', 'viajante', 'anomiatico', 'infecticidio', 'telopsia', 'tempestuoso', 'anomalia',
-                       'anfitriao']),
+                       'anfitriao', 'enraizado']),
       // Exceção: arte exibida menor que o padrão
       THSM = new Set(['zumbi-de-sangue']),
       // Ícone do grupo: PNG do símbolo do elemento (img/sym-*.png) ou a imagem de Humanos/Natureza
