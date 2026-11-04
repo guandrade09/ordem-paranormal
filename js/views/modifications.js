@@ -73,7 +73,7 @@ const modTxt = m => {
 const curRow = (it, i, j) => {
   const m = it.cur[j], b = mb(m), x = CUX[b] || {}, el = cuEl(m);
   return `<div class="card ab" style="margin-top:6px" onclick="curCard(${i},${j})"><div class=abt><b>${
-    CUEMO[el] || ''} ${m}</b> <span class=el style="background:${EC[el] || '#777'}">${el || ''}</span><br><small>${
+    m}</b> <span class=el style="background:${EC[el] || '#777'}">${el || ''}</span><br><small>${
     md(x.s || '')}</small></div>${x.pe ? `<b class=pec>${x.pe} PE</b>` : x.v ? '<small class=pec>PE var.</small>' : ''}</div>`
 };
 // Maldições na aba Ações (itens em uso: proteções só a vestida e o escudo)
@@ -90,7 +90,7 @@ const curCards = c => {
 // Detalhe da maldição: texto completo, botão Usar (desconta o PE) e remover
 function curCard(i, j) {
   const c = cur(), it = c.inv[i], m = it.cur[j], b = mb(m), x = CUX[b] || {}, el = cuEl(m);
-  modal(`<button class=xc onclick="cm()">✕</button><div class=ahd><b style="font:26px 'Bebas Neue'">${CUEMO[el] || ''} ${
+  modal(`<button class=xc onclick="cm()">✕</button><div class=ahd><b style="font:26px 'Bebas Neue'">${
     m}</b>${x.pe ? `<b class=pec>${x.pe} PE</b>` : ''}</div><small>${it.n} · <span class=el style="background:${
     EC[el] || '#777'}">${el || ''}</span></small><p>${md(curTxt(it, m))}</p>${
     x.pe ? `<button class=btn style="width:100%;font-size:24px;margin-top:6px" onclick="curUse(${i},${j})">Usar</button>` :
@@ -124,7 +124,7 @@ const modSec = c => {
           it.e} → <b>${ee(c, it)}</b></small>${
           (it.mods || [])
             .map(
-              (m, j) => `<div class=row style="margin-top:6px;align-items:flex-start"><div style="flex:1"><b>➕ ${
+              (m, j) => `<div class=row style="margin-top:6px;align-items:flex-start"><div style="flex:1"><b>${
                 m}</b><br><small>${modTxt(m)}</small></div><button class=x onclick="modDel(${i},${j})">✕</button></div>`)
             .join('')}${
           (it.cur || []).map((m, j) => curRow(it, i, j)).join('')}${
@@ -174,7 +174,7 @@ function modItem(i) {
 // Passo 3a: modificações disponíveis
 function modMods(i) {
   let c = cur(), it = c.inv[i], o = modOpts(it);
-  modal(`<button class=xc onclick="cm()">✕</button><button onclick="modItem(${i})">← Voltar</button><br><b>➕ ${
+  modal(`<button class=xc onclick="cm()">✕</button><button onclick="modItem(${i})">← Voltar</button><br><b>${
     cuNm(it)}</b><small> — cada modificação aumenta a categoria em +1</small>${
     o.map(m => `<button class=card onclick="${
             m == 'Função adicional' || m == 'Instrumental' ?
@@ -214,7 +214,7 @@ function curList(i) {
 function curInfo(i, n) {
   const it = cur().inv[i], d = CURSES.find(x => x.n == n), x = CUX[n] || {};
   modal(`<button class=xc onclick="cm()">✕</button><button onclick="curList(${i})">← Voltar</button><br><div class=ahd><b style="font:26px 'Bebas Neue'">${
-    CUEMO[d.el] || ''} ${n}</b>${x.pe ? `<b class=pec>${x.pe} PE</b>` : ''}</div><small>${cuNm(it)} · <span class=el style="background:${
+    n}</b>${x.pe ? `<b class=pec>${x.pe} PE</b>` : ''}</div><small>${cuNm(it)} · <span class=el style="background:${
     EC[d.el] || '#777'}">${d.el == 'Varia' ? 'Elemento à escolha' : d.el}</span></small><p>${md(curTxt(it, n))}</p>${
     ''}<button class=btn style="width:100%;font-size:22px;margin-top:6px" onclick="${
     d.el == 'Varia' ? `curEl(${i})` : `curAdd(${i},'${n}')`}">Aplicar maldição</button>`)

@@ -46,7 +46,7 @@
  "modificacoes:lista": "1937177601:4892",
  "ataque:pistola": "-1389903459:4118",
  "habilidades:atributos": "6|4|0|0|5| + 2 (AGI) + 3 (INT)",
- "melhorias:maldicoes": "true|false|true|false|true|true|0|2|false|true|false|3|18→15|[[\"1d8\",\"Sangue\",1]]|➕🩸 Pistola|true|5|15|2|3|2|1|0|0|true|true",
+ "melhorias:maldicoes": "true|false|true|false|true|true|0|2|false|true|false|3|18→15|[[\"1d8\",\"Sangue\",1]]|Pistola🩸➕|true|5|15|2|3|2|1|0|0|true|true",
  "melhorias:uso": "9|true|7|1|true|3|0",
  "combate:ordem": "Ana17,Bruno15,Caio14,Davi14 | Bruno15,Caio14,Davi14,Ana13 | limiteCaio=13",
  "monstruario:lista": "66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true",

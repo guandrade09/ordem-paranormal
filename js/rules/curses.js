@@ -29,10 +29,10 @@ const cuDef = m => CURSES.find(x => x.n == mb(m)),
       // Ajuste de categoria: a 1ª maldição soma +II, cada uma das seguintes +I
       cuCat = it => (it.cur || []).length ? (it.cur || []).length + 1 : 0,
       cuHas = (it, n) => (it.cur || []).some(m => mb(m) == n),
-      // Ícone na frente do nome: ➕ se tem modificação e o emoji do elemento de cada maldição
-      cuIcon = it => ((it.mods || []).length ? '➕' : '') +
-                     [...new Set((it.cur || []).map(cuEl).filter(e => CUEMO[e]))].map(e => CUEMO[e]).join(''),
-      cuNm = it => (cuIcon(it) ? cuIcon(it) + ' ' : '') + it.n;
+      // Ícones depois do nome da arma melhorada: emoji de cada elemento das maldições e ➕ se tem modificação (ex.: Besta👾➕)
+      cuIcon = it => !it.w ? '' : [...new Set((it.cur || []).map(cuEl).filter(e => CUEMO[e]))].map(e => CUEMO[e]).join('') +
+                                  ((it.mods || []).length ? '➕' : ''),
+      cuNm = it => it.n + cuIcon(it);
 
 // Efeitos passivos das maldições do personagem. Bônus de itens amaldiçoados não se acumulam: valem o maior
 // de cada tipo (Defesa, resistência, atributo, perícia) e maldições iguais em itens diferentes contam uma vez.

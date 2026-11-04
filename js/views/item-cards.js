@@ -12,7 +12,7 @@ function dis(id, i) {
 
 // Card de item
 const itemCard = (it, i) => `<div class="card row"><div style="flex:1"><b>${
-  cuIcon(it) ? cuIcon(it) + ' ' : ''}${it.el ? it.n.replace(/ de (Conhecimento|Energia|Morte|Sangue|Medo)$/, '') : it.n}</b>${
+  it.el ? it.n.replace(/ de (Conhecimento|Energia|Morte|Sangue|Medo)$/, '') : it.n}${cuIcon(it)}</b>${
   it.el ? ` <span class=el style="background:${EC[it.el]}">${it.el}</span>` : ''}${lack(cur(), it) ? ' ⚠️' : ''}${
   it.w && it.w.mx ?
     ` <small>pente ${it.w.mag}/${it.w.mx}</small> <button onclick="rc(${i})">Recarregar</button>` :
