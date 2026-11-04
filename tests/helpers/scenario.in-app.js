@@ -164,8 +164,10 @@
     return a + '|' + b + '|' + (document.body.dataset.thel || '');
   });
   safe('monstruario:imagem', () => {
-    thImgSet('nidere', 'data:image/jpeg;base64,xx'); const a = !!thImgs().nidere;
-    thImgSet('nidere', ''); return a + '|' + !!thImgs().nidere;
+    // 12 ameaças têm arte (sem upload); sem arte não aparece nada; a arte vem sem borda/fundo
+    const h = id => { S.thid = id; S.v = 'thd'; R(); return $('#app').innerHTML };
+    const a = h('o-diabo').includes('src="img/th/o-diabo.webp"'), b = h('bandido');
+    return a + '|' + !b.includes('thimgw') + '|' + !/type=file|thPhoto/.test(b) + '|' + THART.size;
   });
 
   // --- dados (Math.random fixo em 0.5) ---

@@ -48,7 +48,7 @@ function main() {
     result['monstruario:lista'] === '66|Sangue>Morte>Conhecimento>Energia>Medo>Realidade: Humanos>Realidade: Natureza|true|true', result['monstruario:lista']);
   check('monstruário: todas as fichas (abas Info e Ações) desenham sem undefined/NaN', result['monstruario:fichas'] === 'ok', result['monstruario:fichas']);
   check('monstruário: paleta do elemento só nas fichas (Realidade e lista voltam ao tema padrão)', result['monstruario:tema'] === 'morte||', result['monstruario:tema']);
-  check('monstruário: imagem da ameaça é guardada e removida', result['monstruario:imagem'] === 'true|false', result['monstruario:imagem']);
+  check('monstruário: arte fixa das ameaças (sem upload, sem moldura)', result['monstruario:imagem'] === 'true|true|true|12', result['monstruario:imagem']);
 
   if (process.env.UPDATE) {
     fs.writeFileSync(SNAPSHOT, JSON.stringify(result, null, 1) + '\n');

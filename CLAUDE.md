@@ -29,7 +29,7 @@ Base de regras: livro v1.1 + ficha oficial. Hospedagem: GitHub Pages. Login e ba
 - Fundo escuro do tema: `#121212`.
 
 ## Pendências conhecidas
-Escudo do Mestre, Criador de Cenas; Melhorias: itens amaldiçoados especiais ainda não existem e maldições com ativação (gasta PE) só aparecem como texto; Monstruário: faltam os Perigos (armadilhas/doenças), a Máscara do Desespero não tem o texto do Enigma de Medo, imagens das ameaças só ficam no aparelho (`op_thimg`, não sincronizam); DT +2 do Especialista em Elemento; excluir conta pelo app; compartilhar fichas/campanhas entre contas.
+Escudo do Mestre, Criador de Cenas; Melhorias: itens amaldiçoados especiais ainda não existem e maldições com ativação (gasta PE) só aparecem como texto; Monstruário: faltam os Perigos (armadilhas/doenças), a Máscara do Desespero não tem o texto do Enigma de Medo, só 12 ameaças têm arte (`THART` em `js/views/threats.js`, arquivos `img/th/<id>.webp`, PNG sem fundo, sem moldura; não há upload); DT +2 do Especialista em Elemento; excluir conta pelo app; compartilhar fichas/campanhas entre contas.
 
 ## Limites dos testes
 Simulam navegador e servidor (Supabase falso). Não cobrem aparência visual nem o Supabase real: depois de publicar, teste o login uma vez de verdade.

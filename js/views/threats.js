@@ -15,23 +15,11 @@ const THO = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Realidade: H
 
 // ---------- Utilidades ----------
 
-// Imagem enviada pelo usuário para cada ameaça: guardada só neste aparelho (chave própria, fora do estado `S`)
-const thImgs = () => {
-  try {
-    return JSON.parse(localStorage.getItem('op_thimg') || '{}')
-  } catch (e) {
-    return {}
-  }
-},
-      thImgSet = (id, d) => {
-        const m = thImgs();
-        if (d) m[id] = d; else delete m[id];
-        try {
-          localStorage.setItem('op_thimg', JSON.stringify(m))
-        } catch (e) {
-          toast('Sem espaço para guardar a imagem neste aparelho.')
-        }
-      },
+// Arte das ameaças: img/th/<id>.webp (PNG sem fundo, sem borda). Ameaça sem arte não mostra nada.
+// Para adicionar uma: salve a imagem em img/th/ e inclua o id aqui.
+const THART = new Set(['zumbi-de-sangue', 'aberracao-de-carne', 'dama-de-sangue', 'zumbi-de-sangue-bestial',
+                       'mulher-afogada', 'enpap-x', 'tita-de-sangue', 'minotauro', 'carente', 'kerberos',
+                       'aniquilacao', 'o-diabo']),
       // Ícone do grupo: PNG do símbolo do elemento (img/sym-*.png) ou a imagem de Humanos/Natureza
       thIcon = (el, sz) => THIMG[el] ?
         `<span class=thic><img src="${THIMG[el]}" width=${sz} height=${sz} alt=""></span>` :
@@ -109,19 +97,6 @@ function thBack() {
   R()
 }
 
-// ---------- Imagem da ameaça ----------
-
-function thPhoto(i) {
-  photoFrom(i.files[0], 320, d => {
-    thImgSet(S.thid, d);
-    R()
-  })
-}
-function thNoPhoto() {
-  thImgSet(S.thid, '');
-  R()
-}
-
 // ---------- Ficha: cabeçalho ----------
 
 const thHead = t => `<div class=thh><div class=thsym>${thIcon(t.el, 44)}</div><div class=thmid><h2>${
@@ -131,14 +106,10 @@ const thHead = t => `<div class=thh><div class=thsym>${thIcon(t.el, 44)}</div><d
 
 const thInfo = t => {
   const [dt, mental, nex] = t.pr || [], [perc, ini, nota] = t.sn, [def, fo, re, vo] = t.df,
-        img = thImgs()[t.id],
         hx = (x, i, p) => `<div class=hx style="left:${p[0]}px;top:${p[1]}px"><i><small>${AN[x]}</small><b>${
           thv(t.at[i])}</b><span>${x}</span></i></div>`,
         li = (l, v) => v ? `<div class=thl><span>${l}</span><b>${v}</b></div>` : '';
-  return `<div class=thimgw><label class=thpick title="${img ? 'Trocar imagem' : 'Enviar imagem'}">${
-    img ? `<img class=thimg src="${img}" alt="${t.n}">` :
-          '<div class="thimg thnoimg">Toque para<br>enviar uma imagem</div>'}<input type=file accept="image/*" hidden onchange="thPhoto(this)"></label>${
-    img ? '<button class=thrm onclick="thNoPhoto()">✕ Remover imagem</button>' : ''}</div>
+  return `${THART.has(t.id) ? `<div class=thimgw><img class=thimg src="img/th/${t.id}.webp" alt="${t.n}"></div>` : ''}
 <div class=bar>ATRIBUTOS</div><div class=hexbox>${hx('AGI', 0, [102, 0])}${hx('FOR', 1, [8, 62])}${
     hx('INT', 2, [196, 62])}${hx('PRE', 3, [40, 168])}${hx('VIG', 4, [164, 168])}<div class=core>ATRIBUTOS</div></div>${
     t.pr ? `<div class=bar>PRESENÇA PERTURBADORA</div><div class=thtx>DT <b>${dt}</b> • <b>${mental}</b>${
