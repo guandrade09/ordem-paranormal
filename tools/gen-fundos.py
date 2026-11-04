@@ -83,36 +83,45 @@ def smooth(pts, close=False):
 
 
 def morte():
-    rng = random.Random(101)
-    defs = tintdefs('1 1 1') + ("<radialGradient id='c' cx='50%' cy='50%' r='50%'><stop offset='.55' stop-color='#000' stop-opacity='.95'/>"
-                                 "<stop offset='1' stop-color='#000' stop-opacity='0'/></radialGradient>"
-                                 "<radialGradient id='v' cx='50%' cy='50%' r='75%'><stop offset='.5' stop-color='#000' stop-opacity='0'/>"
-                                 "<stop offset='1' stop-color='#000' stop-opacity='.6'/></radialGradient>")
-    o = "<rect width='%d' height='%d' fill='#0a0a0a'/>" % (W, H)
-    # aglomerados de anéis grossos e irregulares (como anéis de tronco)
-    for cx, cy, mr in [(150, 230, 320), (720, 120, 360), (800, 640, 300), (90, 900, 260), (860, 1010, 230), (420, -40, 300)]:
-        ph = [rng.uniform(0, 6.28) for _ in range(3)]
-        for k in range(int(mr / 36)):
-            r = 22 + k * 36; pts = []
-            for i in range(56):
-                a = i * 2 * math.pi / 56
-                rr = r + 7 * math.sin(a * 3 + ph[0] + k) + 5 * math.sin(a * 5 + ph[1]) + rng.uniform(-3.5, 3.5) + 10 * math.sin(a * 2 + ph[2])
-                pts.append((cx + rr * math.cos(a) + k * 2.4, cy + rr * math.sin(a)))
-            o += "<path d='%s' fill='none' stroke='#8f8f8f' stroke-width='%s' stroke-opacity='.95' stroke-linejoin='round'/>" % (smooth(pts, True), f(rng.uniform(12, 17)))
-    o += "<rect width='%d' height='%d' fill='#000' fill-opacity='.35'/>" % (W, H)
-    o += "<ellipse cx='450' cy='640' rx='300' ry='300' fill='url(#c)'/>"
-    # dálias negras na base
-    flores = sorted([(rng.uniform(30, 870), rng.uniform(1300, 1650), rng.uniform(140, 230)) for _ in range(12)], key=lambda t: t[1])
-    for fx, fy, R in flores:
-        o += "<g transform='translate(%s %s)'>" % (f(fx), f(fy))
-        for lay, (frac, fill) in enumerate([(1, '#0d1416'), (.74, '#131c1e'), (.5, '#1a2628')]):
-            n = 14 - lay * 2; ph = rng.uniform(0, 6.28); L = R * frac; w = R * .26 * (1 - lay * .1)
-            for i in range(n):
-                a = ph + i * 2 * math.pi / n * 1.0
-                o += ("<path transform='rotate(%s)' d='M0 0C%s %s %s %s 0 %sC%s %s %s %s 0 0Z' fill='%s' stroke='#334749' stroke-width='2.2'/>"
-                      % (f(math.degrees(a)), f(w), f(-L * .3), f(w * .7), f(-L * .8), f(-L), f(-w * .7), f(-L * .8), f(-w), f(-L * .3), fill))
-        o += "<circle r='%s' fill='#3a1c1b'/><circle r='%s' fill='none' stroke='#6b3a33' stroke-width='3'/></g>" % (f(R * .13), f(R * .08))
-    o += symimg('morte', 450, 640, 330, glow=.5)
+    """Preto com poeira, símbolo de Morte brilhando no centro e espirais/círculos de giz na parte de baixo (referência do usuário)."""
+    rng = random.Random(106)
+    defs = tintdefs('.86 .86 .86') + ("<filter id='ch' x='-10%' y='-10%' width='120%' height='120%'><feTurbulence type='fractalNoise' baseFrequency='.03' numOctaves='2' seed='6' result='n'/>"
+                                       "<feDisplacementMap in='SourceGraphic' in2='n' scale='9'/></filter>"
+                                       "<filter id='gr' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='2'/>"
+                                       "<feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 1.5 0 0 0 -.8'/></filter>"
+                                       "<filter id='bl' x='-50%' y='-50%' width='200%' height='200%'><feGaussianBlur stdDeviation='2.2'/></filter>"
+                                       "<radialGradient id='v' cx='50%' cy='42%' r='75%'><stop offset='.4' stop-color='#000' stop-opacity='0'/>"
+                                       "<stop offset='1' stop-color='#000' stop-opacity='.6'/></radialGradient>")
+    o = "<rect width='%d' height='%d' fill='#0c0c0c'/><rect width='%d' height='%d' filter='url(#gr)' opacity='.1'/>" % (W, H, W, H)
+    # poeira
+    for i in range(170):
+        r = rng.choice([.8, .9, 1, 1.2, 1.5, 2.2]); op = rng.uniform(.12, .5)
+        o += "<circle cx='%s' cy='%s' r='%s' fill='#fff' fill-opacity='%s'%s/>" % (f(rng.uniform(0, W)), f(rng.uniform(0, H * .85)), f(r), f(op), " filter='url(#bl)'" if r > 1.4 else '')
+    # espirais e círculos de giz (parte de baixo)
+    def giz(cx, cy, r0, r1, turns, op, passes=3):
+        out = ''
+        for k in range(passes):
+            ph = rng.uniform(0, 6.28); n = int(turns * 36); pts = []
+            for i in range(n + 1):
+                t = i / n; a = ph + t * turns * 2 * math.pi
+                rr = r0 + (r1 - r0) * t + rng.uniform(-3, 3) + 4 * math.sin(t * 17 + k)
+                pts.append((cx + rr * math.cos(a), cy + rr * math.sin(a) * .92))
+            out += "<path d='%s' fill='none' stroke='#9a9a9a' stroke-opacity='%s' stroke-width='%s' stroke-linecap='round'/>" % (smooth(pts), f(op * rng.uniform(.6, 1)), f(rng.uniform(1.4, 3.4)))
+        return out
+    g = ''
+    g += giz(330, 1400, 18, 300, 4.2, .55, 3)              # espiral grande embaixo
+    g += giz(120, 1130, 40, 250, 2.4, .4, 3)                # esquerda
+    g += giz(800, 1180, 40, 280, 2.2, .4, 3)                # direita
+    g += giz(660, 1500, 60, 330, 2.6, .35, 3)
+    g += giz(40, 1560, 30, 260, 2.2, .35, 2)
+    for i in range(7):                                      # círculos soltos
+        cx, cy = rng.uniform(0, W), rng.uniform(1000, 1650)
+        g += giz(cx, cy, rng.uniform(70, 150), rng.uniform(75, 160), 1.05, .32, 2)
+    for i in range(26):                                     # runas minúsculas ao longo dos traços
+        x, y = rng.uniform(0, W), rng.uniform(1050, 1620)
+        g += "<path transform='translate(%s %s) rotate(%s)' d='%s' fill='none' stroke='#9a9a9a' stroke-opacity='.4' stroke-width='1.6' stroke-linecap='round'/>" % (f(x), f(y), f(rng.uniform(-50, 50)), glyph_path(rng, -4, -6))
+    o += "<g filter='url(#ch)'>%s</g>" % g
+    o += symimg('morte', 450, 760, 360, tint=True, opacity=.93, glow=.75)
     o += "<rect width='%d' height='%d' fill='url(#v)'/>" % (W, H)
     return svg(o, defs)
 

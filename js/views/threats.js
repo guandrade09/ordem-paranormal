@@ -74,7 +74,7 @@ function thFilter(q) {
 }
 
 const thCard = t => {
-  const col = THC[t.el] ? THC[t.el][0] : 'var(--fg)';
+  const col = t.el == 'Medo' ? '#fff' : THC[t.el] ? THC[t.el][0] : 'var(--fg)';
   return `<button class="card thc${thRel(t) && THK[t.el] ? ' threl' : ''}" data-el="${THK[t.el] || ''}" data-n="${nz(t.n)}" style="border-left:8px solid ${col}" onclick="thOpen('${
     t.id}')"><div class=row><div class=thsym style="color:${
     THC[t.el] && t.el != 'Medo' ? SC[t.el] : 'var(--fg)'}">${thIcon(t.el, 34)}</div><div class=thmid><b class=thn>${
