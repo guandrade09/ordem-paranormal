@@ -9,4 +9,4 @@ const CFG = {
       SB_ON = !!(CFG.url && CFG.key);
 
 // Versão do app (aparece ao lado de BETA na tela inicial para conferir se a versão nova já chegou). Suba a cada publicação.
-const APP_VERSION = '0.16.0';
+const APP_VERSION = '0.16.1';
