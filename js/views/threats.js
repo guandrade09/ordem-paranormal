@@ -30,10 +30,10 @@ const thImgs = () => {
           toast('Sem espaço para guardar a imagem neste aparelho.')
         }
       },
-      // Ícone do grupo: símbolo SVG do elemento ou a imagem de Humanos/Natureza
+      // Ícone do grupo: PNG do símbolo do elemento (img/sym-*.png) ou a imagem de Humanos/Natureza
       thIcon = (el, sz) => THIMG[el] ?
         `<span class=thic><img src="${THIMG[el]}" width=${sz} height=${sz} alt=""></span>` :
-        `<svg viewBox="0 0 100 100" width=${sz} height=${sz}>${SYM[el]('currentColor')}</svg>`,
+        `<span class=thsy><img src="img/sym-${SYMF[el]}.png" width=${sz} height=${sz} alt=""></span>`,
       // Tags do livro: elementos em maiúsculas (em negrito) + tipo e tamanho
       // (o elemento vira uma etiqueta com o fundo e a fonte da cor do próprio elemento)
       thTags = t => t.tg.map(x => {

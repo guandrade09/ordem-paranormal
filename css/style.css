@@ -1207,3 +1207,23 @@ body[data-thel=energia] .hx small {
 .thh .thic img {
   filter: invert(1) !important;
 }
+/* Símbolos dos elementos (PNG brancos): preto em fundo claro, branco no escuro e nos cabeçalhos coloridos */
+.thsy img {
+  display: block;
+  object-fit: contain;
+  filter: brightness(0);
+}
+:root[data-theme=dark] .thsy img {
+  filter: none;
+}
+@media (prefers-color-scheme:dark) {
+  :root:not([data-theme=light]) .thsy img {
+    filter: none;
+  }
+}
+.thh .thsy img {
+  filter: none !important;
+}
+body[data-thel=conhecimento] .thh .thsy img {
+  filter: brightness(0) !important;
+}
