@@ -4,8 +4,8 @@
  * 'acc' (utensílios e vestuários). A maldição "Proteção Elemental" (el 'Varia') guarda o elemento escolhido: "Proteção Elemental (Sangue)".
  */
 const CUEL = ['Sangue', 'Morte', 'Conhecimento', 'Energia'],
-      // Emoji do elemento no nome do item melhorado (modificação usa ➕)
-      CUEMO = {Sangue: '🩸', Morte: '💀', Conhecimento: '⭐', Energia: '👾'},
+      // Emoji do elemento no nome do item melhorado (modificação usa ⭐)
+      CUEMO = {Sangue: '🔴', Morte: '⚫', Conhecimento: '🟡', Energia: '🟣'},
       // Elemento opressor → elemento que ele oprime: um item não pode ter maldições de elementos opressores entre si
       CUOPR = {Sangue: 'Conhecimento', Morte: 'Sangue', Conhecimento: 'Energia', Energia: 'Morte'},
       // O preço da maldição: cada maldição do elemento custa 2 de Sanidade ao falhar no teste indicado

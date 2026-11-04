@@ -164,9 +164,9 @@ function modItem(i) {
   let c = cur(), it = c.inv[i], nm = modOpts(it).length, nc = cuOpts(it).length;
   modal(`<button class=xc onclick="cm()">✕</button><button onclick="modPick()">← Itens</button><br><b>${
     cuNm(it)}</b><small> — o que deseja aplicar?</small>
-<button class=card ${nm ? '' : 'disabled style="opacity:.5"'} onclick="modMods(${i})"><b>Modificações ➕</b><br><small>${
+<button class=card ${nm ? '' : 'disabled style="opacity:.5"'} onclick="modMods(${i})"><b>Modificações ⭐</b><br><small>${
     nm ? 'Cada modificação aumenta a categoria em +1.' : 'Nenhuma modificação disponível para este item.'}</small></button>
-<button class=card ${nc ? '' : 'disabled style="opacity:.5"'} onclick="curList(${i})"><b>Maldições 🩸💀⭐👾</b><br><small>${
+<button class=card ${nc ? '' : 'disabled style="opacity:.5"'} onclick="curList(${i})"><b>Maldições 🔴⚫🟡🟣</b><br><small>${
     nc ? 'A 1ª maldição aumenta a categoria em +II; cada uma das seguintes, em +I.' :
          cuKind(it) ? 'Nenhuma maldição disponível para este item.' : 'Este item não aceita maldições.'}</small></button>`)
 }
