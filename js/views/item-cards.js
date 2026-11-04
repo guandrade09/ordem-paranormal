@@ -20,11 +20,9 @@ const itemCard = (it, i) => `<div class="card row"><div style="flex:1"><b>${
   it.w && it.w.mx ? '<br>' + bulRow(it.w.am, it.w.mag, it.w.mx) :
                     ''}${it.q != null ? '<br>' + bulRow(it.n, it.q, AMX[it.n] || 20) : ''}${flagBox(it, i)}${
   it.sl ?
-    `<div class=flag style="display:block"><small>Fabricar selo (gasta PE do círculo):</small><div class=grid2 style="gap:6px;margin-top:4px">${
-        [1, 2, 3, 4]
-          .map(ci => `<button onclick="event.stopPropagation();seloMk(${ci})">${ci}º círculo · <b class=pec>${
-                 BC[ci]} PE</b>${(RT.find(z => z.n == it.sl.split('|')[0]) || {}).ci == ci ? ' ★' : ''}</button>`)
-          .join('')}</div><small>★ = círculo do ritual</small></div>` :
+    `<div class=flag style="display:block"><button style="width:100%" onclick="event.stopPropagation();seloMk(${i})">Fabricar selo · <b class=pec>${
+      seloCusto(cur(), it.sl, it.sv || 0)} PE</b></button><small>${
+      (RT.find(z => z.n == it.sl.split('|')[0]) || {}).ci}º círculo · ${SELV[it.sv || 0]} (preço automático)</small></div>` :
     ''}</div><div class=ib><div><small>Cat.</small><b>${
   RM[ecat(cur(), it)]}</b></div><div><small>Espaços</small><b>${ee(cur(), it)}</b></div>${
   it.w ? `<div><small>Dano</small><b>${weff(cur(), it).d}${wEx(weff(cur(), it))}</b></div><div><small>Crítico</small><b>${

@@ -1,0 +1,1460 @@
+[
+ {
+  "g": "A. Origens",
+  "n": "26 origens (livro)",
+  "ok": true,
+  "d": "26"
+ },
+ {
+  "g": "A. Origens",
+  "n": "origens sem nome de poder/texto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "A. Origens",
+  "n": "nomes únicos",
+  "ok": true,
+  "d": "26"
+ },
+ {
+  "g": "A. Origens",
+  "n": "perícias de origem existem na lista de perícias",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "A. Origens",
+  "n": "toda origem (menos Amnésico) dá 2 perícias",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "A. Origens",
+  "n": "26 origens × 3 classes = 78 fichas",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "A. Origens",
+  "n": "Desgarrado: +1 PV por 5% de NEX (NEX 10% = +2)",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "A. Origens",
+  "n": "Policial: +2 de Defesa",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "A. Origens",
+  "n": "Vítima: +1 SAN por 5% de NEX (NEX 10% = +2)",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "A. Origens",
+  "n": "Universitário: +PE e +1 no limite por rodada",
+  "ok": true,
+  "d": "[true,1]"
+ },
+ {
+  "g": "A. Origens",
+  "n": "Cultista Arrependido: metade da Sanidade da classe",
+  "ok": true,
+  "d": "6"
+ },
+ {
+  "g": "A. Origens",
+  "n": "Combatente NEX 5%: Sanidade 12 (origem comum)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "B. Classes: PV, PE, Sanidade e limites por NEX",
+  "n": "3 classes × 19 NEX + NEX 99: PV, PE, SAN e PE/rodada batem com o livro",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "B. Classes: PV, PE, Sanidade e limites por NEX",
+  "n": "acesso a círculo: 5%→1, 25%→2, 55%→3, 85%→4",
+  "ok": true,
+  "d": "[1,1,2,2,3,3,4,4]"
+ },
+ {
+  "g": "B. Classes: PV, PE, Sanidade e limites por NEX",
+  "n": "custo de PE por círculo: 1, 3, 6, 10",
+  "ok": true,
+  "d": "[1,3,6,10]"
+ },
+ {
+  "g": "B. Classes: PV, PE, Sanidade e limites por NEX",
+  "n": "DT de ritual = 10 + PE/rodada + Presença (NEX 30%: 10+6+3)",
+  "ok": true,
+  "d": "19"
+ },
+ {
+  "g": "B. Classes: PV, PE, Sanidade e limites por NEX",
+  "n": "perícias livres por classe: Combatente 3, Especialista 7, Ocultista 3 (+Ocultismo e Vontade fixas)",
+  "ok": true,
+  "d": "[3,7,3]"
+ },
+ {
+  "g": "B. Classes: PV, PE, Sanidade e limites por NEX",
+  "n": "Ocultista começa treinado em Ocultismo e Vontade",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Combatente: 5 trilhas",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Combatente: trilhas com nome único",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Combatente: cada trilha tem 4 habilidades (NEX 10, 40, 65, 99) com nome e texto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Combatente: todas as trilhas têm ícone (ICT)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Especialista: 5 trilhas",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Especialista: trilhas com nome único",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Especialista: cada trilha tem 4 habilidades (NEX 10, 40, 65, 99) com nome e texto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Especialista: todas as trilhas têm ícone (ICT)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Ocultista: 5 trilhas",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Ocultista: trilhas com nome único",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Ocultista: cada trilha tem 4 habilidades (NEX 10, 40, 65, 99) com nome e texto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "Ocultista: todas as trilhas têm ícone (ICT)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "nenhuma habilidade de trilha com nome repetido entre trilhas",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "C. Trilhas e habilidades de trilha (dados)",
+  "n": "total de habilidades de trilha = 60 (15 trilhas × 4)",
+  "ok": true,
+  "d": "60"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Aniquilador (Combatente): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Aniquilador: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Aniquilador: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Aniquilador: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Aniquilador\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Aniquilador: ficha final consistente (PV 116, PE 80, SAN 66, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Aniquilador: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Aniquilador: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Comandante de Campo (Combatente): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Comandante de Campo: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Comandante de Campo: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Comandante de Campo: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Comandante de Campo\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Comandante de Campo: ficha final consistente (PV 116, PE 80, SAN 69, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Comandante de Campo: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Comandante de Campo: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Guerreiro (Combatente): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Guerreiro: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Guerreiro: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Guerreiro: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Guerreiro\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Guerreiro: ficha final consistente (PV 116, PE 80, SAN 69, Defesa 17)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Guerreiro: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Guerreiro: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Operações Especiais (Combatente): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Operações Especiais: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Operações Especiais: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Operações Especiais: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Operações Especiais\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Operações Especiais: ficha final consistente (PV 116, PE 80, SAN 66, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Operações Especiais: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Operações Especiais: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Tropa de Choque (Combatente): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Tropa de Choque: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Tropa de Choque: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Tropa de Choque: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Tropa de Choque\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Tropa de Choque: ficha final consistente (PV 136, PE 80, SAN 69, Defesa 17)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Tropa de Choque: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Tropa de Choque: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Atirador de Elite (Especialista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Atirador de Elite: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Atirador de Elite: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Atirador de Elite: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Atirador de Elite\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Atirador de Elite: ficha final consistente (PV 93, PE 100, SAN 92, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Atirador de Elite: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Atirador de Elite: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Infiltrador (Especialista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Infiltrador: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Infiltrador: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Infiltrador: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Infiltrador\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Infiltrador: ficha final consistente (PV 93, PE 100, SAN 88, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Infiltrador: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Infiltrador: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Médico de Campo (Especialista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Médico de Campo: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Médico de Campo: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Médico de Campo: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Médico de Campo\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Médico de Campo: ficha final consistente (PV 93, PE 100, SAN 84, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Médico de Campo: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Médico de Campo: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Negociador (Especialista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Negociador: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Negociador: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Negociador: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Negociador\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Negociador: ficha final consistente (PV 93, PE 100, SAN 88, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Negociador: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Negociador: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Técnico (Especialista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Técnico: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Técnico: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Técnico: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Técnico\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Técnico: ficha final consistente (PV 93, PE 100, SAN 88, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Técnico: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Técnico: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Conduíte (Ocultista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Conduíte: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Conduíte: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Conduíte: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Conduíte\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Conduíte: ficha final consistente (PV 70, PE 120, SAN 110, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Conduíte: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Conduíte: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Conduíte: rituais aprendidos em todos os NEX com ritual",
+  "ok": true,
+  "d": "23 rituais"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Flagelador (Ocultista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Flagelador: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Flagelador: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Flagelador: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Flagelador\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Flagelador: ficha final consistente (PV 70, PE 120, SAN 115, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Flagelador: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Flagelador: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Flagelador: rituais aprendidos em todos os NEX com ritual",
+  "ok": true,
+  "d": "23 rituais"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Graduado (Ocultista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Graduado: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Graduado: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Graduado: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Graduado\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Graduado: ficha final consistente (PV 70, PE 120, SAN 115, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Graduado: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Graduado: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Graduado: rituais aprendidos em todos os NEX com ritual",
+  "ok": true,
+  "d": "31 rituais"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Intuitivo (Ocultista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Intuitivo: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Intuitivo: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Intuitivo: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Intuitivo\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Intuitivo: ficha final consistente (PV 70, PE 120, SAN 110, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Intuitivo: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Intuitivo: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Intuitivo: rituais aprendidos em todos os NEX com ritual",
+  "ok": true,
+  "d": "23 rituais"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Lâmina Paranormal (Ocultista): subiu do NEX 5% ao 99% sem erro em nenhum passo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Lâmina Paranormal: terminou em NEX 99%",
+  "ok": true,
+  "d": "NEX 99"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Lâmina Paranormal: ganhou as 4 habilidades da trilha (NEX 10, 40, 65, 99)",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Lâmina Paranormal: trilha registrada na ficha",
+  "ok": true,
+  "d": "\"Lâmina Paranormal\""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Lâmina Paranormal: ficha final consistente (PV 70, PE 120, SAN 115, Defesa 15)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Lâmina Paranormal: ganhou +1 atributo nos 4 passos de atributo (soma 8 → 12)",
+  "ok": true,
+  "d": "12"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Lâmina Paranormal: nenhum atributo passa de 5",
+  "ok": true,
+  "d": "{\"AGI\":5,\"FOR\":1,\"INT\":3,\"PRE\":2,\"VIG\":1}"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Lâmina Paranormal: rituais aprendidos em todos os NEX com ritual",
+  "ok": true,
+  "d": "23 rituais"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "a tabela de evolução bate com os passos do app",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "atributo +1 nos NEX 20, 50?, 80, 95 (5 aumentos até 99%)",
+  "ok": true,
+  "d": "[4,4,4]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "NEX 50% pela opção \"primeiro poder de outra trilha\"",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "guarda o 1º poder da outra trilha e as 4 habilidades da própria",
+  "ok": true,
+  "d": "Técnica Letal, Revidar, A Favorita, Força Opressora, Potência Máxima"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Mundano (NEX 0%) tem valores finitos",
+  "ok": true,
+  "d": "[9,2,8]"
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "subir de NEX de Mundano abre a escolha de classe",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Evolução completa (NEX 5% → 99%) por trilha",
+  "n": "Mundano sem erro",
+  "ok": true,
+  "d": "\"\""
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Combatente: poderes com nome único",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Combatente: todos têm nome e texto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Combatente: todos têm resumo (card) ou texto curto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Especialista: poderes com nome único",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Especialista: todos têm nome e texto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Especialista: todos têm resumo (card) ou texto curto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Ocultista: poderes com nome único",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Ocultista: todos têm nome e texto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Ocultista: todos têm resumo (card) ou texto curto",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "pré-requisito que cita outro poder aponta para um poder que existe",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "todos os 51 poderes entram na ficha e as 4 abas desenham",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Reflexos Defensivos → def +2",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Presença Poderosa → rodR +2",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Rituais Eficientes → dt +5",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Tanque de Guerra com proteção pesada: +2 Defesa",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Tropa de Choque (NEX 40%): +1 PV por nível (+8)",
+  "ok": true,
+  "d": "8"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Tropa de Choque antes do NEX 10% não dá bônus",
+  "ok": true,
+  "d": "0"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Guerreiro: margem de ameaça −2 só em arma corpo a corpo",
+  "ok": true,
+  "d": "[2,0]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Operações Especiais (NEX 10%+): +5 em Iniciativa",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Operações Especiais antes do NEX 10%: sem bônus",
+  "ok": true,
+  "d": "0"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Infiltrador (NEX 40%): +5 em Atletismo e Crime; antes disso, nada",
+  "ok": true,
+  "d": "[5,5,0]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "Aniquilador: redução de categoria do item favorito = 0 / 1 / 2 / 3 em NEX 5 / 10 / 40 / 99",
+  "ok": true,
+  "d": "[0,1,2,3]"
+ },
+ {
+  "g": "E. Poderes de classe",
+  "n": "outras trilhas não reduzem categoria",
+  "ok": true,
+  "d": "0"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Conhecimento: 5 poderes, todos com nome e texto",
+  "ok": true,
+  "d": "[5,0]"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Energia: 5 poderes, todos com nome e texto",
+  "ok": true,
+  "d": "[5,0]"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Morte: 5 poderes, todos com nome e texto",
+  "ok": true,
+  "d": "[5,0]"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Sangue: 5 poderes, todos com nome e texto",
+  "ok": true,
+  "d": "[5,0]"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "nomes únicos",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "os 20 poderes paranormais entram na ficha, sem sanidade extra (Transcender) e telas sem erro",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Afinidade Elemental guarda o elemento e marca a evolução sem Sanidade (stn)",
+  "ok": true,
+  "d": "[\"Morte\",true]"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Resistir a elemento guarda Sangue em c.res",
+  "ok": true,
+  "d": "[\"Sangue\"]"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Cultista Arrependido com poder de Conhecimento: Expansão de Conhecimento",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Cultista Arrependido com poder de Energia: Afortunado",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Cultista Arrependido com poder de Morte: Encarar a Morte",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "F. Poderes paranormais e Transcender",
+  "n": "Cultista Arrependido com poder de Sangue: Anatomia Insana",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "catálogo: 84 rituais; círculos 1–4",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "elementos válidos (Sangue, Morte, Conhecimento, Energia, Medo ou * = qualquer)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "todos têm nome e resumo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "nomes repetidos só no ritual de qualquer elemento (Amaldiçoar Arma)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "versões: Discente e Verdadeiro são [PE extra, NEX do círculo, afinidade]",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "Verdadeiro sempre custa mais que Discente",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "Verdadeiro/Discente exigem círculo ≥ 2 ou afinidade (regra do livro: 3º e 4º círculo)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "todo ritual tem ficha de execução/alcance/alvo (INFO)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "todo ritual tem descrição completa (DS)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "efeitos automáticos (EF) apontam para rituais existentes",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "rituais instantâneos (INST) existem",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "rituais de Medo de 4º círculo ficam fora da lista de aprendizado (M4)",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 1º círculo · Conhecimento (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Compreensão Paranormal\",\"Criar Ilusão\",\"Enfeitiçar\",\"Ouvir os Sussurros\",\"Perturbação\",\"Terceiro Olho\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 1º círculo · Energia (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Amaldiçoar Tecnologia\",\"Coincidência Forçada\",\"Eletrocussão\",\"Embaralhar\",\"Luz\",\"Polarização Caótica\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 1º círculo · Morte (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Cicatrização\",\"Consumir Manancial\",\"Decadência\",\"Definhar\",\"Espirais da Perdição\",\"Nuvem de Cinzas\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 1º círculo · Sangue (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Arma Atroz\",\"Armadura de Sangue\",\"Corpo Adaptado\",\"Distorcer Aparência\",\"Fortalecimento Sensorial\",\"Ódio Incontrolável\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 1º círculo · Medo (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Cinerária\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 2º círculo · Conhecimento (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Aprimoramento Mental\",\"Detecção de Ameaças\",\"Esconder dos Olhos\",\"Invadir Mente\",\"Localização\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 2º círculo · Energia (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Chamas do Caos\",\"Contenção Fantasmagórica\",\"Dissonância Acústica\",\"Sopro do Caos\",\"Tela de Ruído\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 2º círculo · Morte (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Desacelerar Impacto\",\"Eco Espiral\",\"Miasma\",\"Paradoxo\",\"Velocidade Mortal\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 2º círculo · Sangue (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Descarnar\",\"Flagelo de Sangue\",\"Físico Aprimorado\",\"Hemofagia\",\"Transfusão Vital\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 2º círculo · Medo (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Proteção contra Rituais\",\"Rejeitar Névoa\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 3º círculo · Conhecimento (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Alterar Memória\",\"Contato Paranormal\",\"Mergulho Mental\",\"Vidência\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 3º círculo · Energia (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Convocação Instantânea\",\"Salto Fantasma\",\"Transfigurar Terra\",\"Transfigurar Água\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 3º círculo · Morte (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Poeira da Podridão\",\"Tentáculos de Lodo\",\"Zerar Entropia\",\"Âncora Temporal\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 3º círculo · Sangue (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Ferver Sangue\",\"Forma Monstruosa\",\"Purgatório\",\"Vomitar Pestes\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 3º círculo · Medo (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Neutralizar Ritual\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 4º círculo · Conhecimento (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Controle Mental\",\"Inexistir\",\"Possessão\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 4º círculo · Energia (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Alterar Destino\",\"Deflagração de Energia\",\"Teletransporte\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 4º círculo · Morte (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Convocar o Algoz\",\"Distorção Temporal\",\"Fim Inevitável\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 4º círculo · Sangue (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Capturar o Coração\",\"Invólucro de Carne\",\"Vínculo de Sangue\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "livro × app: 4º círculo · Medo (nomes antigos aceitos)",
+  "ok": true,
+  "d": "[\"Canalizar o Medo\",\"Conhecendo o Medo\",\"Lâmina do Medo\",\"Medo Tangível\",\"Presença do Medo\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "rituais que só existem no app (não estão na lista do livro v1.1, p.122–123)",
+  "ok": true,
+  "d": "[\"2º Ligação Telepática\",\"4º Visão da Verdade\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "nenhum grupo extra no app",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "Amaldiçoar Arma (qualquer elemento) está no 1º círculo",
+  "ok": true,
+  "d": "[\"Amaldiçoar Arma1\"]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "214 combinações ritual × versão: custo correto, sustentado/instantâneo certo",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "84 rituais: card de escolha (Normal/Discente/Verdadeiro) abre sem undefined",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "ritual de 4º círculo (10 PE) acima do limite por rodada (NEX 20% = 4) é recusado",
+  "ok": true,
+  "d": "[0,true]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "sem PE é recusado",
+  "ok": true,
+  "d": "[0,true]"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "conjurar com PV (2 PV por PE) desconta PV",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "Ritual Predileto (−1 PE): ritual de 1º círculo custa 0 e nunca fica negativo",
+  "ok": true,
+  "d": "0"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "Mestre em Elemento (−1 PE em rituais do elemento): 3º círculo custa 5",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "Ritual Potente soma Intelecto à cura (Cicatrização)",
+  "ok": true,
+  "d": "Cicatrização: −1 PE cura **22 PV** (inclui +4 de Ritual Potente) (aplique manualmente no a"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "capacidade do grimório = Intelecto (+1 a partir do 3º círculo)",
+  "ok": true,
+  "d": "4"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "item Grimório Ritualístico é criado uma vez só",
+  "ok": true,
+  "d": "1"
+ },
+ {
+  "g": "G. Rituais",
+  "n": "abas da ficha e Grimório Paranormal com 40 rituais conhecidos",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "lista de rituais do selo abre sem undefined",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "79 rituais × versões: card de escolha, item criado (nome/versão) e preço = círculo + versão",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "só 1 botão \"Fabricar selo\" por selo, sem os 4 botões antigos de círculo",
+  "ok": true,
+  "d": "[1,false]"
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "o botão mostra o preço do ritual na versão escolhida",
+  "ok": true,
+  "d": "Fabricar selo · <b class=pec>6 PE"
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "mostra círculo e versão",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "fabricar desconta exatamente o preço",
+  "ok": true,
+  "d": "6"
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "PE insuficiente é recusado",
+  "ok": true,
+  "d": "[1,true]"
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "Ritual Predileto reduz o preço do selo (−1 PE)",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "selo antigo (sem versão guardada) vale como Normal",
+  "ok": true,
+  "d": "1"
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "selo antigo desenha sem erro",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "Amaldiçoar Arma: primeiro escolhe o elemento",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "depois mostra as 3 versões",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "H. Selo Paranormal",
+  "n": "item guarda ritual|elemento e versão",
+  "ok": true,
+  "d": "[\"Amaldiçoar Arma|Morte\",2,\"Morte\"]"
+ }
+]
