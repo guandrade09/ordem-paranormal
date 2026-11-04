@@ -9,6 +9,8 @@ const THO = ['Sangue', 'Morte', 'Conhecimento', 'Energia', 'Medo', 'Realidade: H
              Energia: ['#8a2be2', '#fff'], Medo: ['#1a1a1a', '#fff']},
       // Chave do tema da ficha (atributo data-thel); Realidade fica sem chave = tema padrão do app
       THK = {Sangue: 'sangue', Morte: 'morte', Conhecimento: 'conhecimento', Energia: 'energia', Medo: 'medo'},
+      // Fundo da ficha de Realidade (símbolo a 15% de opacidade)
+      THBG = {'Realidade: Humanos': 'humanos', 'Realidade: Natureza': 'natureza'},
       THIMG = {'Realidade: Humanos': 'img/ordo-realitas.png', 'Realidade: Natureza': 'img/natureza.png'};
 
 // ---------- Utilidades ----------
@@ -45,17 +47,20 @@ const thImgs = () => {
       thv = x => x == null || x === '' ? '—' : x,
       thSel = () => THREATS.find(t => t.id == S.thid);
 
-// Aplica (ou remove) a paleta do elemento no <html> e no <body>; chamada pelo roteador a cada tela
+// Aplica (ou remove) a paleta do elemento no <html> e no <body>; chamada pelo roteador a cada tela.
+// Realidade não tem paleta: só ganha o símbolo (Humanos/Natureza) no fundo (data-thbg)
 function thTheme() {
-  const t = S.v == 'thd' ? thSel() : null, k = t ? THK[t.el] || '' : '',
+  const t = S.v == 'thd' ? thSel() : null, k = t ? THK[t.el] || '' : '', bg = t ? THBG[t.el] || '' : '',
         d = document.documentElement, b = document.body;
-  if (k) {
-    d.dataset.thel = k;
-    b.dataset.thel = k
-  } else {
-    delete d.dataset.thel;
-    delete b.dataset.thel
-  }
+  [[k, 'thel'], [bg, 'thbg']].forEach(([v, a]) => {
+    if (v) {
+      d.dataset[a] = v;
+      b.dataset[a] = v
+    } else {
+      delete d.dataset[a];
+      delete b.dataset[a]
+    }
+  })
 }
 
 // ---------- Lista ----------
