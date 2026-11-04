@@ -93,7 +93,7 @@ const CUEL = ['Sangue', 'Morte', 'Conhecimento', 'Energia'],
 const CUX = {
   Antielemento: {s: 'Contra um elemento: +4d8 de dano ao acertar.', pe: 2, dx: ['4d8', 'dano extra']},
   Ritualística: {s: 'Guarda um ritual na arma e o descarrega ao acertar (custo = o do ritual).', v: 1},
-  Senciente: {s: 'A arma flutua e ataca sozinha (manter: 1 PE por turno).', pe: 2},
+  Senciente: {s: 'A arma flutua e ataca sozinha (manter: 1 PE por turno).', pe: 2, mt: 1},
   Empuxo: {s: 'Arremesso em alcance curto, +1 dado de dano; a arma volta.'},
   Energética: {s: 'Ataque vira Energia: +5 no ataque e ignora resistência.', pe: 2},
   Vibrante: {s: 'Você recebe Ataque Extra (ou ele custa −1 PE).'},

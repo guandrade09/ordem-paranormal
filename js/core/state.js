@@ -9,7 +9,7 @@ const $ = s => document.querySelector(s), A = ['AGI', 'FOR', 'INT', 'PRE', 'VIG'
   PRE: 'Presença',
   VIG: 'Vigor'
 },
-      RM = ['0', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+      RM = ['0', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'];
 
 // Estado global (carregado do localStorage) + migração de nomes antigos de rituais
 let S;

@@ -4,6 +4,7 @@ const path = require('path');
 
 const suites = [
   ['Verificação geral (telas, fichas, cálculos, combate)', 'smoke.test.js'],
+  ['Melhorias (modificações, maldições e botões de PE)', 'melhorias.test.js'],
   ['Contas (login, senha, sincronização, segurança)', 'account.test.js'],
 ];
 let falhou = false;

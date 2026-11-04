@@ -169,7 +169,7 @@ function sheet() {
       fl('ORIGEM', c.origem)}${fl('CLASSE', c.classe + (c.trail ? ' — ' + c.trail : ''))}${
       c.af && AFC[c.af] ?
         afBox(c.af) :
-        ''}<div class=g3 style="gap:10px">${fl('NEX', c.nex + '%')}${fl('PE/RODADA', k.rodR > k.rod ? k.rod + ' (rituais ' + k.rodR + ')' : k.rod)}${fl('DESL', '9m')}</div>
+        ''}<div class=g3 style="gap:10px">${fl('NEX', c.nex + '%')}${fl('PE/RODADA', k.rodR > k.rod ? k.rod + ' (rituais ' + k.rodR + ')' : k.rod)}${fl('DESL', (9 + (k.cf.desl || 0)) + 'm')}</div>
 <div class=grid2 style="gap:14px">${vit('pv', 'PV')}${vit('pe', 'PE')}</div>
 <div class=grid2 style="gap:14px"><div class=vw><div class=vb>${(() => {
       let t = Math.min(k.def, (c.t && c.t.def) || 0), dn = k.def || 1;

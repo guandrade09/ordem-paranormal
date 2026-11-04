@@ -69,12 +69,25 @@ const modTxt = m => {
       b == 'Instrumental' && x         ? 'Funciona como kit de perícia de ' + x + '.' :
                                          MTX[b] || '')
 };
+// Efeito de maldição mantido (ex.: Senciente) fica ativo na lista de efeitos sustentados da ficha
+const cuSid = (it, m) => 'cu|' + it.n + '|' + m,
+      cuOn = (c, it, m) => (c.sust || []).some(q => q.id == cuSid(it, m)),
+      // Botão específico: manter (1 PE por turno) quando o efeito está ativo; gastar PE do ritual nas de custo variável
+      curBtn = (it, i, j) => {
+        const m = it.cur[j], x = CUX[mb(m)] || {};
+        return x.mt && cuOn(cur(), it, m) ?
+          `<br><button class=btn style="margin-top:6px" onclick="event.stopPropagation();curKeep(${i},${j})">Manter · ${x.mt} PE</button>` :
+        x.v ?
+          `<br><button class=btn style="margin-top:6px" onclick="event.stopPropagation();curVar(${i},${j})">Gastar PE do ritual</button>` :
+          ''
+      };
 // Card simplificado de maldição (como os de habilidades): nome, resumo e custo de PE à direita
 const curRow = (it, i, j) => {
   const m = it.cur[j], b = mb(m), x = CUX[b] || {}, el = cuEl(m);
   return `<div class="card ab" style="margin-top:6px" onclick="curCard(${i},${j})"><div class=abt><b>${
-    m}</b> <span class=el style="background:${EC[el] || '#777'}">${el || ''}</span><br><small>${
-    md(x.s || '')}</small></div>${x.pe ? `<b class=pec>${x.pe} PE</b>` : x.v ? '<small class=pec>PE var.</small>' : ''}</div>`
+    m}</b> <span class=el style="background:${EC[el] || '#777'}">${el || ''}</span>${
+    x.mt && cuOn(cur(), it, m) ? ' <small>● ativa</small>' : ''}<br><small>${
+    md(x.s || '')}</small>${curBtn(it, i, j)}</div>${x.pe ? `<b class=pec>${x.pe} PE</b>` : x.v ? '<small class=pec>PE var.</small>' : ''}</div>`
 };
 // Maldições na aba Ações (itens em uso: proteções só a vestida e o escudo)
 const curCards = c => {
@@ -93,8 +106,11 @@ function curCard(i, j) {
   modal(`<button class=xc onclick="cm()">✕</button><div class=ahd><b style="font:26px 'Bebas Neue'">${
     m}</b>${x.pe ? `<b class=pec>${x.pe} PE</b>` : ''}</div><small>${it.n} · <span class=el style="background:${
     EC[el] || '#777'}">${el || ''}</span></small><p>${md(curTxt(it, m))}</p>${
+    x.mt && cuOn(c, it, m) ?
+      `<button class=btn style="width:100%;font-size:24px;margin-top:6px" onclick="curKeep(${i},${j})">Manter · ${x.mt} PE (início do turno)</button>
+<button class=x style="margin-top:6px" onclick="cm();dis('${cuSid(it, m)}')">Encerrar efeito</button>` :
     x.pe ? `<button class=btn style="width:100%;font-size:24px;margin-top:6px" onclick="curUse(${i},${j})">Usar</button>` :
-    x.v  ? '<small>Custo de PE variável: é o custo do ritual (desconte-o no grimório ou à mão).</small>' :
+    x.v  ? `<button class=btn style="width:100%;font-size:24px;margin-top:6px" onclick="curVar(${i},${j})">Gastar PE do ritual</button>` :
            '<small>Maldição passiva: os bônus já entram na ficha.</small>'}
 <button class=x style="margin-top:10px" onclick="cm();curDel(${i},${j})">✕ Remover maldição</button>`)
 }
@@ -102,6 +118,7 @@ function curCard(i, j) {
 function curUse(i, j) {
   const c = cur(), k = K(c), it = c.inv[i], m = it.cur[j], b = mb(m), x = CUX[b] || {}, n = x.pe || 0;
   if (!n) return;
+  if (x.mt && cuOn(c, it, m)) return toast(`${b} já está ativa: use Manter (${x.mt} PE) no início de cada turno.`);
   if (n > k.rod) return toast(`⚠ Custo de ${n} PE acima do limite de ${k.rod} PE por rodada (NEX ${c.nex}%).`);
   if (c.pe < n) return toast('PE insuficiente');
   cm();
@@ -109,9 +126,38 @@ function curUse(i, j) {
   const r = x.dx ? `${x.dx[1]}: ${rl(x.dx[0])} (${x.dx[0]})` : '', h = x.hp ? rl(x.hp) : 0;
   mut(z => {
     z.pe -= n;
-    if (h) z.pv = Math.min(K(z).pv, z.pv + h)
+    if (h) z.pv = Math.min(K(z).pv, z.pv + h);
+    if (x.mt) (z.sust = z.sust || []).push({id: cuSid(it, m), n: b, el: cuEl(m), tdef: 0, tpv: 0})
   });
   toast(`${b}${r ? ' · ' + r : ''}${h ? ` · +${h} PV` : ''} · −${n} PE`)
+}
+
+// Manter um efeito ativo de maldição (ex.: Senciente: 1 PE no início de cada turno)
+function curKeep(i, j) {
+  const c = cur(), it = c.inv[i], m = it.cur[j], b = mb(m), x = CUX[b] || {}, n = x.mt || 0;
+  if (!n || !cuOn(c, it, m)) return;
+  if (c.pe < n) return toast('PE insuficiente para manter ' + b + ': encerre o efeito.');
+  cm();
+  mut(z => {z.pe -= n});
+  toast(`${b} mantida · −${n} PE`)
+}
+// Maldições de custo variável (Ritualística, Abascanta, Conjuração, Reflexão): pergunta o custo do ritual e desconta
+function curVar(i, j) {
+  const c = cur(), it = c.inv[i], m = it.cur[j], b = mb(m), d = b == 'Conjuração' ? 1 : 0;
+  modal(`<button class=xc onclick="cm()">✕</button><div class=ahd><b style="font:26px 'Bebas Neue'">${m}</b></div><small>${
+    it.n}</small><p>${md((CUX[b] || {}).s || '')}</p><label><small>Custo do ritual (PE)${
+    d ? ' — o −1 PE da maldição é descontado sozinho' : ''}</small></label><input id=cvn type=number min=0 value=1 inputmode=numeric style="margin:6px 0"><button class=btn style="width:100%;font-size:24px" onclick="curPay(${
+    i},${j},+document.querySelector('#cvn').value)">Gastar PE</button>`)
+}
+function curPay(i, j, v) {
+  const c = cur(), it = c.inv[i], m = it.cur[j], b = mb(m), n = Math.max(0, Math.floor(+v || 0) - (b == 'Conjuração' ? 1 : 0));
+  if (!(+v > 0)) return toast('Informe o custo do ritual.');
+  if (n > K(c).rodR) return toast(`⚠ Custo de ${n} PE acima do limite de ${K(c).rodR} PE por rodada (NEX ${c.nex}%).`);
+  if (c.pe < n) return toast('PE insuficiente');
+  cm();
+  fx('ico', CUEMO[cuEl(m)] || '✨');
+  mut(z => {z.pe -= n});
+  toast(`${b} · −${n} PE`)
 }
 
 // Seção "Melhorias" do Inventário: itens com modificações e/ou maldições
@@ -250,5 +296,9 @@ function curAdd(i, m) {
   })
 }
 function curDel(i, j) {
-  mut(c => {c.inv[i].cur.splice(j, 1)})
+  mut(c => {
+    const it = c.inv[i], id = cuSid(it, it.cur[j]);
+    c.sust = (c.sust || []).filter(q => q.id != id);
+    it.cur.splice(j, 1)
+  })
 }

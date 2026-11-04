@@ -37,7 +37,7 @@ const cuDef = m => CURSES.find(x => x.n == mb(m)),
 // Efeitos passivos das maldições do personagem. Bônus de itens amaldiçoados não se acumulam: valem o maior
 // de cada tipo (Defesa, resistência, atributo, perícia) e maldições iguais em itens diferentes contam uma vez.
 function cfx(c) {
-  const r = {def: 0, pv: 0, pe: 0, dt: 0, rd: 0, attr: {}, res: {}, sk: {}}, seen = {},
+  const r = {def: 0, pv: 0, pe: 0, dt: 0, rd: 0, desl: 0, attr: {}, res: {}, sk: {}}, seen = {},
         up = (o, k, v) => {o[k] = Math.max(o[k] || 0, v)}, inv = c.inv || [], iv = inv.map(x => x.n),
         bs = iv.includes('Proteção pesada') ? 'Proteção pesada' : iv.includes('Proteção leve') ? 'Proteção leve' : '';
   inv.forEach(it => {
@@ -58,7 +58,7 @@ function cfx(c) {
       else if (b == 'Proteção Elemental' && el) up(r.res, el, 10);
       else if (b == 'Escudo Mental') up(r.res, 'Mental', 10);
       else if (b == 'Sombria') up(r.sk, 'Furtividade', 5);
-      else if (b == 'Lépida') up(r.sk, 'Atletismo', 10);
+      else if (b == 'Lépida') { up(r.sk, 'Atletismo', 10); up(r, 'desl', 3) }
       else if (b == 'Carisma') up(r.attr, 'PRE', 1);
       else if (b == 'Sagacidade') up(r.attr, 'INT', 1);
       else if (b == 'Destreza') up(r.attr, 'AGI', 1);

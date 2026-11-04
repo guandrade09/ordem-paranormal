@@ -1,0 +1,1261 @@
+[
+ {
+  "g": "A. Modificações",
+  "n": "arma corpo a corpo: Certeira, Cruel, Discreta, Perigosa, Tática",
+  "ok": true,
+  "d": "[\"Certeira\",\"Cruel\",\"Discreta\",\"Perigosa\",\"Tática\"]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "arco/besta (arma sem fogo) = mesmas do corpo a corpo",
+  "ok": true,
+  "d": "[\"Certeira\",\"Cruel\",\"Discreta\",\"Perigosa\",\"Tática\"]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "arma de fogo: + Alongada, Calibre Grosso, Ferrolho, Mira Laser, Mira Telescópica, Silenciador, Visão de Calor (sem Compensador se não for automática)",
+  "ok": true,
+  "d": "[\"Certeira\",\"Cruel\",\"Discreta\",\"Perigosa\",\"Tática\",\"Alongada\",\"Calibre Grosso\",\"Ferrolho Automático\",\"Mira Laser\",\"Mira Telescópica\",\"Silenciador\",\"Visão de Calor\"]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "arma automática (Fuzil de assalto) ganha Compensador",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Submetralhadora e Metralhadora também aceitam Compensador",
+  "ok": true,
+  "d": "[true,true]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Pistola só aceita Compensador depois de Ferrolho Automático",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Proteção leve: Discreta e Reforçada (sem Antibombas/Blindada)",
+  "ok": true,
+  "d": "[\"Discreta\",\"Reforçada\"]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Proteção pesada: Antibombas, Blindada e Reforçada (sem Discreta)",
+  "ok": true,
+  "d": "[\"Antibombas\",\"Blindada\",\"Reforçada\"]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Escudo: só Reforçada",
+  "ok": true,
+  "d": "[\"Reforçada\"]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Utensílio / Vestimenta / Kit de perícia: Aprimorado, Discreto, Função adicional, Instrumental",
+  "ok": true,
+  "d": "[[\"Aprimorado\",\"Discreto\",\"Função adicional\",\"Instrumental\"],[\"Aprimorado\",\"Discreto\",\"Função adicional\",\"Instrumental\"],[\"Aprimorado\",\"Discreto\",\"Função adicional\",\"Instrumental\"]]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "itens que não aceitam modificação (Corda, Granada, Lanterna)",
+  "ok": true,
+  "d": "[0,0,0]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Reforçada tira Discreta da lista (proteção leve)",
+  "ok": true,
+  "d": "false"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Discreta tira Reforçada da lista",
+  "ok": true,
+  "d": "false"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "modificação já aplicada não aparece de novo",
+  "ok": true,
+  "d": "false"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "categoria = base + nº de modificações (acumulando todas)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Blindada: espaço +1",
+  "ok": true,
+  "d": "6"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Blindada + Reforçada: espaço +2",
+  "ok": true,
+  "d": "7"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Discreta (proteção leve): espaço −1",
+  "ok": true,
+  "d": "1"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Discreto (acessório): espaço −1",
+  "ok": true,
+  "d": "0"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Discreta (arma de 1 espaço): nunca abaixo de 0",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Certeira: +2 em ataque",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Cruel: dano +2 (1d4 → 1d4+2)",
+  "ok": true,
+  "d": "\"1d4+2\""
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Perigosa: margem −2 (19 → 17)",
+  "ok": true,
+  "d": "17"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Alongada: +2 em ataque",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Mira Laser: margem −2",
+  "ok": true,
+  "d": "16"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Mira Laser + Perigosa: margem −4",
+  "ok": true,
+  "d": "14"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Calibre Grosso: +1 dado do mesmo tipo (2d8 → 3d8)",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "mesma modificação não duplica",
+  "ok": true,
+  "d": "1"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "margem de ameaça nunca cai abaixo de 2",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Reforçada (pesada vestida): Defesa +2",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Blindada: resistência a dano 2 → 5",
+  "ok": true,
+  "d": "Balístico, Corte, Impacto e Perfuração 5"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Reforçada no Escudo: Defesa +2",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "Discreta não muda a Defesa",
+  "ok": true,
+  "d": "0"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "arma com modificação ganha ⭐ (sem ➕)",
+  "ok": true,
+  "d": "\"Faca⭐\""
+ },
+ {
+  "g": "A. Modificações",
+  "n": "remover uma modificação desce a categoria em 1",
+  "ok": true,
+  "d": "1"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "sem modificações: categoria volta ao original e some o ⭐",
+  "ok": true,
+  "d": "[0,\"Faca\"]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "proteção não ganha ícone no nome (só armas)",
+  "ok": true,
+  "d": "\"Proteção leve\""
+ },
+ {
+  "g": "A. Modificações",
+  "n": "aba Inventário mostra a seção Melhorias sem undefined/NaN",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "A. Modificações",
+  "n": "seletor de item e listas de modificação sem undefined/NaN",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "A. Modificações",
+  "n": "categoria máxima tem algarismo romano (RM) — máx. 13",
+  "ok": true,
+  "d": "RM[13]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "catálogo tem 35 maldições (12 de arma, 10 de proteção, 13 de acessório)",
+  "ok": true,
+  "d": "[35,12,10,13]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "todas as maldições têm elemento válido (ou \"Varia\" só na Proteção Elemental)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "todas as maldições têm texto e resumo (CUX)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "cada elemento tem ao menos 1 maldição de arma, 1 de proteção e 1 de acessório",
+  "ok": true,
+  "d": "[true,true,true,true]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: arma / Conhecimento",
+  "ok": true,
+  "d": "[\"Antielemento\",\"Ritualística\",\"Senciente\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: arma / Energia",
+  "ok": true,
+  "d": "[\"Empuxo\",\"Energética\",\"Vibrante\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: arma / Morte",
+  "ok": true,
+  "d": "[\"Consumidora\",\"Erosiva\",\"Repulsora\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: arma / Sangue",
+  "ok": true,
+  "d": "[\"Lancinante\",\"Predadora\",\"Sanguinária\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: prot / Conhecimento",
+  "ok": true,
+  "d": "[\"Abascanta\",\"Profética\",\"Sombria\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: prot / Energia",
+  "ok": true,
+  "d": "[\"Cinética\",\"Lépida\",\"Voltaica\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: prot / Morte",
+  "ok": true,
+  "d": "[\"Letárgica\",\"Repulsiva\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: prot / Sangue",
+  "ok": true,
+  "d": "[\"Regenerativa\",\"Sádica\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: acc / Conhecimento",
+  "ok": true,
+  "d": "[\"Carisma\",\"Conjuração\",\"Escudo Mental\",\"Reflexão\",\"Sagacidade\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: acc / Energia",
+  "ok": true,
+  "d": "[\"Defesa\",\"Destreza\",\"Potência\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: acc / Morte",
+  "ok": true,
+  "d": "[\"Esforço Adicional\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: acc / Sangue",
+  "ok": true,
+  "d": "[\"Disposição\",\"Pujança\",\"Vitalidade\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "livro × app: acc / Varia",
+  "ok": true,
+  "d": "[\"Proteção Elemental\"]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "nenhuma seção a mais no app",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "35 maldições × 18 itens: cada uma só aparece onde o livro permite",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "Empuxo (só corpo a corpo) não aparece em arma de fogo nem arco",
+  "ok": true,
+  "d": "[false,false,true]"
+ },
+ {
+  "g": "B. Maldições: onde cada uma pode ser aplicada",
+  "n": "Kit de perícia, Corda, Granada e Lanterna não aceitam maldição",
+  "ok": true,
+  "d": "[0,0,0,0]"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "1, 2 e 3 maldições somam +2, +3, +4",
+  "ok": true,
+  "d": "[2,3,4]"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "modificação soma por cima (+1)",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "remover tudo devolve a categoria original",
+  "ok": true,
+  "d": "0"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "acessório também: +II na 1ª maldição",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "só Sangue+Energia e Conhecimento+Morte combinam",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "mesmo elemento sempre combina (Sangue + Sangue)",
+  "ok": true,
+  "d": "true"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "a mesma maldição não aparece duas vezes",
+  "ok": true,
+  "d": "false"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "curAdd repetido não duplica a maldição",
+  "ok": true,
+  "d": "1"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "Sangue e Conhecimento (opressores) não liberam nem a Proteção Elemental desses elementos",
+  "ok": true,
+  "d": "[\"Sangue\",\"Energia\"]"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "elemento da maldição é o escolhido",
+  "ok": true,
+  "d": "\"Morte\""
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "bloqueia elementos opressores do escolhido na lista da Proteção Elemental (Morte: bloqueia Sangue e Energia)",
+  "ok": true,
+  "d": "[\"Morte\",\"Conhecimento\"]"
+ },
+ {
+  "g": "C. Maldições: categoria, elementos opressores e repetição",
+  "n": "tela de escolha do elemento sem undefined",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Repulsora em Faca → def +2",
+  "ok": true,
+  "d": "obtido 2"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Letárgica em Proteção leve → def +2",
+  "ok": true,
+  "d": "obtido 2"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Cinética em Proteção leve → def +2",
+  "ok": true,
+  "d": "obtido 2"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Defesa em Utensílio → def +5",
+  "ok": true,
+  "d": "obtido 5"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Cinética em Proteção leve → rd +2",
+  "ok": true,
+  "d": "obtido 2"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Cinética em Escudo → rd +2",
+  "ok": true,
+  "d": "obtido 2"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Cinética em Proteção pesada → rd +5",
+  "ok": true,
+  "d": "obtido 5"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Profética em Proteção leve → res.Conhecimento +10",
+  "ok": true,
+  "d": "obtido 10"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Voltaica em Proteção leve → res.Energia +10",
+  "ok": true,
+  "d": "obtido 10"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Repulsiva em Proteção leve → res.Morte +10",
+  "ok": true,
+  "d": "obtido 10"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Regenerativa em Proteção leve → res.Sangue +10",
+  "ok": true,
+  "d": "obtido 10"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Escudo Mental em Utensílio → res.Mental +10",
+  "ok": true,
+  "d": "obtido 10"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Proteção Elemental (Sangue) em Utensílio → res.Sangue +10",
+  "ok": true,
+  "d": "obtido 10"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Proteção Elemental (Energia) em Utensílio → res.Energia +10",
+  "ok": true,
+  "d": "obtido 10"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Sombria em Proteção leve → sk.Furtividade +5",
+  "ok": true,
+  "d": "obtido 5"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Lépida em Proteção leve → sk.Atletismo +10",
+  "ok": true,
+  "d": "obtido 10"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Lépida em Proteção leve → desl +3",
+  "ok": true,
+  "d": "obtido 3"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Carisma em Utensílio → attr.PRE +1",
+  "ok": true,
+  "d": "obtido 1"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Sagacidade em Utensílio → attr.INT +1",
+  "ok": true,
+  "d": "obtido 1"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Destreza em Utensílio → attr.AGI +1",
+  "ok": true,
+  "d": "obtido 1"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Disposição em Utensílio → attr.VIG +1",
+  "ok": true,
+  "d": "obtido 1"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Pujança em Utensílio → attr.FOR +1",
+  "ok": true,
+  "d": "obtido 1"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Potência em Utensílio → dt +1",
+  "ok": true,
+  "d": "obtido 1"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Esforço Adicional em Utensílio → pe +5",
+  "ok": true,
+  "d": "obtido 5"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Vitalidade em Utensílio → pv +15",
+  "ok": true,
+  "d": "obtido 15"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Defesa (acessório) = +5 na Defesa final",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Destreza: +1 AGI conta na Defesa (+1)",
+  "ok": true,
+  "d": "1"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Destreza não altera o atributo salvo (c.attr.AGI) nem PV/PE",
+  "ok": true,
+  "d": "[2,3,0,0]"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Esforço Adicional: PE máximo +5",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Vitalidade: PV máximo +15",
+  "ok": true,
+  "d": "15"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Potência: DT de ritual +1",
+  "ok": true,
+  "d": "1"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Sagacidade: INT efetiva +1 e atributo salvo igual",
+  "ok": true,
+  "d": "[1,1]"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Carisma: PRE efetiva +1 → DT +1",
+  "ok": true,
+  "d": "1"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Pujança: FOR efetiva +1 (não altera a capacidade de carga)",
+  "ok": true,
+  "d": "[1,0]"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Disposição: VIG efetivo +1 (não gera PV extra)",
+  "ok": true,
+  "d": "[1,0]"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Cinética em Proteção e Escudo: +2 Defesa (uma vez só)",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Cinética (+2) + Defesa (+5): vale só o maior (+5)",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Defesa em dois itens: ainda +5",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Vitalidade em dois acessórios: +15 PV uma vez",
+  "ok": true,
+  "d": "15"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Proteção Elemental de elementos diferentes: ambas valem",
+  "ok": true,
+  "d": "[10,10]"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "com as duas no inventário vale só a pesada (a vestida): Morte 10, sem Energia",
+  "ok": true,
+  "d": "[10,0]"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "escudo no inventário conta junto com a proteção",
+  "ok": true,
+  "d": "[10,10]"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "Cinética numa leve não vestida (há pesada) não conta",
+  "ok": true,
+  "d": "0"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "ficha mostra \"Conhecimento 10\", \"Mental 10\" e \"Dano 2\"",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "ficha sem undefined/NaN",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "sem Lépida: DESL 9m",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "com Lépida: DESL 12m",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "ob(Atletismo) = +10 por Lépida",
+  "ok": true,
+  "d": "10"
+ },
+ {
+  "g": "D. Maldições: efeitos automáticos na ficha",
+  "n": "ob(Furtividade) = +5 por Sombria",
+  "ok": true,
+  "d": "[5,0]"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Lancinante: +1d8 de Sangue multiplicado no crítico",
+  "ok": true,
+  "d": "[[\"1d8\",\"Sangue\",1]]"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Erosiva: +1d8 de Morte (não multiplica no crítico)",
+  "ok": true,
+  "d": "[[\"1d8\",\"Morte\",0]]"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "ataque mostra o dano extra \"+ Sangue N [1d8]\"",
+  "ok": true,
+  "d": "Luta: [11] 11+0 = 11 · Dano 9 (corte 4 + Sangue 5 [1d8])"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Predadora: margem 17 → 13",
+  "ok": true,
+  "d": "13"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Predadora: margem 19 → 17",
+  "ok": true,
+  "d": "17"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Predadora: margem 20 → 19",
+  "ok": true,
+  "d": "19"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Predadora: margem 18 → 15",
+  "ok": true,
+  "d": "15"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Predadora: margem 16 → 11",
+  "ok": true,
+  "d": "11"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Predadora dobra antes de Perigosa (−2 depois)",
+  "ok": true,
+  "d": "13"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "maldições sem dano extra (Vibrante) não criam \"ex\"",
+  "ok": true
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Lancinante + Predadora + Sanguinária + Cruel convivem",
+  "ok": true,
+  "d": "[1,true]"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "weff em item sem arma devolve nulo",
+  "ok": true,
+  "d": "null"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Lancinante → Faca🔴",
+  "ok": true,
+  "d": "\"Faca🔴\""
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Erosiva → Faca⚫",
+  "ok": true,
+  "d": "\"Faca⚫\""
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Antielemento → Faca🟡",
+  "ok": true,
+  "d": "\"Faca🟡\""
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Vibrante → Faca🟣",
+  "ok": true,
+  "d": "\"Faca🟣\""
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "Sangue + Energia + modificação = Faca🔴🟣⭐",
+  "ok": true,
+  "d": "\"Faca🔴🟣⭐\""
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "duas maldições do mesmo elemento: um ícone só",
+  "ok": true,
+  "d": "\"Faca🔴\""
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "acessório e proteção amaldiçoados não ganham ícone no nome",
+  "ok": true,
+  "d": "[\"Utensílio\",\"Proteção leve\"]"
+ },
+ {
+  "g": "E. Maldições: efeitos em armas",
+  "n": "aba Ações mostra o nome com o ícone",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "CUX.pe = primeiro \"gastar N PE\" do texto (ou 0 quando não há)",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "maldições de custo variável: Ritualística, Abascanta, Conjuração, Reflexão",
+  "ok": true,
+  "d": "[\"Ritualística\",\"Abascanta\",\"Conjuração\",\"Reflexão\"]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "só a Senciente tem manutenção por turno (1 PE)",
+  "ok": true,
+  "d": "[\"Senciente:1\"]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Antielemento gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Antielemento · dano extra: 20 (4d8) · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Senciente gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Senciente · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Energética gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Energética · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Consumidora gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Consumidora · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Erosiva gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Erosiva · Morte por rodada: 6 (2d4) · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Repulsora gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Repulsora · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Profética gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Profética · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Sombria gasta 1 PE",
+  "ok": true,
+  "d": "gastou 1 · Sombria · −1 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Lépida gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Lépida · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Voltaica gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Voltaica · Energia por turno: 8 (2d6) · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Repulsiva gasta 2 PE",
+  "ok": true,
+  "d": "gastou 2 · Repulsiva · Morte ao agressor: 10 (2d8) · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Usar Regenerativa gasta 1 PE",
+  "ok": true,
+  "d": "gastou 1 · Regenerativa · +7 PV · −1 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "custo acima do limite por rodada é recusado (PE não muda)",
+  "ok": true,
+  "d": "[10,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "PE insuficiente é recusado",
+  "ok": true,
+  "d": "[1,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Regenerativa cura 1d12 PV e não passa do máximo",
+  "ok": true,
+  "d": "PV 8"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Regenerativa com PV cheio não ultrapassa o máximo",
+  "ok": true,
+  "d": "64"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Antielemento rola 4d8 de dano extra e avisa no toast",
+  "ok": true,
+  "d": "Antielemento · dano extra: 20 (4d8) · −2 PE"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "maldição passiva: Usar não gasta PE",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "antes de ativar não há efeito ativo",
+  "ok": true,
+  "d": "[0,false]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Manter sem ativar não gasta PE",
+  "ok": true,
+  "d": "10"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "ativar (Usar) gasta 2 PE e deixa o efeito ativo",
+  "ok": true,
+  "d": "[8,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "efeito aparece nos efeitos sustentados da ficha",
+  "ok": true,
+  "d": "[\"Senciente\"]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "ativar de novo é recusado e orienta usar Manter",
+  "ok": true,
+  "d": "[8,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Manter gasta 1 PE",
+  "ok": true,
+  "d": "[7,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Manter por 3 turnos seguidos = 3 PE",
+  "ok": true,
+  "d": "5"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "aba Ações mostra o botão \"Manter · 1 PE\" e a marca \"ativa\"",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Inventário (Melhorias) também mostra o botão Manter",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "detalhe da maldição ativa tem Manter e Encerrar efeito",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "encerrar remove o efeito e o botão Manter some",
+  "ok": true,
+  "d": "[0,false]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "sem efeito ativo não há botão Manter",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Manter sem PE é recusado e o efeito continua para o jogador encerrar",
+  "ok": true,
+  "d": "[0,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "remover a maldição também encerra o efeito ativo",
+  "ok": true,
+  "d": "[0,0]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "dois efeitos distintos (ids por item)",
+  "ok": true,
+  "d": "[2,2]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Manter da segunda arma gasta só 1 PE",
+  "ok": true,
+  "d": "15"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Ritualística: aba Ações tem o botão \"Gastar PE do ritual\" e \"PE var.\"",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Ritualística: janela de custo abre sem undefined",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Ritualística: ritual de 3 PE gasta 3 PE",
+  "ok": true,
+  "d": "3"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Abascanta: aba Ações tem o botão \"Gastar PE do ritual\" e \"PE var.\"",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Abascanta: janela de custo abre sem undefined",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Abascanta: ritual de 3 PE gasta 3 PE",
+  "ok": true,
+  "d": "3"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Reflexão: aba Ações tem o botão \"Gastar PE do ritual\" e \"PE var.\"",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Reflexão: janela de custo abre sem undefined",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Reflexão: ritual de 3 PE gasta 3 PE",
+  "ok": true,
+  "d": "3"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Conjuração: aba Ações tem o botão \"Gastar PE do ritual\" e \"PE var.\"",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Conjuração: janela de custo abre sem undefined",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Conjuração: ritual de 3 PE gasta 2 PE",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "Conjuração: ritual de 1 PE custa 0 (−1 PE, nunca negativo)",
+  "ok": true,
+  "d": "20"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "custo 0/vazio é recusado",
+  "ok": true,
+  "d": "[20,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "texto no campo é recusado sem travar",
+  "ok": true,
+  "d": "[20,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "custo acima do limite de PE por rodada (rituais) é recusado",
+  "ok": true,
+  "d": "[20,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "PE insuficiente é recusado",
+  "ok": true,
+  "d": "[1,true]"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "custo decimal é arredondado para baixo (2,9 → 2 PE)",
+  "ok": true,
+  "d": "2"
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "sem \"Manter\" nem \"Gastar PE do ritual\" nas passivas",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "F. Maldições: custo de PE e botões",
+  "n": "detalhe de passiva diz que os bônus já entram na ficha",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "nenhuma maldição quebra a lista, o detalhe, as abas Ações/Inventário ou a remoção",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "todas têm resumo para os cards",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "ficha NEX 99% totalmente melhorada: abas 0–3 sem undefined/NaN",
+  "ok": true,
+  "d": "[]"
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "valores finais coerentes (Defesa, PV, PE, DT numéricos)",
+  "ok": true,
+  "d": "[30,171,100,34]"
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "categoria da arma tem algarismo romano (cat 11)",
+  "ok": true,
+  "d": ""
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "arma completa: ataque, dano e margem finitos",
+  "ok": true,
+  "d": "{\"ab\":2,\"c\":15,\"d\":\"2d10\"}"
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "maldição e efeito ativo foram salvos no armazenamento local",
+  "ok": true,
+  "d": "{\"cur\":[\"Senciente\"],\"sust\":1}"
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "desfazer volta ao estado anterior (PE de volta e sem efeito ativo)",
+  "ok": true,
+  "d": "[10,0]"
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "ficha antiga (sem lista de efeitos) ativa a Senciente sem erro",
+  "ok": true,
+  "d": "[\"\",1]"
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "duas facas: a maldição só vai na escolhida",
+  "ok": true,
+  "d": "[1,0]"
+ },
+ {
+  "g": "G. Maldições: telas, modais e dados salvos",
+  "n": "remover o item amaldiçoado não quebra as telas",
+  "ok": true,
+  "d": ""
+ }
+]
