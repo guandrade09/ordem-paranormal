@@ -202,12 +202,22 @@ function curList(i) {
         return l.length ?
           `<div class=bar style="background:${EC[e] || '#555'};color:#fff;font-size:18px">${CUEMO[e] || '🌀'} ${
             e == 'Varia' ? 'VARIA' : e.toUpperCase()}</div>${
-            l.map(d => `<button class=card onclick="${d.el == 'Varia' ? `curEl(${i})` : `curAdd(${i},'${d.n}')`}"><b>${
-                    d.n}</b><br><small>${md(curTxt(it, d.n))}</small></button>`)
+            l.map(d => `<button class="card ab" style="width:100%;text-align:left" onclick="curInfo(${i},'${d.n}')"><div class=abt><b>${
+                    d.n}</b><br><small>${md((CUX[d.n] || {}).s || '')}</small></div>${
+                    (CUX[d.n] || {}).pe ? `<b class=pec>${CUX[d.n].pe} PE</b>` : ''}</button>`)
               .join('')}` :
           ''
       })
       .join('')}`)
+}
+// Detalhe da maldição antes de aplicar (texto completo + botão Aplicar)
+function curInfo(i, n) {
+  const it = cur().inv[i], d = CURSES.find(x => x.n == n), x = CUX[n] || {};
+  modal(`<button class=xc onclick="cm()">✕</button><button onclick="curList(${i})">← Voltar</button><br><div class=ahd><b style="font:26px 'Bebas Neue'">${
+    CUEMO[d.el] || ''} ${n}</b>${x.pe ? `<b class=pec>${x.pe} PE</b>` : ''}</div><small>${cuNm(it)} · <span class=el style="background:${
+    EC[d.el] || '#777'}">${d.el == 'Varia' ? 'Elemento à escolha' : d.el}</span></small><p>${md(curTxt(it, n))}</p>${
+    ''}<button class=btn style="width:100%;font-size:22px;margin-top:6px" onclick="${
+    d.el == 'Varia' ? `curEl(${i})` : `curAdd(${i},'${n}')`}">Aplicar maldição</button>`)
 }
 // Proteção Elemental: escolher o elemento
 function curEl(i) {
