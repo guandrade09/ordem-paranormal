@@ -314,7 +314,8 @@ function ab(i) {
     z.pe -= p[1];
     if (p[0] == 'Segurar o Gatilho') z.sg = (z.sg || 0) + 1
   });
-  toast(p[0] + (p[1] ? ` · −${p[1]} PE` : ' (passivo)'))
+  let ti = tmpInfo(c, p[0], 0, !!(p[5] && c.af == p[5][1]));
+  toast(p[0] + (p[1] ? ` · −${p[1]} PE` : ' (passivo)') + (ti ? ' · ' + ti : ''))
 }
 
 

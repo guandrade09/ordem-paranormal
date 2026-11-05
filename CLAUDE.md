@@ -14,6 +14,7 @@ Base de regras: livro v1.1 + ficha oficial. Hospedagem: GitHub Pages. Login e ba
 - `supabase.sql` — tabelas + RLS (cada usuário só acessa as próprias linhas).
 - Selo Paranormal (`js/rules/seal.js`): ao criar, escolhe ritual e versão (Normal/Discente/Verdadeiro → `it.sv`); no Inventário há um único botão "Fabricar selo" com preço automático `seloCusto` (círculo + versão − reduções como Ritual Predileto). Selo antigo sem `sv` vale como Normal.
 - `tests/` — `npm test` (ou `node tests/run.js`). Sem dependências. `tests/criacao.test.js` (origens, classes, trilhas NEX 5→99 pelo fluxo real, poderes, rituais, selo; `ONLY=D` roda só um grupo, `DBG=1` mostra progresso) e `tests/melhorias.test.js`; `--report` grava o JSON do relatório.
+- Valores temporários (`TMPI`/`tmpInfo` em `js/rules/effects.js`): ao usar habilidade ou ritual o app só MOSTRA quanto PE/PV/Defesa temporário adicionar (toast, como a rolagem de perícia); quem aplica é o jogador nos campos "temp". Habilidades sem custo ganham o botão "Ver quanto adicionar". Decisão do usuário: NADA de aplicar efeito sozinho (a versão automática 0.21.0 foi revertida). Testes: `tests/efeitos.test.js`.
 - Rituais: o app usa 5 nomes anteriores ao livro v1.1 (Criar Ilusão, Aprimoramento Mental, Físico Aprimorado, Miasma, Neutralizar Ritual — `RNM` em `js/core/state.js` migra os nomes do livro) e tem 2 rituais que a lista do v1.1 não traz (Ligação Telepática, Visão da Verdade). O teste de criação trava esses dois conjuntos.
 
 ## Como mexer

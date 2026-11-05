@@ -225,7 +225,9 @@ function abc(i) {
   modal(`<button class=xc onclick="cm()">✕</button><div class=ahd><b style="font:26px 'Bebas Neue'">${n}</b>${
     p[1] ? `<b class=pec>${p[1]} PE</b>` : ''}</div><p>${md(p[3])}</p>${p[5] ? afNote(p[5][0], p[5][1], c) : ''}${nt}${
     p[1] ? `<button class=btn style="width:100%;font-size:24px;margin-top:6px" onclick="cm();ab(${i})">Usar</button>` :
-           '<small>Habilidade passiva.</small>'}`)
+           (tmpInfo(c, n, 0, !!(p[5] && c.af == p[5][1])) ?
+              `<button class=btn style="width:100%;font-size:22px;margin-top:6px" onclick="tmpShow(${i})">Ver quanto adicionar</button>` :
+              '<small>Habilidade passiva.</small>')}`)
 }
 function tecCard(i) {
   let c = cur(), k = K(c), p = abl(c, k)[i], T = (S.tec && S.tec.i == i) ? S.tec : (S.tec = {i, sp: 0, ef: {}}),

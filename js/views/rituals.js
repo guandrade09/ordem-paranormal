@@ -159,6 +159,7 @@ function cast(id, j, pv) {
         ' (aplique manualmente no alvo)')
     } else if (RPT(c, n, j) == 'dano')
       m.push('**Ritual Potente:** some **+' + c.attr.INT + '** ao dano');
+    if (!x.tdef && !x.tpv && tmpInfo(c, n, j)) m.push(tmpInfo(c, n, j));
     if (x.tpv && x.tpv[j]) {
       let t = /d/.test(x.tpv[j]) ? rl(x.tpv[j]) : +x.tpv[j];
       z.t.pv += t;
