@@ -6,7 +6,6 @@ const suites = [
   ['Verificação geral (telas, fichas, cálculos, combate)', 'smoke.test.js'],
   ['Melhorias (modificações, maldições e botões de PE)', 'melhorias.test.js'],
   ['Criação (origens, classes, trilhas, poderes, rituais e selo)', 'criacao.test.js'],
-  ['Efeitos automáticos (PV, PE, Sanidade e Defesa temporária de habilidades e rituais)', 'efeitos.test.js'],
   ['Contas (login, senha, sincronização, segurança)', 'account.test.js'],
 ];
 let falhou = false;

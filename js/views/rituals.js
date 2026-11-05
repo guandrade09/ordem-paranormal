@@ -116,7 +116,7 @@ function rv(id) {
         ['Verdadeiro', r.v && Math.max(0, b + r.v[0]), r.v && r.v[1], r.v && r.v[2]]
       ];
   modal(`<button class=xc onclick="cm()">✕</button><b>${r.n}</b> <span class=el style="background:${EC[e]}">${
-    e}</span> · ${r.ci}º círculo<br>${rinfo(r)}${pendBox(r.n)}${
+    e}</span> · ${r.ci}º círculo<br>${rinfo(r)}${
     o.map((x, j) => {
        let off = x[1] == null || a < x[2];
        return `<button class="card row" ${off ? 'disabled style="opacity:.5"' : ''} onclick="cast('${id}',${
@@ -145,7 +145,6 @@ function cast(id, j, pv) {
   if (co > K(c).rodR) return toast(`⚠ Custo de ${co} PE acima do limite de ${K(c).rodR} PE por rodada (NEX ${c.nex}%).`);
   if (pv ? c.pv <= co * 2 : c.pe < co) return toast(pv ? 'PV insuficiente' : 'PE insuficiente');
   fx(e);
-  let heal = 0;
   mut(z => {
     if (pv)
       z.pv -= co * 2;
@@ -155,10 +154,9 @@ function cast(id, j, pv) {
     z.rl[id] = (+z.rl[id] || 0) + 1;
     let m = [], tp = 0;
     if (x.heal && x.heal[j]) {
-      let h = rl(x.heal[j]) + (RPT(c, n, j) ? c.attr.INT : 0) + hbon(c);
-      heal = h;
+      let h = rl(x.heal[j]) + (RPT(c, n, j) ? c.attr.INT : 0);
       m.push('cura **' + h + ' PV**' + (RPT(c, n, j) ? ' (inclui +' + c.attr.INT + ' de Ritual Potente)' : '') +
-        (hbon(c) ? ' (inclui +' + hbon(c) + ' de Técnica Medicinal)' : '') + resg(z, c))
+        ' (aplique manualmente no alvo)')
     } else if (RPT(c, n, j) == 'dano')
       m.push('**Ritual Potente:** some **+' + c.attr.INT + '** ao dano');
     if (x.tpv && x.tpv[j]) {
@@ -169,10 +167,8 @@ function cast(id, j, pv) {
     }
     if (!INST.includes(n)) {
       z.sust = z.sust.filter(q => q.id != id);
-      z.sust.push({id, n: r.n, el: e, tdef: x.tdef && x.tdef[j] || 0, tpv: tp, ...(x.dec ? {dec: x.dec} : {})})
+      z.sust.push({id, n: r.n, el: e, tdef: x.tdef && x.tdef[j] || 0, tpv: tp})
     }
     toast(`${r.n}: −${pv ? co * 2 + ' PV' : co + ' PE'} ${m.join(' · ')}`)
-  });
-  if (heal) healAsk(r.n, heal);
-  else if (RPOST[n]) RPOST[n](id, j)
+  })
 }
