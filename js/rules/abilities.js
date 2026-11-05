@@ -179,8 +179,13 @@ function optUse(i) {
   cm();
   S.opt = null;
   fx('ico', ICO[p[0]] || '✨');
-  mut(z => {z.pe -= o[1]});
-  toast(O.heal ? `${p[0]}: cura ${rl(o[0])} PV (${o[0]}) · −${o[1]} PE` : `${p[0]} (${o[0]}) · −${o[1]} PE`)
+  let hb = O.heal ? hbon(c) : 0, h = O.heal ? rl(o[0]) + hb : 0, rs = '';
+  mut(z => {
+    z.pe -= o[1];
+    if (O.heal) rs = resg(z, c)
+  });
+  toast(O.heal ? `${p[0]}: o aliado recupera ${h} PV (${o[0]}${hb ? ' + ' + hb + ' Técnica Medicinal' : ''}) · −${o[1]} PE${rs}` :
+                 `${p[0]} (${o[0]}) · −${o[1]} PE`)
 }
 
 // Blocos extras nos cards de poder
@@ -221,11 +226,12 @@ function abc(i) {
     (fv ? `<p><small>Arma favorita: <b>${fv.n}</b> · Cat. ${RM[fv.cat]} → <b>${RM[ecat(c, fv)]}</b></small></p>` :
           '<p class=red><small>⚠ Nenhuma arma favorita marcada no Inventário.</small></p>') :
     '';
-  nt += xtra(c, n, i);
+  nt += xtra(c, n, i) + pendBox(n);
   modal(`<button class=xc onclick="cm()">✕</button><div class=ahd><b style="font:26px 'Bebas Neue'">${n}</b>${
     p[1] ? `<b class=pec>${p[1]} PE</b>` : ''}</div><p>${md(p[3])}</p>${p[5] ? afNote(p[5][0], p[5][1], c) : ''}${nt}${
-    p[1] ? `<button class=btn style="width:100%;font-size:24px;margin-top:6px" onclick="cm();ab(${i})">Usar</button>` :
-           '<small>Habilidade passiva.</small>'}`)
+    AUT[n] ? autoBtns(c, k, n, i) :
+    p[1]   ? `<button class=btn style="width:100%;font-size:24px;margin-top:6px" onclick="cm();ab(${i})">Usar</button>` :
+             '<small>Habilidade passiva.</small>'}`)
 }
 function tecCard(i) {
   let c = cur(), k = K(c), p = abl(c, k)[i], T = (S.tec && S.tec.i == i) ? S.tec : (S.tec = {i, sp: 0, ef: {}}),

@@ -14,7 +14,9 @@ const BC = [0, 1, 3, 6, 10],
 // Efeitos de rituais
 const EF = {
   'Armadura de Sangue': {tdef: [5, 10, 15]},
-  'Embaralhar': {tdef: [6, 10, 16]},
+  'Embaralhar': {tdef: [6, 10, 16], dec: 2},
+  'Fortalecimento Sensorial': {tdef: [0, 0, 10]},
+  'Forma Monstruosa': {tdef: [5, 5, 10], tpv: ['30', '30', '50']},
   'Cicatrização': {heal: ['3d8+3', '5d8+5', '7d8+7']},
   'Consumir Manancial': {tpv: ['3d6', '6d6', '']},
   'Tela de Ruído': {tpv: ['30', '60', '']}

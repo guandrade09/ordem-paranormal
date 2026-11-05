@@ -179,7 +179,7 @@ function sheet() {
       ea(c).AGI} (AGI) + ${k.pr.d} (equip.) + ${k.def - 10 - ea(c).AGI - k.pr.d} (outros)</small>${
       (k.tdef || (c.t && c.t.def)) ?
         '<br><span class=tmp>inclui bônus temporário</span>' :
-        ''}<div class=row style="justify-content:center;gap:6px;margin:6px 6px 2px"><input id=tdef type=number min=0 class=tin style="color:#fff" placeholder="temp" value="${
+        ''}${k.inq ? '<br><span class=tmp>Inquebrável: +5 Defesa e RD 5 (Machucado)</span>' : ''}<div class=row style="justify-content:center;gap:6px;margin:6px 6px 2px"><input id=tdef type=number min=0 class=tin style="color:#fff" placeholder="temp" value="${
       (c.t && c.t.def) ||
       ''}" onchange="setT('def')"><button onclick="mut(z=>z.t['def']=0)" title="Remover temporários">✕</button></div></div></div>${
       vit('san', 'SANIDADE')}</div>
@@ -188,7 +188,8 @@ ${
         `<div>${
           c.sust
             .map((x, i) =>
-                   `<span class=el style="background:${EC[x.el]}" onclick="dis('${x.id || ''}',${i})">${x.n} ✕</span> `)
+                   `<span class=el style="background:${EC[x.el]}" onclick="dis('${x.id || ''}',${i})">${x.n}${x.tdef ? ' +' + x.tdef : ''} ✕</span> ${
+                     x.dec ? `<span class=el style="background:${EC[x.el]}" onclick="sdec(${i})">ataque errou −${x.dec}</span> ` : ''}`)
             .join('')}<small>(toque para encerrar)</small></div>` :
         ''}
 ${fl('PROTEÇÃO', k.pr.n + (c.inv.some(x => PR[x.n] && lack(c, x)) ? ' ⚠️' : ''))}${
@@ -197,7 +198,7 @@ ${fl('PROTEÇÃO', k.pr.n + (c.inv.some(x => PR[x.n] && lack(c, x)) ? ' ⚠️' 
           k.pr.r, ...Object.entries({
             ...Object.fromEntries((c.res || []).map(x => [x, c.af == x ? 20 : 10])),
             ...Object.fromEntries(Object.entries(k.cf.res).map(([e, v]) => [e, Math.max(v, c.af == e ? 20 : 0, (c.res || []).includes(e) ? 10 : 0)]))
-          }).map(([e, v]) => e + ' ' + v), ...(k.cf.rd ? ['Dano ' + k.cf.rd] : []),
+          }).map(([e, v]) => e + ' ' + v), ...(k.rdx ? ['Dano ' + k.rdx] : []),
           ...(c.origem == 'Teórico da Conspiração' ? ['Mental ' + c.attr.INT] : [])
         ].filter(Boolean)
             .join(' · ') ||
@@ -230,7 +231,7 @@ ${fl('PROTEÇÃO', k.pr.n + (c.inv.some(x => PR[x.n] && lack(c, x)) ? ' ⚠️' 
                  `<button class=atkb onclick="atk2(${a.u})" title="Ataque com duas armas">⚔⚔</button>` :
                  ''}<button class=atkb onclick="${a.dm ? `useDmg(${a.u})` : `atk(${a.u})`}">⚔</button></div></div>`)
         .join('')}
-<div class=bar>Habilidades</div>${
+<button onclick="sceneModal()" style="width:100%;margin:0 0 6px">🎬 Fim da cena / nova sessão</button><div class=bar>Habilidades</div>${
       abl(c, k)
         .map((p, i) => `<div class="card ab" onclick="abc(${i})"><div class=abt><b>${p[0]}</b>${
                p[0] == 'Combater com Duas Armas' && c.dw ? ' <small style="color:#43a047">● ativa</small>' : ''}${
