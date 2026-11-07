@@ -42,7 +42,7 @@ const afNote = (t, e, c) => {
 };
 
 // Botão de configurações
-const gear = (back) => `<div class=topb><button class="gear" aria-label="Configurações" onclick="cfgT()">⚙️</button>${
+const gear = (back) => `<div class=topb><button class="gear" aria-label="Configurações" onclick="cfgT()"><i class=gi></i></button>${
   back ? `<button onclick="S.v='start';R()">← Início</button>` : ''}</div>`;
 
 // Tela inicial

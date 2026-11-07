@@ -110,12 +110,10 @@ async function aSub() {
 function loginv() {
   const h = (x) =>
     `<div class=fade style="max-width:420px;margin:0 auto"><div class=bar>Ordem Paranormal</div>${x}</div>`;
-  // sem internet (ou servidor inalcançável): "SEM TRANSMISSÃO..."; carregando normal: só os símbolos
-  const net = AU.fail || semNet() || /Sem conexão|conectar ao servidor/.test(AU.msg || '');
-  if (AU.ld) return h(ldr(semNet()));
-  if (AU.u && AU.perr)
-    return h(`${net ? ldr(1) : ''}<div class=card><p>Não foi possível carregar suas fichas.</p>${
-      aMsgH()}</div><button onclick="aEnter()">🔄 Tentar de novo</button><button onclick="AU.off=1;R()">Usar offline (só neste aparelho)</button>`);
+  // carregando: só os símbolos. Sem internet / servidor inalcançável: símbolos + "SEM TRANSMISSÃO..." e,
+  // no canto inferior esquerdo, o botão "Usar offline". Nada de título, borda ou mensagem de erro.
+  if (AU.ld) return ldr(semNet(), 0, semNet());
+  if (AU.fail || AU.perr || semNet()) return ldr(1, 0, 1);
   const m = AU.mode, T = {in : 'Entrar', up: 'Criar conta', forgot: 'Recuperar senha', reset: 'Nova senha'}[m],
         f = (id, lb, ty, ac, extra = '') => `<label style="display:block;margin:10px 0 2px;font-size:14px">${
           lb}</label><input id=${id} type=${ty} autocomplete=${ac} ${extra}>`;
@@ -141,9 +139,8 @@ function loginv() {
   const ln = m == 'in' ? lk('Esqueci a senha', 'forgot') + '<br>' + lk('Criar conta', 'up') :
     m == 'reset'       ? '' :
                          lk('← Voltar para entrar', 'in');
-  return h(`${AU.fail || semNet() ? ldr(1) : ''}<div class=card><div style="font:24px 'Bebas Neue';letter-spacing:1px">${
+  return h(`<div class=card><div style="font:24px 'Bebas Neue';letter-spacing:1px">${
     T}</div><form onsubmit="aSub();return false" novalidate>${b}${
     aMsgH()}<button id=abtn type=submit style="margin-top:8px">${
-    T}</button></form></div><div style="text-align:center">${ln}</div>${
-    AU.fail ? '<button onclick="AU.off=1;R()">Usar offline (só neste aparelho)</button>' : ''}`)
+    T}</button></form></div><div style="text-align:center">${ln}</div>`)
 }

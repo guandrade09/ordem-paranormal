@@ -7,6 +7,7 @@ const suites = [
   ['Melhorias (modificações, maldições e botões de PE)', 'melhorias.test.js'],
   ['Criação (origens, classes, trilhas, poderes, rituais e selo)', 'criacao.test.js'],
   ['Valores temporários (só mostram quanto adicionar)', 'efeitos.test.js'],
+  ['Loading (símbolos, sem transmissão, ícone da sidebar)', 'loading.test.js'],
   ['Contas (login, senha, sincronização, segurança)', 'account.test.js'],
 ];
 let falhou = false;
