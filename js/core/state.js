@@ -32,6 +32,7 @@ S = S || {chars: [], v: 'start', tab: 0};
     try {
       (S.chars || []).forEach(c => {
         m4fix(c);
+        abDedup(c);  // limpa habilidades duplicadas de fichas antigas
         if ((c.ab || []).some(a => a.n == 'Grimório Ritualístico')) grmItem(c)
       });
       save()

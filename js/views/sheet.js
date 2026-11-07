@@ -110,6 +110,10 @@ function undo() {
   let c = cur(), s = c.hist.pop();
   if (!s) return toast('Nada a desfazer');
   let h = c.hist;
+  // restaura a ficha INTEIRA: apaga também o que foi criado depois do ponto salvo (habilidades `ab`, grau `gr`,
+  // afinidade `af`, resistências `res`, grimório `grm`…). Só sobrepor deixava esses campos para trás e, ao refazer
+  // a escolha, a habilidade aparecia duplicada.
+  Object.keys(c).forEach(k => delete c[k]);
   Object.assign(c, JSON.parse(s), {hist: h});
   R()
 }

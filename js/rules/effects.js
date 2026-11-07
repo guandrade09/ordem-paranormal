@@ -28,6 +28,19 @@ const M4 = r => r.el == 'Medo' && r.ci == 4, m4fix = c => {
   })
 };
 
+// Habilidades: nunca duplicar (mesma habilidade com os mesmos dados). abAdd adiciona só se ainda não existe;
+// abDedup limpa duplicatas de fichas antigas.
+const abKey = a => [a.n, a.tr, a.pw, a.el, a.rp, a.ee, a.me].map(v => v == null ? '' : v).join('|'),
+      abAdd = (c, a) => {
+        c.ab = c.ab || [];
+        if (!c.ab.some(x => abKey(x) == abKey(a))) c.ab.push(a)
+      },
+      abDedup = c => {
+        if (!Array.isArray(c.ab)) return;
+        const v = new Set();
+        c.ab = c.ab.filter(a => !v.has(abKey(a)) && v.add(abKey(a)))
+      };
+
 // Quanto PE/PV/Defesa temporário adicionar ao usar (só mostra o valor; quem aplica é o jogador nos campos "temp")
 const TMPI = {
   'Sentido Tático': c => `+${ea(c).INT} de Defesa temporária (até o fim da cena)`,

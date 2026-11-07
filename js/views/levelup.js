@@ -147,15 +147,13 @@ function lvTr(first) {
     let b0 = K(c);
     c.pv += b0.pv - a0.pv
   }
-  c.ab = c.ab || [];
-  c.ab.push({n: t.ab[0].n, t: t.ab[0].t, tr: 1});
+  abAdd(c, {n: t.ab[0].n, t: t.ab[0].t, tr: 1});
   if (t.ab[0].n == 'Saber Ampliado') S.lv.st.splice(S.lv.i + 1, 0, {t: 'rit', sa: 1});
   lvNext()
 }
 function lvHab() {
   let c = cur(), t = D[c.classe].tr.find(z => z.n == c.trail), a = t.ab.find(z => z.nex == S.lv.n);
-  c.ab = c.ab || [];
-  c.ab.push({n: a.n, t: a.t, tr: 1});
+  abAdd(c, {n: a.n, t: a.t, tr: 1});
   m4fix(c);
   if (a.n == 'Grimório Ritualístico') {
     grmItem(c);
@@ -308,12 +306,10 @@ function lvPc(i) {
   }
   if (p.n == 'Mestre em Elemento') {
     let ee = (c.ab || []).find(a => a.ee);
-    c.ab = c.ab || [];
-    c.ab.push({n: p.n, t: p.t, pw: 1, me: ee ? ee.ee : null});
+    abAdd(c, {n: p.n, t: p.t, pw: 1, me: ee ? ee.ee : null});
     return lvNext()
   }
-  c.ab = c.ab || [];
-  c.ab.push({n: p.n, t: p.t, pw: 1});
+  abAdd(c, {n: p.n, t: p.t, pw: 1});
   lvNext()
 }
 function vEe() {
@@ -328,8 +324,7 @@ function vEe() {
 }
 function lvEe() {
   let c = cur(), x = S.lv.x, p = D[c.classe].pow.find(z => z.n == 'Especialista em Elemento');
-  c.ab = c.ab || [];
-  c.ab.push({n: p.n, t: p.t, pw: 1, ee: x.el});
+  abAdd(c, {n: p.n, t: p.t, pw: 1, ee: x.el});
   x.mode = null;
   lvNext()
 }
@@ -363,8 +358,7 @@ function vRp() {
 }
 function lvRp() {
   let c = cur(), x = S.lv.x, p = D[c.classe].pow.find(z => z.n == 'Ritual Predileto');
-  c.ab = c.ab || [];
-  c.ab.push({n: p.n, t: p.t, pw: 1, rp: x.rp});
+  abAdd(c, {n: p.n, t: p.t, pw: 1, rp: x.rp});
   x.mode = null;
   lvNext()
 }
@@ -434,8 +428,7 @@ function lvEl() {
 }
 function lvPP() {
   let c = cur(), [e, i] = S.lv.x.pp, p = D.PP[e][i];
-  c.ab = c.ab || [];
-  c.ab.push({n: p.n, t: p.t, aff: p.a || '', pw: 1, el: e});
+  abAdd(c, {n: p.n, t: p.t, aff: p.a || '', pw: 1, el: e});
   S.lv.tr = 1;
   lvNext()
 }
