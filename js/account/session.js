@@ -117,6 +117,7 @@ async function aEv(ev, ses) {
     return
   }
   if (ev == 'SIGNED_OUT') {
+    LGI = undefined;
     AU.u = null;
     AU.ld = 0;
     AU.perr = 0;

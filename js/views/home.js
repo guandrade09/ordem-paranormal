@@ -4,7 +4,7 @@
 
 // Lista de personagens
 const home = () =>
-  `<div class=fade>${gear(1)}<h1 class=logo>ORDEM<b>PARANORMAL</b><i>RPG</i></h1><div class=bar>Fichas de Agente</div>${
+  `<div class=fade>${gear(1)}${logoH()}<div class=bar>Fichas de Agente</div>${
     S.chars.filter(c => !c.npc)
       .map(c => `<div class="card row" onclick="S.cid=${c.id};S.v='sheet';S.tab=0;R()">${ph(c)}<div><b>${
              c.name}</b><br><small>${c.classe} · ${c.origem} · NEX ${
@@ -14,7 +14,7 @@ const home = () =>
 
 // Menu do Mestre
 const mestre = () => `<div class=fade>${
-  gear(1)}<h1 class=logo>ORDEM<b>PARANORMAL</b><i>RPG</i></h1><div class=bar>Área do Mestre</div><div class=grid2>${
+  gear(1)}${logoH()}<div class=bar>Área do Mestre</div><div class=grid2>${
   MS.map(m => `<button class=card onclick="go('${m}')">${m}</button>`).join('')}</div></div>`;
 
 // Tela da conta

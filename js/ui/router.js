@@ -41,10 +41,13 @@ const afNote = (t, e, c) => {
     SYM[e](tt)}</svg></span><div class=box style="background:${vb};color:${vt};border-color:${vd}">${e}</div></div>`
 };
 
+// Logo "Ordem Paranormal" (imagem) — substitui todo título de texto "Ordem Paranormal"
+const logoH = (st = '') => `<img class=logo-img src="img/logo.webp" alt="Ordem Paranormal"${st ? ` style="${st}"` : ''}>`;
+
 // Botão de configurações
 const gear = (back) => `<div class=topb><button class="gear" aria-label="Configurações" onclick="cfgT()"><i class=gi></i></button>${
   back ? `<button onclick="S.v='start';R()">← Início</button>` : ''}</div>`;
 
 // Tela inicial
 const start = () => `<div class=fade>${
-  gear()}<h1 class=logo style="margin:60px 0 40px">ORDEM<b>PARANORMAL</b><i>RPG</i></h1><div style="text-align:center;margin:-30px 0 24px"><small style="border:1px solid currentColor;padding:2px 8px;border-radius:10px;opacity:.75">BETA v${APP_VERSION}</small></div><div class=bar>Quem é você?</div><button class="card big2" onclick="S.v='home';R()"><b>Jogador</b><br><small>Crie e jogue com suas fichas de agente.</small></button><button class="card big2" onclick="S.v='mestre';R()"><b>Mestre</b><br><small>Monstruário, grimório, NPCs, itens e mais.</small></button></div>`;
+  gear()}${logoH('margin:34px auto 14px')}<div style="text-align:center;margin:0 0 24px"><small style="border:1px solid currentColor;padding:2px 8px;border-radius:10px;opacity:.75">BETA v${APP_VERSION}</small></div><div class=bar>Quem é você?</div><button class="card big2" onclick="S.v='home';R()"><b>Jogador</b><br><small>Crie e jogue com suas fichas de agente.</small></button><button class="card big2" onclick="S.v='mestre';R()"><b>Mestre</b><br><small>Monstruário, grimório, NPCs, itens e mais.</small></button></div>`;

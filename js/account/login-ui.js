@@ -25,6 +25,7 @@ async function aOut() {
   AU.msg = '';
   AU.ok = '';
   AU.perr = 0;
+  LGI = undefined;  // ao entrar de novo, sorteia outra imagem de login
   syncPut();
   cfgC();
   save();
@@ -106,10 +107,31 @@ async function aSub() {
   if (b2) b2.disabled = false
 }
 
+// Imagem sorteada da tela de login (4 opções): sorteia ao entrar/recarregar, nunca repete a anterior;
+// dentro da mesma visita (entrar / criar conta / esqueci a senha) a imagem e o lugar dela não mudam.
+const LGN = 4, LGH = 410;  // LGH = altura reservada do formulário (maior modo), mantém a imagem sempre no mesmo lugar
+let LGI;
+function lgPick() {
+  let last = -1;
+  try {
+    last = parseInt(localStorage.getItem('op_lgi'), 10)
+  } catch (e) {
+  }
+  // sorteia entre as outras imagens (nunca a anterior), sem laço que possa travar
+  const n = last >= 0 && last < LGN ? (last + 1 + Math.floor(Math.random() * (LGN - 1))) % LGN :
+                                      Math.floor(Math.random() * LGN);
+  try {
+    localStorage.setItem('op_lgi', n)
+  } catch (e) {
+  }
+  LGI = n
+}
+
 // Tela de login
 function loginv() {
-  const h = (x) =>
-    `<div class=fade style="max-width:420px;margin:0 auto"><div class=bar>Ordem Paranormal</div>${x}</div>`;
+  if (LGI === undefined) lgPick();
+  const h = (x) => `<div style="max-width:420px;margin:0 auto">${logoH()}<div class=lgform style="--lgh:${LGH}px"><div class=fade>${
+    x}</div></div><div class=lgimg><img src="img/login/l${LGI + 1}.webp" alt=""></div></div>`;
   // carregando: só os símbolos. Sem internet / servidor inalcançável: símbolos + "SEM TRANSMISSÃO..." e,
   // no canto inferior esquerdo, o botão "Usar offline". Nada de título, borda ou mensagem de erro.
   if (AU.ld) return ldr(semNet(), 0, semNet());

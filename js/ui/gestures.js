@@ -25,6 +25,7 @@ document.addEventListener('touchend', e => {
   const s = SW, t = e.changedTouches[0];
   SW = null;
   if (!s || !t || document.querySelector('.ldr.full')) return;
+  if (typeof authGate == 'function' && authGate()) return;  // tela de login: sem sidebar
   const dx = t.clientX - s.x, dy = t.clientY - s.y, open = $('#cfg').classList.contains('open');
   if (Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * .6 || Date.now() - s.t > 800) return;
   if ($('#m').className) return;  // janela aberta

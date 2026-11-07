@@ -28,6 +28,19 @@ const res = app.ev(`(() => {
   T('fora do modo offline a sidebar NÃO tem o botão', /cfgon/.test($('#cfg').innerHTML), false);
   AU.off = 1; AU.fail = 0; AU.u = null; aOn();
   T('"Ficar online" sai do modo offline e tenta conectar (mostra o loading)', [AU.off, AU.ld], [0, 1]);
+  // --- login: logo + imagem sorteada ---
+  AU.ld = 0; AU.fail = 0; AU.perr = 0; AU.off = 0; AU.u = null; AU.mode = 'in'; LGI = undefined;
+  const im = () => (loginv().match(/img\\/login\\/l(\\d)\\.webp/) || [])[1];
+  const i1 = im(); AU.mode = 'up'; const i2 = im(); AU.mode = 'forgot'; const i3 = im(); AU.mode = 'in';
+  T('login: mostra o logo (imagem) e uma das 4 imagens; a imagem não muda ao trocar de modo', [/img\\/logo\\.webp/.test(loginv()), /^[1-4]$/.test(i1), i1 == i2 && i2 == i3], [true, true, true]);
+  T('login: a altura do formulário é reservada (imagem sempre no mesmo lugar)', /class=lgform style="--lgh:\\d+px"/.test(loginv()), true);
+  let q = 0; Math.random = () => ((q++ * 0.37) % 1);
+  let repetiu = 0, vistos = new Set(), ant = i1;
+  for (let k = 0; k < 60; k++) { LGI = undefined; const n = im(); if (n == ant) repetiu++; vistos.add(n); ant = n; }
+  T('login: ao entrar de novo / recarregar sorteia outra imagem, nunca a anterior', [repetiu, vistos.size], [0, 4]);
+  T('tela do loading não mostra imagem de login', /img\\/login/.test(ldr(1, 0, 1)), false);
+  S.v = 'start'; const t1 = start(); S.v = 'home'; const t2 = home(); const t3 = mestre();
+  T('título "Ordem Paranormal" é a imagem em Início, Jogador e Mestre (sem texto antigo)', [[t1, t2, t3].every(x => /img\\/logo\\.webp/.test(x)), [t1, t2, t3].some(x => /ORDEM<b>|class=logo>/.test(x))], [true, false]);
   return R_; })()`);
 const lista = Array.from(res), falhas = lista.filter((r) => !r.ok);
 lista.forEach((r) => console.log(`${r.ok ? 'OK   ' : 'FALHA'} | ${r.n}${r.d ? ' → ' + r.d : ''}`));

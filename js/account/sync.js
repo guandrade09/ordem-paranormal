@@ -28,6 +28,9 @@ async function pull() {
     rids.add(r.cid);
     const l = loc.get(r.cid);
     if (l && SYNC.h[r.cid] !== hs(JSON.stringify(l))) return;
+    // ficha que já foi sincronizada, mas não existe mais aqui = apagada neste aparelho (talvez offline):
+    // não ressuscita; o push seguinte apaga na conta
+    if (!l && r.cid in SYNC.h) return;
     const c = r.data;
     if (l)
       S.chars[S.chars.indexOf(l)] = c;

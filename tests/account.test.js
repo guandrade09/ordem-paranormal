@@ -15,7 +15,7 @@ const query=(tb)=>{const q={tb,f:{},op:'sel'};const api={select(){q.op='sel';ret
  then(res,rej){return Promise.resolve().then(()=>{if(FAIL)return{data:null,error:{message:'Failed to fetch'}};
   if(!SESS)return{data:null,error:{message:'JWT'}};const uid=SESS.user.id;// RLS
   const T=tb=='characters'?DB.chars:DB.st;
-  if(q.op=='sel'){let rows=Object.values(T).filter(r=>r.user_id==uid&&(!q.f.user_id||q.f.user_id==uid));if(q.f.user_id&&q.f.user_id!=uid)rows=[];return{data:q.single?(rows[0]||null):rows,error:null}}
+  if(q.op=='sel'){let rows=Object.values(T).filter(r=>r.user_id==uid&&(!q.f.user_id||q.f.user_id==uid));if(q.f.user_id&&q.f.user_id!=uid)rows=[];rows=JSON.parse(JSON.stringify(rows));/* servidor real devolve cópias, não referências */return{data:q.single?(rows[0]||null):rows,error:null}}
   if(q.op=='up'){for(const r of [].concat(q.rows)){if(r.user_id!=uid)return{error:{message:'RLS violation'}};T[r.user_id+'/'+(r.cid||'')]={...r,data:JSON.parse(JSON.stringify(r.data))}}LOG.push('up:'+tb+':'+[].concat(q.rows).length);return{error:null}}
   if(q.op=='del'){const ids=q.f['in:cid'];for(const k of Object.keys(T))if(T[k].user_id==uid&&ids.includes(T[k].cid))delete T[k];LOG.push('del:'+ids.join(','));return{error:null}}}).then(res,rej)}};return api};
 const auth={
@@ -87,6 +87,12 @@ async function main() {
  T('Sem rede: mostra aviso e tenta de novo depois, sem perder a ficha local','status ⚠; ficha 114 segue local',X.SYNC().st+' | local='+X.S().chars.length,/⚠/.test(X.SYNC().st)&&X.S().chars.length==3);
  FAIL=false;clearTimeout(X.SYNC().t);await X.push();
  T('Rede volta: sincroniza o que ficou pendente','114 no servidor',Object.values(DB.chars).map(r=>r.cid).sort().join(','),!!DB.chars['u0/114']&&/Salvo/.test(X.SYNC().st));
+ // modo "Usar offline" -> "Ficar online": o que foi mexido offline NÃO se perde (nem é sobrescrito) e vai para a conta
+ X.AU().off=1;
+ X.S().chars.find(c=>c.id==111).n='Editada OFFLINE';X.S().chars.push({id:115,n:'Criada OFFLINE'});X.S().chars=X.S().chars.filter(c=>c.id!=113);X.save();await sleep(1500);
+ T('Offline: nada é enviado enquanto estiver no modo offline','servidor ainda com o nome antigo e sem a 115',DB.chars['u0/111'].data.n+' | 115='+!!DB.chars['u0/115'],DB.chars['u0/111'].data.n=='Local A editada'&&!DB.chars['u0/115']&&!!DB.chars['u0/113']);
+ app.g.aOn();await sleep(2600);
+ T('Ficar online: edição, criação e exclusão feitas offline vão para a conta; nada local é sobrescrito','111 editada, 115 criada, 113 apagada; local igual',DB.chars['u0/111'].data.n+' | '+Object.values(DB.chars).map(r=>r.cid).sort().join(',')+' | local='+X.S().chars.map(c=>c.id+':'+c.n).sort().join(','),DB.chars['u0/111'].data.n=='Editada OFFLINE'&&!!DB.chars['u0/115']&&!DB.chars['u0/113']&&X.S().chars.find(c=>c.id==111).n=='Editada OFFLINE'&&!X.S().chars.some(c=>c.id==113)&&!X.AU().off);
  // sair
  CONF=true;await X.aOut();await sleep(30);
  T('Sair: encerra sessão, apaga fichas locais deste aparelho e volta ao login','sem usuário; chars=[]; login visível',(X.AU().u?'logado':'deslogado')+' | chars='+X.S().chars.length+' | login='+/id=aem/.test(E.innerHTML),!X.AU().u&&X.S().chars.length==0&&/id=aem/.test(E.innerHTML)&&Object.keys(DB.chars).length==3);
@@ -111,10 +117,10 @@ async function main() {
  set('apw','senha1234');set('apw2','senha1234');await X.aSub();T('Nova senha igual à atual é recusada pelo servidor','"precisa ser diferente"',X.AU().msg,/diferente/.test(X.AU().msg));
  set('apw','novaSenha99');set('apw2','novaSenha99');await X.aSub();await sleep(80);
  T('Nova senha salva e usuário entra no app','senha trocada; logado; gate livre',DB.users['gustavo@teste.com'].pw+' | '+(X.AU().u?'logado':'não')+' | rec='+X.AU().rec,DB.users['gustavo@teste.com'].pw=='novaSenha99'&&!!X.AU().u&&!X.AU().rec&&!X.authGate());
- T('Fichas do usuário voltam após o login (dados ficaram na conta)','111 e 114 e 113',X.S().chars.map(c=>c.id).sort().join(','),X.S().chars.length==3);
+ T('Fichas do usuário voltam após o login (dados ficaram na conta)','111, 114 e 115 (113 foi apagada offline)',X.S().chars.map(c=>c.id).sort().join(','),X.S().chars.map(c=>c.id).sort().join(',')=='111,114,115');
  // segurança no HTML
  X.aMode('in');set('aem','"><img src=x onerror=alert(1)>');X.AU().em='"><img src=x onerror=alert(1)>';X.AU().msg='<b>x</b>';const h=X.loginv();
- T('Entradas exibidas são escapadas (anti-XSS) na tela de login','sem <img> nem <b> crus',/<img/.test(h)||/<b>x/.test(h)?'vulnerável':'escapado',!/<img/.test(h)&&!/<b>x/.test(h));
+ T('Entradas exibidas são escapadas (anti-XSS) na tela de login','sem <img src=x> nem <b>x crus',/<img src=x/.test(h)||/<b>x/.test(h)?'vulnerável':'escapado',!/<img src=x/.test(h)&&!/<b>x/.test(h));
  T('Chave exposta no código é só a "anon" (CFG tem url+key; nenhuma service_role)','sem "service_role" no código',/service_role/.test(CODIGO)?'achou':'ok',!/service_role/.test(CODIGO));
  return OUT;
 }

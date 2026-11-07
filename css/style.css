@@ -184,6 +184,32 @@ body {
 }
 
 /* ===== Marca e títulos ===== */
+.logo-img {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  margin: 8px auto;
+}
+/* login: imagem sorteada fixa embaixo do formulário (caixa de altura fixa: não muda de lugar ao trocar de modo) */
+.lgform {
+  min-height: var(--lgh, 0);
+}
+.lgform #amsg {
+  min-height: 46px;
+}
+.lgimg {
+  height: 320px;
+  margin-top: 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.lgimg img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
 .logo {
   font: 900 30px Cinzel,serif;
   text-align: center;
