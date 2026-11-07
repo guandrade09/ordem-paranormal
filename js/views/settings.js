@@ -74,7 +74,7 @@ function cfgR() {
         '☀️ Tema claro' :
         '🌙 Tema escuro'}</button><div class=bar style="margin-top:14px">Dados (beta)</div><button onclick="dExp()">💾 Exportar backup</button><button onclick="$('#dimp').click()">📂 Importar backup</button><small style="display:block;padding:6px 2px;opacity:.7">${
       SB_ON && AU.u ?
-        `<span class=sst>${aesc(SYNC.st || '')}</span> · ${aesc(AU.u.email || '')}<br>` :
+        `<span class=sst>${sstH()}</span> · ${aesc(AU.u.email || '')}<br>` :
         'Suas fichas ficam salvas só neste navegador. Exporte um backup de vez em quando.<br>'}${VER}</small>`
 }
 

@@ -53,7 +53,7 @@ const hs =
         }
       },
       authGate = () => SB_ON && !AU.off && (!AU.u || AU.rec || AU.ld || AU.perr),
-      stR = () => document.querySelectorAll('.sst').forEach(e => {e.textContent = SYNC.st || ''}),
+      stR = () => document.querySelectorAll('.sst').forEach(e => {e.innerHTML = sstH()}),
       aV =
         id => {
           const e = $('#' + id);

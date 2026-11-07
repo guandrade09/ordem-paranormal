@@ -1312,3 +1312,65 @@ body[data-thel=conhecimento] .thh .thsy img {
 .thc[data-el=conhecimento].threl .thn {
   text-shadow: none;
 }
+
+/* ===== Loading (símbolos em sequência) e "sem transmissão" ===== */
+.ldr {
+  background: #121212;
+  border: 2px solid #000;
+  padding: 26px 10px 22px;
+  text-align: center;
+}
+.ldr-sym {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+}
+.ldr-sym img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  animation: ldr 7.5s steps(1, end) infinite;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, .35));
+}
+@keyframes ldr {
+  0% { opacity: 1; }
+  6.6667%, 100% { opacity: 0; }
+}
+.ldr-txt {
+  margin-top: 14px;
+  font: 18px/1.2 'Courier New', ui-monospace, monospace;
+  letter-spacing: 2px;
+  color: #33ff66;
+  text-shadow: 0 0 6px rgba(51, 255, 102, .7);
+}
+.ldr-dots {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  width: 0;
+  animation: ldrd 1.5s steps(1, end) infinite;
+}
+@keyframes ldrd {
+  0% { width: 0; }
+  25% { width: 1ch; }
+  50% { width: 2ch; }
+  75%, 100% { width: 3ch; }
+}
+.ldr.mini {
+  display: inline-block;
+  border: 0;
+  padding: 2px 8px;
+  vertical-align: middle;
+}
+.ldr.mini .ldr-sym {
+  width: 30px;
+  height: 30px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ldr-sym img { animation: none; }
+  .ldr-sym img:first-child { opacity: 1; }
+  .ldr-dots { animation: none; width: 3ch; }
+}
