@@ -90,16 +90,17 @@ function sbLoad() {
 }
 
 // Inicia o cliente e escuta eventos de autenticação
-async function aInit() {
+async function aInit(quiet) {
   try {
     await sbLoad()
   } catch (e) {
     AU.ld = 0;
     AU.fail = 1;
     AU.msg = 'Não foi possível conectar ao servidor.';
-    R();
+    if (!quiet) R();  // tentativa silenciosa: não redesenha (não reinicia a animação)
     return
   }
+  AU.fail = 0;
   sb = window.supabase.createClient(
     CFG.url, CFG.key, {auth: {storage: stg, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true}});
   sb.auth.onAuthStateChange((ev, ses) => {setTimeout(() => aEv(ev, ses), 0)})
@@ -139,13 +140,16 @@ async function aEv(ev, ses) {
     R()
   }
 }
-async function aEnter() {
-  AU.ld = 1;
-  AU.perr = 0;
-  R();
+async function aEnter(quiet) {
+  if (!quiet) {
+    AU.ld = 1;
+    AU.perr = 0;
+    R()
+  }
   try {
     await pull();
     AU.ld = 0;
+    AU.perr = 0;
     AU.msg = '';
     S.v = 'start';
     S.cid = null;
@@ -155,6 +159,24 @@ async function aEnter() {
     AU.ld = 0;
     AU.perr = 1;
     AU.msg = aerr(e);
+    if (!quiet) R()
+  }
+}
+
+// Escolheu "Usar offline" e agora quer voltar a ficar online (botão na sidebar)
+function aOn() {
+  cfgC();
+  AU.off = 0;
+  AU.msg = '';
+  if (!sb) {
+    AU.fail = 0;
+    AU.ld = 1;
+    R();
+    aInit()
+  } else if (AU.u)
+    aEnter();
+  else {
+    AU.ld = 0;
     R()
   }
 }

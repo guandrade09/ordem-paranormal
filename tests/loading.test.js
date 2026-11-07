@@ -1,6 +1,7 @@
 /** Loading: 15 símbolos em sequência (0,5 s), tela cheia sem título, "SEM TRANSMISSÃO..." só offline, botão offline. */
 const { loadApp } = require('./helpers/app-loader');
-const app = loadApp({ cfg: { url: '', key: '' } });
+const fake = { createClient: () => ({ auth: { onAuthStateChange() {} } }) };
+const app = loadApp({ cfg: { url: 'https://x.supabase.co', key: 'k' }, supabase: fake });
 const res = app.ev(`(() => {
   const R_ = [], T = (n, got, want) => { const ok = JSON.stringify(got) === JSON.stringify(want); R_.push({ n, ok, d: ok ? '' : JSON.stringify(got) + ' ≠ ' + JSON.stringify(want) }); };
   const on = ldr(0), off = ldr(1, 0, 1), mini = ldr(0, 1);
@@ -15,6 +16,18 @@ const res = app.ev(`(() => {
   T('erro ao carregar fichas: mesma tela, sem "Não foi possível carregar suas fichas"', [/ldr-btn/.test(loginv()), /carregar suas fichas/.test(loginv())], [true, false]);
   const g = gear();
   T('ícone da sidebar é a imagem do usuário (máscara), não o emoji', [/class=gi/.test(g), /⚙/.test(g)], [true, false]);
+  AU.u = null; AU.perr = 0; AU.ld = 0; AU.off = 0; AU.fail = 1; AU.rtb = 0;
+  aRetry();
+  T('sem internet: reconecta sozinho (tentativa silenciosa, sem redesenhar)', [AU.rtb, AU.ld], [1, 0]);
+  AU.rtb = 0; AU.off = 1;
+  aRetry();
+  T('depois de "Usar offline" para de tentar reconectar', AU.rtb, 0);
+  cfgR();
+  T('logado offline: sidebar tem o botão "Ficar online"', /class=cfgon[^>]*>Ficar online/.test($('#cfg').innerHTML), true);
+  AU.off = 0; cfgR();
+  T('fora do modo offline a sidebar NÃO tem o botão', /cfgon/.test($('#cfg').innerHTML), false);
+  AU.off = 1; AU.fail = 0; AU.u = null; aOn();
+  T('"Ficar online" sai do modo offline e tenta conectar (mostra o loading)', [AU.off, AU.ld], [0, 1]);
   return R_; })()`);
 const lista = Array.from(res), falhas = lista.filter((r) => !r.ok);
 lista.forEach((r) => console.log(`${r.ok ? 'OK   ' : 'FALHA'} | ${r.n}${r.d ? ' → ' + r.d : ''}`));

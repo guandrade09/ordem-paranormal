@@ -141,6 +141,15 @@ html {
   font-size: 16px;
   padding: 10px;
 }
+/* "Ficar online": só aparece quando se escolheu usar offline; canto inferior esquerdo da sidebar */
+#cfg .cfgon {
+  margin-top: auto;
+  align-self: flex-start;
+  width: auto;
+  font-size: 14px;
+  padding: 8px 12px;
+  margin-bottom: max(0px, env(safe-area-inset-bottom));
+}
 #cfgb {
   position: fixed;
   inset: 0;
