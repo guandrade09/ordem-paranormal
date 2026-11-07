@@ -17,6 +17,10 @@ const res = app.ev(`(() => {
   tmpShow(i); T('o aviso mostra o valor e NÃO altera PE nem temporários', [/\\+2 PE temporários por acerto/.test(t()), c.pe === pe0, (c.t.pe || 0) === tp0], [true, true, true]);
   c.rit.push('Forma Monstruosa'); c.pe = 20; const d0 = K(c).def; cast('Forma Monstruosa', 0);
   T('conjurar Forma Monstruosa mostra o valor e não aplica Defesa/PV sozinho', [/\\+5 de Defesa e 30 PV temporários/.test(t()), K(c).def === d0, (c.t.pv || 0) === 0], [true, true, true]);
+  const k0 = K(c); c.ab.push({ n: 'Potencial Aprimorado', t: 'x' }); c.ab.push({ n: 'Encarar a Morte', t: 'x' });
+  const k1 = K(c); c.af = 'Morte'; const k2 = K(c); c.af = null;
+  T('Potencial Aprimorado: +1 PE por nível (NEX 30% = +6; +12 com afinidade)', [k1.pe - k0.pe, k2.pe - k0.pe], [6, 12]);
+  T('Encarar a Morte: +1 PE/rodada (+2 com afinidade), vale também para rituais', [k1.rod - k0.rod, k2.rod - k0.rod, k1.rodR - k0.rodR], [1, 2, 1]);
   return R_; })()`);
 const lista = Array.from(res), falhas = lista.filter((r) => !r.ok);
 lista.forEach((r) => console.log(`${r.ok ? 'OK   ' : 'FALHA'} | ${r.n}${r.d ? ' → ' + r.d : ''}`));

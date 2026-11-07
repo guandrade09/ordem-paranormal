@@ -26,14 +26,17 @@ function K(c) {
                        cl.san[0] / (c.origem == 'Cultista Arrependido' ? 2 : 1) + s * cl.san[1]
                      ],
         pr_ = Math.max(1, lv), pd = c.origem == 'Policial' ? 2 : 0,
-        td = (c.sust || []).reduce((a, x) => a + (x.tdef || 0), 0);
+        td = (c.sust || []).reduce((a, x) => a + (x.tdef || 0), 0),
+        // Poderes de Morte: Encarar a Morte (+1 PE/rodada; +2 com afinidade) e Potencial Aprimorado (+1 PE por nível; +2 com afinidade)
+        afM = c.af == 'Morte', encM = hasAb(c, 'Encarar a Morte') ? (afM ? 2 : 1) : 0,
+        potM = hasAb(c, 'Potencial Aprimorado') ? lv * (afM ? 2 : 1) : 0;
   return {
     pv: z[0] + (c.origem == 'Desgarrado' ? lv : 0) + (c.trail == 'Tropa de Choque' && n >= 10 ? lv : 0) +
         (hasAb(c, 'Sangue de Ferro') ? 3 + lv : 0) + cf.pv,
-      pe: z[1] + (c.origem == 'Universitário' ? uni(n) : 0) + cf.pe, san: z[2] + (c.origem == 'Vítima' ? lv : 0) - (c.stn || 0),
-      rod: pr_ + (c.origem == 'Universitário' ? 1 : 0),
+      pe: z[1] + (c.origem == 'Universitário' ? uni(n) : 0) + potM + cf.pe, san: z[2] + (c.origem == 'Vítima' ? lv : 0) - (c.stn || 0),
+      rod: pr_ + (c.origem == 'Universitário' ? 1 : 0) + encM,
       // limite de PE por rodada só para rituais (Presença Poderosa soma a Presença)
-      rodR: pr_ + (c.origem == 'Universitário' ? 1 : 0) + (hasAb(c, 'Presença Poderosa') ? v.PRE : 0),
+      rodR: pr_ + (c.origem == 'Universitário' ? 1 : 0) + encM + (hasAb(c, 'Presença Poderosa') ? v.PRE : 0),
       // DT de ritual = 10 + limite de PE por rodada + atributo-base (Presença) (+5 com Rituais Eficientes)
       dt: 10 + pr_ + (c.origem == 'Universitário' ? 1 : 0) + ve.PRE + (hasAb(c, 'Rituais Eficientes') ? 5 : 0) + cf.dt,
       def: 10 + ve.AGI + pr.d + td + pd + (hasAb(c, 'Reflexos Defensivos') ? 2 : 0) + ((c.t && c.t.def) || 0) + cf.def, pdef: pd,
