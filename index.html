@@ -21,7 +21,7 @@
   <div id="cfgb" onclick="cfgC()"></div>
   <div id="cfg"></div>
   <div id="app"></div>
-  <div id="m" onclick="if(event.target==this&&!S.lv)cm()"></div>
+  <div id="m" onclick="if(event.target==this){S.lv?lvCancel(1):cm()}"></div>
   <div id="t"></div>
   <div id="fx"></div>
   <input type="file" id="dimp" accept=".json,application/json" style="display:none" onchange="dImp(this.files[0]);this.value=''">

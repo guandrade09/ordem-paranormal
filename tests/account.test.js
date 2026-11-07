@@ -93,6 +93,12 @@ async function main() {
  T('Offline: nada é enviado enquanto estiver no modo offline','servidor ainda com o nome antigo e sem a 115',DB.chars['u0/111'].data.n+' | 115='+!!DB.chars['u0/115'],DB.chars['u0/111'].data.n=='Local A editada'&&!DB.chars['u0/115']&&!!DB.chars['u0/113']);
  app.g.aOn();await sleep(2600);
  T('Ficar online: edição, criação e exclusão feitas offline vão para a conta; nada local é sobrescrito','111 editada, 115 criada, 113 apagada; local igual',DB.chars['u0/111'].data.n+' | '+Object.values(DB.chars).map(r=>r.cid).sort().join(',')+' | local='+X.S().chars.map(c=>c.id+':'+c.n).sort().join(','),DB.chars['u0/111'].data.n=='Editada OFFLINE'&&!!DB.chars['u0/115']&&!DB.chars['u0/113']&&X.S().chars.find(c=>c.id==111).n=='Editada OFFLINE'&&!X.S().chars.some(c=>c.id==113)&&!X.AU().off);
+ // subida de NEX em andamento: a ficha pela metade NÃO vai para a conta; ao concluir/cancelar vai o resultado
+ const upN=()=>LOG.filter(x=>x.startsWith('up:characters')).length;
+ X.S().lv={bak:'{}',cid:111,i:0,x:{},st:[]};X.S().chars.find(c=>c.id==111).n='Meio da subida';X.save();await sleep(1700);
+ T('Durante a subida de NEX nada é enviado para a conta','servidor ainda sem "Meio da subida"',DB.chars['u0/111'].data.n,DB.chars['u0/111'].data.n=='Editada OFFLINE');
+ X.S().lv=null;X.S().chars.find(c=>c.id==111).n='Editada OFFLINE';X.save();await sleep(1700);
+ T('Depois de cancelar (ficha igual à da conta) continua tudo igual','servidor igual ao local',DB.chars['u0/111'].data.n,DB.chars['u0/111'].data.n=='Editada OFFLINE');
  // sair
  CONF=true;await X.aOut();await sleep(30);
  T('Sair: encerra sessão, apaga fichas locais deste aparelho e volta ao login','sem usuário; chars=[]; login visível',(X.AU().u?'logado':'deslogado')+' | chars='+X.S().chars.length+' | login='+/id=aem/.test(E.innerHTML),!X.AU().u&&X.S().chars.length==0&&/id=aem/.test(E.innerHTML)&&Object.keys(DB.chars).length==3);

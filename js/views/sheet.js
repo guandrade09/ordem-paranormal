@@ -106,6 +106,7 @@ function mut(f) {
 
 // Desfazer
 function undo() {
+  if (S.lv) return;  // no meio da subida de NEX: use o ✕ para cancelar
   let c = cur(), s = c.hist.pop();
   if (!s) return toast('Nada a desfazer');
   let h = c.hist;

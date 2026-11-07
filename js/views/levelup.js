@@ -25,8 +25,10 @@ function up() {
 }
 function upd() {
   let c = cur();
+  // cópia da ficha ANTES de qualquer mudança: se a pessoa sair/cancelar, tudo volta como estava (lvCancel/lvDrop)
+  const bak = JSON.stringify(c);
   if (c.classe == 'Mundano') {
-    S.lv = {n: 5, sg: 0, i: 0, x: {}, mun: 1, st: [{t: 'cls'}, {t: 'attr'}]};
+    S.lv = {n: 5, sg: 0, i: 0, x: {}, mun: 1, st: [{t: 'cls'}, {t: 'attr'}], bak, cid: c.id};
     mut(z => {});
     return
   }
@@ -36,13 +38,35 @@ function upd() {
     let b = K(z);
     z.pv += b.pv - a.pv;
     z.pe += b.pe - a.pe;
-    S.lv = {n, sg: b.san - a.san, i: 0, x: {}, st: stp(z.classe, n)};
+    S.lv = {n, sg: b.san - a.san, i: 0, x: {}, st: stp(z.classe, n), bak, cid: c.id};
     if ([25, 55, 85].includes(n) && hasAb(z, 'Saber Ampliado')) S.lv.st.push({t: 'rit', sa: 1});
     if ([55, 85].includes(n) && hasAb(z, 'Grimório Ritualístico')) {
       S.lv.gm = 0;
       S.lv.st.push({t: 'grm', cnt: 1})
     }
   })
+}
+// Desiste da subida de NEX: devolve a ficha EXATAMENTE como estava antes (NEX, PV, PE, atributos, poderes… nada muda).
+// Só vale o que a pessoa CONFIRMOU até o fim da subida.
+function lvDrop() {
+  const L = S.lv;
+  if (!L) return;
+  if (L.bak) {
+    const c = S.chars.find(x => x.id == L.cid);
+    if (c) {
+      Object.keys(c).forEach(k => delete c[k]);
+      Object.assign(c, JSON.parse(L.bak))
+    }
+  }
+  S.lv = null
+}
+function lvCancel(ask) {
+  const L = S.lv;
+  if (!L || !L.bak) return;  // subida antiga (sem cópia): não dá para desfazer, segue até o fim
+  if (ask && L.i > 0 && !confirm('Cancelar a subida de NEX? Nada será alterado na ficha.')) return;
+  lvDrop();
+  cm();
+  R()
 }
 const lvNext = () => {
   S.lv.i++;
@@ -64,7 +88,7 @@ function fin2() {
 function lvStep() {
   let c = cur(), L = S.lv, s = L.st[L.i];
   if (!s) return fin2();
-  let x = L.x, h = `<div class=bar>NEX ${L.n}% · ${c.classe}</div>`;
+  let x = L.x, h = `${L.bak ? '<button class=xc aria-label="Cancelar" style="z-index:3" onclick="lvCancel(1)">✕</button>' : ''}<div class=bar style="margin-right:${L.bak ? 44 : 0}px">NEX ${L.n}% · ${c.classe}</div>`;
   if (s.t == 'info')
     h += `<p>${md(s.e ? engTxt(L.n) : infoTxt(c, L.n))}</p><button class=btn onclick="lvNext()">Confirmar</button>`;
   else if (s.t == 'trail')

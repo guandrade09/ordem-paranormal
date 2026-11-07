@@ -61,6 +61,7 @@ async function pull() {
 // Agenda envio (debounce)
 function syncSoon() {
   if (!SB_ON || !sb || !AU.u) return;
+  if (S.lv && S.lv.bak) return;  // subida de NEX em andamento: não envia ficha pela metade (envia ao concluir/cancelar)
   clearTimeout(SYNC.t);
   SYNC.t = setTimeout(push, 1200)
 }
@@ -68,6 +69,7 @@ function syncSoon() {
 // Envia alterações pendentes (upsert/delete)
 async function push() {
   if (!sb || !AU.u || AU.rec || AU.off || S.uid != AU.u.id) return;
+  if (S.lv && S.lv.bak) return;  // idem: nada pela metade
   if (SYNC.busy) {
     SYNC.again = 1;
     return

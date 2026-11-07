@@ -8,6 +8,11 @@ function R() {
     $('#app').innerHTML = loginv();
     return
   }
+  // saiu da ficha no meio da subida de NEX: desiste e devolve a ficha como estava
+  if (S.lv && S.lv.bak && (S.v != 'sheet' || S.lv.cid != S.cid)) {
+    lvDrop();
+    cm()
+  }
   try {
     MDC = S.v == 'create' ? S.d : (S.v == 'sheet' || S.v == 'npc') ? cur() : null
   } catch (e) {
