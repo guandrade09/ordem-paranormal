@@ -20,6 +20,13 @@ function K(c) {
             PR[bs].r,
           n: [bs != 'Nenhuma' ? bs : '', sh ? 'Escudo' : ''].filter(Boolean).join(' + ') || '—'
         };
+  // proteção homebrew (it.hp): vale se for melhor que a do livro (só se usa uma proteção)
+  const hpb = (c.inv || []).filter(x => x.hp).sort((a, b) => b.hp.d - a.hp.d)[0];
+  if (hpb && hpb.hp.d > PR[bs].d) {
+    pr.d = hpb.hp.d + sh + mdf;
+    pr.r = hpb.hp.r || '';
+    pr.n = [hpb.n, sh ? 'Escudo' : ''].filter(Boolean).join(' + ')
+  }
   const z = n == 0 ? [8 + v.VIG, 1 + v.PRE, 8] :
                      [
                        cl.pv[0] + v.VIG + s * (cl.pv[1] + v.VIG), cl.pe[0] + v.PRE + s * (cl.pe[1] + v.PRE),
@@ -54,6 +61,6 @@ const ph = c => c.photo ? `<img class=ph src="${c.photo}">` : '<div class=ph>?</
 
 // Itens do menu do Mestre
 const MS = [
-  'Monstruário (Ameaças)', 'Grimório Paranormal', 'Escudo do Mestre', 'NPCs', 'Inventário de Itens e Armas',
+  'Monstruário (Ameaças)', 'Grimório Paranormal', 'Escudo do Mestre', 'NPCs', 'Inventário de Itens e Armas', 'Homebrew',
   'Criador de Combates', 'Criador de Cenas de Investigação'
 ];

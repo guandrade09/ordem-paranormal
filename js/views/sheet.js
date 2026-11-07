@@ -98,7 +98,7 @@ function art(k, n) {
 // Alterar a ficha e salvar
 function mut(f) {
   let c = cur();
-  c.hist.push(JSON.stringify({...c, hist: []}));
+  c.hist.push(JSON.stringify({...c, hist: [], hbs: undefined}));  // a cópia do homebrew (hbs) não entra no histórico: ficaria pesada
   if (c.hist.length > 30) c.hist.shift();
   f(c);
   R()
@@ -113,8 +113,10 @@ function undo() {
   // restaura a ficha INTEIRA: apaga também o que foi criado depois do ponto salvo (habilidades `ab`, grau `gr`,
   // afinidade `af`, resistências `res`, grimório `grm`…). Só sobrepor deixava esses campos para trás e, ao refazer
   // a escolha, a habilidade aparecia duplicada.
+  const hb = c.hbs;
   Object.keys(c).forEach(k => delete c[k]);
   Object.assign(c, JSON.parse(s), {hist: h});
+  if (hb) c.hbs = hb;
   R()
 }
 function setT(x) {
@@ -245,7 +247,7 @@ ${fl('PROTEÇÃO', k.pr.n + (c.inv.some(x => PR[x.n] && lack(c, x)) ? ' ⚠️' 
                p[1] ? `<b class=pec>${p[1]} PE</b>` : ''}</div>`)
         .join('')}
 ${curCards(c)}
-${rsheet(c, k)}`
+${hbAbSec(c)}${rsheet(c, k)}`
   }
   if (S.tab == 2) {
     const pt = PT.map((p, i) => c.pp >= p[1] ? i : 0).reduce((a, b) => Math.max(a, b)), P = PT[pt], N = PT[pt + 1],

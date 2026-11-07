@@ -2,6 +2,9 @@
  * Conta: sincronização das fichas com o banco (pull, push, resolução de pendências).
  */
 
+// Estado do usuário que vai para a conta (tema, combate e lápides das fichas excluídas)
+const stO = d => ({theme: S.theme || null, cmb: S.cmb || null, del: d && d.length ? d : undefined});
+
 // Baixa fichas da conta e mescla com as locais
 async function pull() {
   const u = AU.u;
@@ -17,20 +20,27 @@ async function pull() {
     S.chars = [];
     S.cid = null;
     S.cmb = null;
+    S.dl = [];
+    S.trash = [];
+    S.camps = [];
     SYNC.h = {}
   } else if (!S.uid && S.chars.length &&
     !confirm('Encontramos ' + S.chars.length +
       ' ficha(s) salva(s) neste aparelho. Importar para a sua conta?\n\nOK = importar · Cancelar = descartar'))
     S.chars = [];
   S.uid = u.id;
-  const loc = new Map(S.chars.map(c => [String(c.id), c])), rids = new Set();
+  const loc = new Map(S.chars.map(c => [String(c.id), c])), rids = new Set(),
+        rs = (b.data && b.data.data) || null, rdel = new Set((rs && rs.del) || []),
+        stSame = SYNC.h['#st'] === undefined || SYNC.h['#st'] === hs(JSON.stringify(stO(S.dl || [])));
+  // lápides: fichas excluídas de propósito (neste ou em outro aparelho) — é a ÚNICA coisa que apaga ficha
+  S.dl = [...new Set((S.dl || []).concat([...rdel]))].slice(-200);
+  const dl = new Set(S.dl);
   (a.data || []).forEach(r => {
     rids.add(r.cid);
     const l = loc.get(r.cid);
-    if (l && SYNC.h[r.cid] !== hs(JSON.stringify(l))) return;
-    // ficha que já foi sincronizada, mas não existe mais aqui = apagada neste aparelho (talvez offline):
-    // não ressuscita; o push seguinte apaga na conta
-    if (!l && r.cid in SYNC.h) return;
+    if (l && SYNC.h[r.cid] !== hs(JSON.stringify(l))) return;  // editada aqui: vale a versão daqui
+    if (!l && dl.has(r.cid)) return;  // excluída de propósito: o push seguinte apaga na conta
+    // (ficha que sumiu daqui SEM lápide é restaurada da conta: sumir nunca é apagar)
     const c = r.data;
     if (l)
       S.chars[S.chars.indexOf(l)] = c;
@@ -39,18 +49,27 @@ async function pull() {
     SYNC.h[r.cid] = hs(JSON.stringify(c))
   });
   S.chars = S.chars.filter(c => {
-    const k = String(c.id);
-    return rids.has(k) || !(k in SYNC.h) || SYNC.h[k] !== hs(JSON.stringify(c))
+    const k = String(c.id), sy = SYNC.h[k] === hs(JSON.stringify(c));
+    if (rdel.has(k)) {
+      if (sy) {
+        chTrash(c);  // excluída em outro aparelho e ninguém mexeu aqui: sai (fica na Lixeira)
+        delete SYNC.h[k];
+        return false
+      }
+      S.dl = S.dl.filter(x => x != k);  // mexida aqui depois: a edição vence a exclusão
+      return true
+    }
+    if (!rids.has(k)) delete SYNC.h[k];  // não está na conta (e sem lápide): NÃO apaga, só reenvia no próximo push
+    return true
   });
-  const stN = () => hs(JSON.stringify({theme: S.theme || null, cmb: S.cmb || null})), rs = b.data && b.data.data;
-  if (rs && (SYNC.h['#st'] === undefined || SYNC.h['#st'] === stN())) {
+  if (rs && stSame) {
     if (rs.theme !== undefined) S.theme = rs.theme || undefined;
     if (rs.cmb) S.cmb = rs.cmb;
     try {
       if (S.theme) document.documentElement.dataset.theme = S.theme
     } catch (e) {
     }
-    SYNC.h['#st'] = stN()
+    SYNC.h['#st'] = hs(JSON.stringify(stO([...rdel])))  // se S.dl tiver lápide que a conta não tem, o push envia
   }
   if (!cur()) S.cid = null;
   syncPut();
@@ -80,8 +99,9 @@ async function push() {
     nh[k] = v;
     if (SYNC.h[k] !== v) up.push({user_id: uid, cid: k, data: c})
   });
-  const del = Object.keys(SYNC.h).filter(k => k != '#st' && !(k in nh)),
-        st = {theme: S.theme || null, cmb: S.cmb || null}, sv = hs(JSON.stringify(st));
+  // só apaga na conta o que o usuário EXCLUIU (lápide S.dl); ficha que apenas sumiu daqui nunca é apagada
+  const dl = new Set(S.dl || []), del = Object.keys(SYNC.h).filter(k => k != '#st' && !(k in nh) && dl.has(k)),
+        st = stO(S.dl || []), sv = hs(JSON.stringify(st));
   if (!up.length && !del.length && SYNC.h['#st'] === sv) return;
   SYNC.busy = 1;
   SYNC.st = '⏳ Salvando…';
@@ -91,12 +111,12 @@ async function push() {
       const r = await sb.from('characters').upsert(up, {onConflict: 'user_id,cid'});
       if (r.error) throw r.error
     }
-    if (del.length) {
-      const r = await sb.from('characters').delete().eq('user_id', uid).in('cid', del);
+    if (SYNC.h['#st'] !== sv) {  // lápides primeiro: se a exclusão das linhas falhar, outros aparelhos já sabem
+      const r = await sb.from('user_state').upsert({user_id: uid, data: st}, {onConflict: 'user_id'});
       if (r.error) throw r.error
     }
-    if (SYNC.h['#st'] !== sv) {
-      const r = await sb.from('user_state').upsert({user_id: uid, data: st}, {onConflict: 'user_id'});
+    if (del.length) {
+      const r = await sb.from('characters').delete().eq('user_id', uid).in('cid', del);
       if (r.error) throw r.error
     }
     nh['#st'] = sv;

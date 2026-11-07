@@ -11,6 +11,7 @@ const suites = [
   ['Subir de NEX é tudo ou nada (cancelar não muda nada)', 'subida.test.js'],
   ['Loading (símbolos, sem transmissão, ícone da sidebar)', 'loading.test.js'],
   ['Contas (login, senha, sincronização, segurança)', 'account.test.js'],
+  ['Campanhas e homebrew (código, senha, listas, segurança)', 'campanhas.test.js'],
 ];
 let falhou = false;
 for (const [nome, arquivo] of suites) {

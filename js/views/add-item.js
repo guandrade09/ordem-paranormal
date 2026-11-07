@@ -19,7 +19,8 @@ function addIt(x, name, el, k) {
     q: x[3].q,
     am: k == 'amd' ? 1 : 0,
     el: el || (k == 'amd' ? ((x[4] || '').match(/^\*\*(\w+)\./) || [])[1] : null),
-    ds: ''
+    ds: '',
+    ...(x.hp ? {hp: x.hp} : {})
   }))
 }
 

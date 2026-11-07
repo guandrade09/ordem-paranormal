@@ -18,7 +18,8 @@ function R() {
   } catch (e) {
     MDC = null
   }
-  $('#app').innerHTML = ({start, home, mestre, conta, create, sheet, wip, grim, minv, npc: npcv, cmb: cmbv, thr, thd})[S.v]();
+  hbSync();  // homebrew da campanha da ficha aberta entra nas listas do livro
+  $('#app').innerHTML = ({start, home, mestre, conta, create, sheet, wip, grim, minv, npc: npcv, cmb: cmbv, thr, thd, camps: campsv, camp: campv, hbm: hbmv})[S.v]();
   thTheme();
   save();
   if (S.lv && S.v == 'sheet') lvStep()
@@ -55,4 +56,4 @@ const gear = (back) => `<div class=topb><button class="gear" aria-label="Configu
 
 // Tela inicial
 const start = () => `<div class=fade>${
-  gear()}${logoH('margin:34px auto 14px')}<div style="text-align:center;margin:0 0 24px"><small style="border:1px solid currentColor;padding:2px 8px;border-radius:10px;opacity:.75">BETA v${APP_VERSION}</small></div><div class=bar>Quem é você?</div><button class="card big2" onclick="S.v='home';R()"><b>Jogador</b><br><small>Crie e jogue com suas fichas de agente.</small></button><button class="card big2" onclick="S.v='mestre';R()"><b>Mestre</b><br><small>Monstruário, grimório, NPCs, itens e mais.</small></button></div>`;
+  gear()}${logoH('margin:34px auto 14px')}<div style="text-align:center;margin:0 0 24px"><small style="border:1px solid currentColor;padding:2px 8px;border-radius:10px;opacity:.75">BETA v${APP_VERSION}</small></div><div class=bar>Quem é você?</div><button class="card big2" onclick="S.v='home';R()"><b>Jogador</b><br><small>Crie e jogue com suas fichas de agente.</small></button><button class="card big2" onclick="S.v='mestre';R()"><b>Mestre</b><br><small>Monstruário, grimório, NPCs, itens e mais.</small></button><button class="card big2" onclick="campGo()"><b>Campanhas</b><br><small>Entre numa sala com código e senha ou prepare a sua.</small></button></div>`;

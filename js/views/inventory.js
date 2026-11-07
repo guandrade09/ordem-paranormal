@@ -5,8 +5,8 @@
 // Lista do inventário
 function invList(c) {
   const G = [
-    ['Armas', x => x.w], ['Proteções', x => PR[x.n] && !x.w], ['Munições', x => x.q != null],
-    ['Utilidades', x => !x.w && !PR[x.n] && x.q == null && !x.am], ['Itens Amaldiçoados', x => x.am]
+    ['Armas', x => x.w], ['Proteções', x => (PR[x.n] || x.hp) && !x.w], ['Munições', x => x.q != null],
+    ['Utilidades', x => !x.w && !PR[x.n] && !x.hp && x.q == null && !x.am], ['Itens Amaldiçoados', x => x.am]
   ];
   return G
     .map(g => {
@@ -29,6 +29,6 @@ function delC(id) {
   let c = S.chars.find(z => z.id == id);
   modal(`<b>Excluir ${
     esc(
-      c.name)}?</b><p><small>Esta ficha será apagada e não poderá ser recuperada.</small></p><div class=grid2><button class=btn onclick="cm()">Cancelar</button><button class=btn style="background:var(--red)" onclick="cm();S.chars=S.chars.filter(z=>z.id!=${
+      c.name)}?</b><p><small>Ela vai para a Lixeira (Configurações) e pode ser restaurada.</small></p><div class=grid2><button class=btn onclick="cm()">Cancelar</button><button class=btn style="background:var(--red)" onclick="cm();chDel(${
     id});R()">Excluir</button></div>`)
 }

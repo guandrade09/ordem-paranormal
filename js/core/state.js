@@ -56,3 +56,32 @@ const save = () => {
   }
   if (SB_ON) syncSoon()
 }, cur = () => S.chars.find(c => c.id == S.cid);
+
+// Lixeira: ficha excluída (ou removida por outro aparelho) fica guardada aqui, para poder ser restaurada
+function chTrash(c) {
+  S.trash = [{t: Date.now(), c}].concat(S.trash || []).slice(0, 30)
+}
+
+// Excluir ficha DE PROPÓSITO: vai para a lixeira e deixa uma "lápide" (S.dl) — só lápide apaga na conta.
+// Ficha que apenas "sumiu" do aparelho nunca é apagada no servidor.
+function chDel(id) {
+  const c = S.chars.find(z => z.id == id);
+  if (!c) return;
+  chTrash(c);
+  S.chars = S.chars.filter(z => z !== c);
+  const k = String(id);
+  S.dl = (S.dl || []).filter(x => x != k).concat(k).slice(-200);
+  if (S.cid == id) S.cid = null;
+  save()
+}
+
+// Restaurar da lixeira (com id novo, para não colidir com a lápide)
+function chRestore(i) {
+  const e = (S.trash || [])[i];
+  if (!e) return;
+  S.trash.splice(i, 1);
+  const c = e.c;
+  c.id = Date.now();
+  S.chars.push(c);
+  save()
+}

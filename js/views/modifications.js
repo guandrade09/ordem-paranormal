@@ -57,9 +57,9 @@ function modOpts(it) {
     l = ['Antibombas', 'Blindada', 'Discreta', 'Reforçada'].filter(m => (m == 'Antibombas' || m == 'Blindada') ?
         it.n == 'Proteção pesada' :
         m == 'Discreta' ? it.n == 'Proteção leve' && !h.includes('Reforçada') :
-                          !h.includes('Discreta'));
+                          !h.includes('Discreta')).concat(HBMOD.prot);
   else if (k == 'acc')
-    l = ['Aprimorado', 'Discreto', 'Função adicional', 'Instrumental'];
+    l = ['Aprimorado', 'Discreto', 'Função adicional', 'Instrumental', ...HBMOD.acc];
   return l.filter(
     m => !h.includes(m) && (m != 'Compensador' || AUTOW.includes(it.n) || h.includes('Ferrolho Automático')))
 }

@@ -72,11 +72,22 @@ function cfgR() {
     `<div class=bar>Configurações</div><button onclick="S.from=S.v;cfgC();S.v='conta';R()">👤 Conta</button><button onclick="tema()">${
       d == 'dark' ?
         '☀️ Tema claro' :
-        '🌙 Tema escuro'}</button><div class=bar style="margin-top:14px">Dados (beta)</div><button onclick="dExp()">💾 Exportar backup</button><button onclick="$('#dimp').click()">📂 Importar backup</button><small style="display:block;padding:6px 2px;opacity:.7">${
+        '🌙 Tema escuro'}</button><div class=bar style="margin-top:14px">Dados (beta)</div><button onclick="dExp()">💾 Exportar backup</button><button onclick="$('#dimp').click()">📂 Importar backup</button><button onclick="cfgC();trashM()">🗑 Lixeira${
+      (S.trash || []).length ? ' (' + S.trash.length + ')' : ''}</button><small style="display:block;padding:6px 2px;opacity:.7">${
       SB_ON && AU.u ?
         `<span class=sst>${sstH()}</span> · ${aesc(AU.u.email || '')}<br>` :
         'Suas fichas ficam salvas só neste navegador. Exporte um backup de vez em quando.<br>'}${VER}</small>${
       SB_ON && AU.off ? '<button class=cfgon onclick="aOn()">Ficar online</button>' : ''}`
+}
+
+// Lixeira: fichas excluídas (ficam guardadas para restaurar)
+function trashM() {
+  const t = S.trash || [];
+  modal(`<b>Lixeira</b><p><small>Fichas excluídas ficam aqui (as 30 mais recentes). Restaurar cria a ficha de novo.</small></p>${
+    t.map((e, i) => `<div class="card row"><div style="flex:1"><b>${aesc(e.c.name || 'Sem nome')}</b><br><small>${
+      e.c.npc ? 'NPC · ' : ''}${aesc(e.c.classe || '')} · excluída em ${
+      new Date(e.t).toLocaleDateString('pt-BR')}</small></div><button class=btn style="width:auto;padding:6px 12px" onclick="chRestore(${
+      i});cm();trashM()">Restaurar</button></div>`).join('') || '<p><small>Lixeira vazia.</small></p>'}<button class=btn onclick="cm()">Fechar</button>`)
 }
 
 // Alternar tema claro/escuro

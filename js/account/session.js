@@ -150,6 +150,7 @@ async function aEnter(quiet) {
   }
   try {
     await pull();
+    await campPull();  // campanhas (nunca trava a entrada: falhas ficam em CAMP.err)
     AU.ld = 0;
     AU.perr = 0;
     AU.msg = '';

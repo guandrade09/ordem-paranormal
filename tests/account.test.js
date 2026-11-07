@@ -73,7 +73,7 @@ async function main() {
  X.S().chars.find(c=>c.id==111).n='Local A editada';X.save();await sleep(1500);
  T('Edição de ficha vai só dessa ficha (upsert de 1)','servidor com nome atualizado; último upsert = 1 linha',DB.chars['u0/111'].data.n+' | '+LOG.filter(x=>x.startsWith('up:characters')).pop(),DB.chars['u0/111'].data.n=='Local A editada'&&LOG.filter(x=>x.startsWith('up:characters')).pop()=='up:characters:1');
  // exclusão
- X.S().chars=X.S().chars.filter(c=>c.id!=112);X.save();await sleep(1500);
+ app.g.chDel(112);await sleep(1500);
  T('Excluir ficha remove no servidor','112 apagada',Object.values(DB.chars).map(r=>r.cid).sort().join(','),!DB.chars['u0/112']&&Object.keys(DB.chars).length==2);
  // tema
  X.S().theme='dark';X.save();await sleep(1500);
@@ -89,7 +89,7 @@ async function main() {
  T('Rede volta: sincroniza o que ficou pendente','114 no servidor',Object.values(DB.chars).map(r=>r.cid).sort().join(','),!!DB.chars['u0/114']&&/Salvo/.test(X.SYNC().st));
  // modo "Usar offline" -> "Ficar online": o que foi mexido offline NÃO se perde (nem é sobrescrito) e vai para a conta
  X.AU().off=1;
- X.S().chars.find(c=>c.id==111).n='Editada OFFLINE';X.S().chars.push({id:115,n:'Criada OFFLINE'});X.S().chars=X.S().chars.filter(c=>c.id!=113);X.save();await sleep(1500);
+ X.S().chars.find(c=>c.id==111).n='Editada OFFLINE';X.S().chars.push({id:115,n:'Criada OFFLINE'});app.g.chDel(113);await sleep(1500);
  T('Offline: nada é enviado enquanto estiver no modo offline','servidor ainda com o nome antigo e sem a 115',DB.chars['u0/111'].data.n+' | 115='+!!DB.chars['u0/115'],DB.chars['u0/111'].data.n=='Local A editada'&&!DB.chars['u0/115']&&!!DB.chars['u0/113']);
  app.g.aOn();await sleep(2600);
  T('Ficar online: edição, criação e exclusão feitas offline vão para a conta; nada local é sobrescrito','111 editada, 115 criada, 113 apagada; local igual',DB.chars['u0/111'].data.n+' | '+Object.values(DB.chars).map(r=>r.cid).sort().join(',')+' | local='+X.S().chars.map(c=>c.id+':'+c.n).sort().join(','),DB.chars['u0/111'].data.n=='Editada OFFLINE'&&!!DB.chars['u0/115']&&!DB.chars['u0/113']&&X.S().chars.find(c=>c.id==111).n=='Editada OFFLINE'&&!X.S().chars.some(c=>c.id==113)&&!X.AU().off);
@@ -124,6 +124,30 @@ async function main() {
  set('apw','novaSenha99');set('apw2','novaSenha99');await X.aSub();await sleep(80);
  T('Nova senha salva e usuário entra no app','senha trocada; logado; gate livre',DB.users['gustavo@teste.com'].pw+' | '+(X.AU().u?'logado':'não')+' | rec='+X.AU().rec,DB.users['gustavo@teste.com'].pw=='novaSenha99'&&!!X.AU().u&&!X.AU().rec&&!X.authGate());
  T('Fichas do usuário voltam após o login (dados ficaram na conta)','111, 114 e 115 (113 foi apagada offline)',X.S().chars.map(c=>c.id).sort().join(','),X.S().chars.map(c=>c.id).sort().join(',')=='111,114,115');
+ // ---- PERDA DE DADOS: sumir daqui nunca apaga na conta; só exclusão explícita (lápide) apaga
+ const ids=()=>Object.values(DB.chars).filter(r=>r.user_id=='u0').map(r=>r.cid).sort().join(',');
+ const antes=ids();
+ // A) ficha some do aparelho sem exclusão (ex.: dados locais corrompidos/limpos, mas o registro de sincronização ficou)
+ X.setS({chars:[],v:'start',tab:0,uid:'u0'});await sleep(10);
+ const h0=JSON.stringify(X.SYNC().h);X.save();await sleep(1500);await X.push();
+ T('Aparelho com fichas sumidas (sem lápide) NÃO apaga a conta','servidor segue com '+antes,ids(),ids()==antes);
+ await X.pull();
+ T('E o pull traz as fichas de volta do servidor','local = '+antes,X.S().chars.map(c=>c.id).sort().join(','),X.S().chars.map(c=>c.id).sort().join(',')==antes);
+ // B) servidor devolve lista vazia por falha: nada local é apagado, tudo é reenviado
+ const salvo=JSON.parse(JSON.stringify(DB.chars));for(const k of Object.keys(DB.chars))if(DB.chars[k].user_id=='u0')delete DB.chars[k];
+ await X.pull();await X.push();
+ T('Servidor vazio por engano: fichas locais ficam e são reenviadas','local e servidor = '+antes,X.S().chars.map(c=>c.id).sort().join(',')+' | '+ids(),X.S().chars.map(c=>c.id).sort().join(',')==antes&&ids()==antes);
+ // C) exclusão em um aparelho chega ao outro (lápide), e fica na Lixeira
+ const copia=JSON.stringify(X.S());
+ app.g.chDel(114);await X.push();
+ T('Excluir de propósito apaga na conta e guarda na lixeira','114 fora do servidor; 114 na lixeira',ids()+' | trash='+(X.S().trash||[]).map(e=>e.c.id),!DB.chars['u0/114']&&(X.S().trash||[]).some(e=>e.c.id==114));
+ const lixo=JSON.stringify(X.S().trash);
+ X.setS(JSON.parse(copia));ls.setItem('op_sync',JSON.stringify({uid:'u0',h:Object.fromEntries(X.S().chars.map(c=>[String(c.id),X.hs(JSON.stringify(c))]))}));
+ await X.pull();
+ T('Outro aparelho recebe a exclusão (e guarda na lixeira dele)','114 some aqui; 111 e 115 ficam',X.S().chars.map(c=>c.id).sort().join(',')+' | trash='+(X.S().trash||[]).map(e=>e.c.id),X.S().chars.map(c=>c.id).sort().join(',')=='111,115'&&(X.S().trash||[]).some(e=>e.c.id==114));
+ // D) restaurar da lixeira
+ app.g.chRestore(0);await X.push();
+ T('Restaurar da lixeira devolve a ficha (id novo) e ela vai para a conta','3 fichas locais e no servidor; nome igual',X.S().chars.length+' | '+Object.values(DB.chars).filter(r=>r.user_id=='u0').length,X.S().chars.length==3&&Object.values(DB.chars).filter(r=>r.user_id=='u0').length==3&&Object.values(DB.chars).some(r=>r.user_id=='u0'&&r.data.n=='Offline D'));
  // segurança no HTML
  X.aMode('in');set('aem','"><img src=x onerror=alert(1)>');X.AU().em='"><img src=x onerror=alert(1)>';X.AU().msg='<b>x</b>';const h=X.loginv();
  T('Entradas exibidas são escapadas (anti-XSS) na tela de login','sem <img src=x> nem <b>x crus',/<img src=x/.test(h)||/<b>x/.test(h)?'vulnerável':'escapado',!/<img src=x/.test(h)&&!/<b>x/.test(h));
