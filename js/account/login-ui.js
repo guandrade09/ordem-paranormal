@@ -109,7 +109,7 @@ async function aSub() {
 
 // Imagem sorteada da tela de login (4 opções): sorteia ao entrar/recarregar, nunca repete a anterior;
 // dentro da mesma visita (entrar / criar conta / esqueci a senha) a imagem e o lugar dela não mudam.
-const LGN = 4, LGH = 410;  // LGH = altura reservada do formulário (maior modo), mantém a imagem sempre no mesmo lugar
+const LGN = 4;  // a altura do formulário é reservada em CSS (.lgform flex-basis, maior modo): a imagem começa sempre no mesmo lugar e ocupa o resto da tela
 let LGI;
 function lgPick() {
   let last = -1;
@@ -130,8 +130,8 @@ function lgPick() {
 // Tela de login
 function loginv() {
   if (LGI === undefined) lgPick();
-  const h = (x) => `<div style="max-width:420px;margin:0 auto">${logoH()}<div class=lgform style="--lgh:${LGH}px"><div class=fade>${
-    x}</div></div><div class=lgimg><img src="img/login/l${LGI + 1}.webp" alt=""></div></div>`;
+  const h = (x) => `<div class=lgpage><div class=lgcol>${logoH()}<div class=lgform><div class=fade>${
+    x}</div></div><div class=lgimg><img src="img/login/l${LGI + 1}.webp" alt=""></div></div></div>`;
   // carregando: só os símbolos. Sem internet / servidor inalcançável: símbolos + "SEM TRANSMISSÃO..." e,
   // no canto inferior esquerdo, o botão "Usar offline". Nada de título, borda ou mensagem de erro.
   if (AU.ld) return ldr(semNet(), 0, semNet());

@@ -33,7 +33,7 @@ const res = app.ev(`(() => {
   const im = () => (loginv().match(/img\\/login\\/l(\\d)\\.webp/) || [])[1];
   const i1 = im(); AU.mode = 'up'; const i2 = im(); AU.mode = 'forgot'; const i3 = im(); AU.mode = 'in';
   T('login: mostra o logo (imagem) e uma das 4 imagens; a imagem não muda ao trocar de modo', [/img\\/logo\\.webp/.test(loginv()), /^[1-4]$/.test(i1), i1 == i2 && i2 == i3], [true, true, true]);
-  T('login: a altura do formulário é reservada (imagem sempre no mesmo lugar)', /class=lgform style="--lgh:\\d+px"/.test(loginv()), true);
+  T('login: a altura do formulário é reservada (imagem sempre no mesmo lugar)', /class=lgpage/.test(loginv()) && /class=lgform>/.test(loginv()), true);
   let q = 0; Math.random = () => ((q++ * 0.37) % 1);
   let repetiu = 0, vistos = new Set(), ant = i1;
   for (let k = 0; k < 60; k++) { LGI = undefined; const n = im(); if (n == ant) repetiu++; vistos.add(n); ant = n; }

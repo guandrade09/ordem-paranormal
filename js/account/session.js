@@ -101,6 +101,7 @@ async function aInit(quiet) {
     return
   }
   AU.fail = 0;
+  if (/conectar ao servidor/.test(AU.msg || '')) AU.msg = '';  // reconectou: some o aviso antigo
   sb = window.supabase.createClient(
     CFG.url, CFG.key, {auth: {storage: stg, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true}});
   sb.auth.onAuthStateChange((ev, ses) => {setTimeout(() => aEv(ev, ses), 0)})
