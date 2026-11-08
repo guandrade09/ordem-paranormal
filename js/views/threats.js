@@ -97,6 +97,7 @@ const thr = () => `<div class=fade><button onclick="S.v='mestre';R()">← Voltar
 let THPOS = null;
 function thOpen(id) {
   if (S.v == 'thr') THPOS = {y: window.scrollY, q: ($('#thq') || {}).value || ''};
+  S.thbk = null;
   S.thid = id;
   S.tht = 'i';
   S.v = 'thd';
@@ -108,6 +109,11 @@ function thTab(t) {
   R()
 }
 function thBack() {
+  if (S.thbk) {  // veio do Criador de Combates
+    S.v = S.thbk;
+    S.thbk = null;
+    return R()
+  }
   S.v = 'thr';
   R();
   const p = THPOS;
@@ -170,7 +176,7 @@ function thd() {
     return thr()
   }
   const a = S.tht == 'a';
-  return `<div class="fade thsheet"><button onclick="thBack()">← Ameaças</button>${thHead(t)}<div class=pills><button class="${
+  return `<div class="fade thsheet"><button onclick="thBack()">← ${S.thbk ? 'Combate' : 'Ameaças'}</button>${thHead(t)}<div class=pills><button class="${
     a ? '' : 'on'}" onclick="thTab('i')">Info</button><button class="${
     a ? 'on' : ''}" onclick="thTab('a')">Ações</button></div>${a ? thActs(t) : thInfo(t)}</div>`
 }

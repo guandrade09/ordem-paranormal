@@ -5,7 +5,7 @@
  */
 const { loadApp } = require('./helpers/app-loader');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const DB = { camps: [], members: [], att: [], n: 0, noSql: false, sheets: [], combat: {} };
+const DB = { camps: [], members: [], att: [], n: 0, noSql: false, sheets: [], combat: {}, noCombat: false };
 
 function rpc(uid, name, a) {
   if (DB.noSql) return { data: null, error: { message: 'Could not find the function public.' + name + ' in the schema cache', code: 'PGRST202' } };
@@ -42,6 +42,7 @@ function rpc(uid, name, a) {
     if (!mine(a.p_camp)) return { error: { message: 'Campanha não encontrada.' } };
     return { data: JSON.parse(JSON.stringify(DB.sheets.filter((z) => z.c == a.p_camp).map((z) => ({ k: z.u.slice(0, 8), cid: z.cid, data: z.data, upd: z.upd })))) };
   }
+  if ((name == 'camp_combat_set' || name == 'camp_combat_get') && DB.noCombat) return { error: { message: 'Could not find the function public.' + name + ' in the schema cache' } };
   if (name == 'camp_combat_set') {
     if (!mine(a.p_camp)) return { error: { message: 'Campanha não encontrada.' } };
     if (a.p_data == null) delete DB.combat[a.p_camp]; else DB.combat[a.p_camp] = JSON.parse(JSON.stringify(a.p_data));
@@ -286,7 +287,7 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   T('Campanha do Mestre tem o botão do Criador de Combates; a do jogador não', /Criador de Combates/.test(mestre.el.innerHTML) && !/Criador de Combates/.test(jog.el.innerHTML));
   M.campCombat(); await sleep(50);
   T('Tela do combate na campanha lista os jogadores presentes (fichas vinculadas)', M.S.v == 'cmbc' && /Jogadores presentes/.test(mestre.el.innerHTML) && /Ana/.test(M.cmbPlH()) && M.CMBP.l.length == 1);
-  setIn(mestre, { cmn: 'Zumbi', cmr: '12', cmb: '2' }); M.cmbAdd();
+  setIn(mestre, { cmn: 'Zumbi', cmr: '12', cmb: '2', cmh: '' }); M.cmbAdd();
   setIn(mestre, { cpd0: '17' }); M.cmbAddP(0);
   const cm1 = M.S.cmbs[camp.id];
   T('Jogador presente entra pela lista (sem digitar o nome), com iniciativa = dado + bônus da ficha', cm1.l.length == 2 && cm1.l.some((x) => x.n == 'Ana' && x.d == 17 && x.p));
@@ -324,6 +325,44 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   T('Maldição homebrew com custo de PE (2) fica usável (CUX), com resumo', J.CUX['Maldição Paga'] && J.CUX['Maldição Paga'].pe == 2 && /Maldição que gasta PE/.test(J.CUX['Maldição Paga'].s));
   T('Formulário tem Classe e Custo de PE em habilidade, poder e maldição', ['hab', 'pod', 'mal'].every((t) => M.HBF[t].some((f) => f[0] == 'pe' && f[2] == 'n')) && M.HBF.hab.some((f) => f[0] == 'cl' && f[3].map((o) => o[0]).join() == 'Geral,Combatente,Especialista,Ocultista'));
   M.S.hbx = null; await J.campPull(); J.S.v = 'sheet'; J.R();
+
+  // ---- 7f2. Ameaça diversa e do livro, vida (só do Mestre), ficha da ameaça
+  M.S.cp = camp.id; M.S.v = 'cmbc'; M.S.cmbk = 'd'; M.R();
+  setIn(mestre, { cmn: 'Cultista', cmr: '10', cmb: '1', cmh: '30' }); M.cmbAdd();
+  M.S.cmbk = 'l'; M.R();
+  const zb = M.THREATS.find((t) => t.id == 'zumbi-de-sangue');
+  setIn(mestre, { cmt: zb.id, cmr: '14', cmb: '2' }); M.cmbAdd();
+  setIn(mestre, { cmt: zb.id, cmr: '8', cmb: '0' }); M.cmbAdd();
+  await M.csPoll(true); M.cmbPlH(); setIn(mestre, { cpd0: '11' }); M.cmbAddP(0);
+  const l2 = M.S.cmbs[camp.id].l, cu = l2.find((x) => x.n == 'Cultista'), z1 = l2.find((x) => x.n == 'Zumbi de Sangue'), z2 = l2.find((x) => x.n == 'Zumbi de Sangue 2'), an = l2.find((x) => x.p);
+  T('Ameaça diversa: nome, dado e vida digitada', cu && cu.hp == 30 && cu.mx == 30 && !cu.th && cu.d == 10);
+  T('Ameaça do livro: vida automática do livro e nome numerado quando repete', z1 && z2 && z1.hp == zb.pv[0] && z1.th == zb.id && z2.hp == zb.pv[0]);
+  mestre.el.innerHTML = M.cmbv();
+  const hv = mestre.el.innerHTML;
+  T('Tela do Mestre mostra a vida de todos e o nome da ameaça do livro é link para a ficha', /PV <b class=cmhv/.test(hv) && /cmbTh\('zumbi-de-sangue'\)/.test(hv) && /Ameaça diversa/.test(hv) && /Ameaça do livro/.test(hv));
+  const dano = (x, n, sg) => { setIn(mestre, n === '' ? {} : { ['hpd' + x.id]: String(n) }); M.cmbHp(x.id, sg); return x.hp; };
+  T('Mestre reduz e aumenta a vida da ameaça (limites 0 e máximo)', dano(cu, 5, -1) == 25 && dano(cu, '', 1) == 26 && dano(cu, 99, 1) == 30 && dano(cu, 999, -1) == 0);
+  T('Vida de jogador NÃO é editável pelo Mestre (só ao vivo)', (() => { const a0 = an.hp; M.cmbHp(an.id, -1); return an.hp === a0 && !/hpd/.test(M.cmbHpH(an)) && /ao vivo/.test(M.cmbHpH(an)); })());
+  const sh0 = DB.sheets.find((x) => x.data.name == 'Ana').data;
+  T('Vida do jogador presente vem da ficha dele', M.cmbHpT(an) == sh0.pv + '/' + M.csMax(sh0).pv, M.cmbHpT(an));
+  J.cur().pv = Math.max(0, J.cur().pv - 1); J.save(); await J.csPush(); await M.csPoll(true);
+  T('Vida do jogador atualiza ao vivo no combate do Mestre', M.cmbHpT(an) == (sh0.pv - 1) + '/' + M.csMax(sh0).pv || M.cmbHpT(an).split('/')[0] == String(J.cur().pv), M.cmbHpT(an));
+  M.cmbTh(zb.id);
+  T('Tocar na ameaça abre a ficha dela, com "← Combate" para voltar', M.S.v == 'thd' && M.S.thbk == 'cmbc' && /← Combate/.test(M.thd()));
+  M.thBack();
+  T('Voltar da ficha da ameaça retorna ao combate da campanha', M.S.v == 'cmbc' && M.S.thbk == null);
+  M.cmbGo(); await sleep(1000); await J.cbPoll();
+  const pj = JSON.stringify(DB.combat[camp.id]), jv = J.cbH(J.campOf(camp.id));
+  T('Servidor recebe só a ordem (nomes, turno, rodada): sem vida, ficha, dado nem iniciativa', /Zumbi de Sangue 2/.test(pj) && /Cultista/.test(pj) && !/"(hp|mx|th|d|b|i|p)":/.test(pj), pj);
+  T('Jogador vê nomes, rodada e turno; NENHUMA vida nem número de dado', /Zumbi de Sangue 2/.test(jv) && /Rodada 1/.test(jv) && !/PV|cmhp|cmbi|30|hp/.test(jv.replace(/cmbn/g, '')), jv);
+  // sem o SQL novo: o erro aparece (Mestre e jogador), nada quebra
+  DB.noCombat = true; M.S.v = 'cmbc'; M.cmbPub(); await sleep(900); await J.cbPoll();
+  T('Sem o SQL do combate: Mestre vê aviso vermelho com o nome do bloco', /COMBATE NA CAMPANHA/.test(M.CB.err) && /COMBATE NA CAMPANHA/.test(M.cmbv()));
+  J.S.cp = camp.id; J.CB.data[camp.id] = null; DB.noCombat = true; await J.cbPoll();
+  T('Sem o SQL do combate: jogador vê "indisponível" (e não quebra)', /indisponível/.test(J.cbH(J.campOf(camp.id))));
+  DB.noCombat = false; M.cmbPub(); await sleep(900);
+  T('Com o SQL ativo o aviso some e o combate é publicado', M.CB.err === '' && M.CB.ok === 1 && DB.combat[camp.id]);
+  M.cmbClear(); await sleep(900); M.S.v = 'camp';
 
   // ---- 8. Mestre apaga um ritual: a ficha que já usou continua funcionando
   const ana2 = J.cur(); ana2.rit.push('Chuva de Cinzas'); J.S.v = 'sheet'; J.R();

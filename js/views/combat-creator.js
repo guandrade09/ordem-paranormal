@@ -24,19 +24,27 @@ const cmbLim = x => Math.max(0, Math.min(10 + x.b - (x.u || 0), x.i - 1)),
 
 // Tela do Criador de Combates
 function cmbv() {
-  const m = cmbS(), cc = cmbC(), c = cc && campOf(S.cp);
+  const m = cmbS(), cc = cmbC(), c = cc && campOf(S.cp), k = S.cmbk == 'l' ? 'l' : 'd';
   if (cc && !c) return `<div class=fade><button onclick="S.v='camps';R()">← Campanhas</button><p><small>Campanha não encontrada.</small></p></div>`;
   return `<div class=fade><button onclick="${cc ? "S.v='camp'" : "S.v='mestre'"};R()">← ${cc ? 'Campanha' : 'Voltar'}</button><div class=bar>Criador de Combates${
     cc ? ' · ' + esc(c.name) : ''}</div>${cc ? `<small>Os jogadores desta campanha veem a ordem assim que você clicar em Combate! (sem os números).</small>` : ''}${
-    cc ? `<div id=cmp>${cmbPlH()}</div>` : ''}
-<div class=card><b>Adicionar personagem</b><input id=cmn placeholder="Nome" style="margin:6px 0"><div class=grid2 style="margin-bottom:6px"><input id=cmr type=number inputmode=numeric placeholder="Dado rodado"><input id=cmb type=number inputmode=numeric placeholder="Bônus de Iniciativa"></div><button class=btn onclick="cmbAdd()">+ Adicionar</button></div>
+    cc ? `<div id=cbe>${cbStat()}</div><div id=cmp>${cmbPlH()}</div>` : ''}
+<div class=card><b>Adicionar ameaça</b><div class=grid2 style="margin:6px 0"><button class="${k == 'd' ? 'btn' : ''}" onclick="cmbMode('d')">Ameaça diversa</button><button class="${
+  k == 'l' ? 'btn' : ''}" onclick="cmbMode('l')">Ameaça do livro</button></div>${
+  k == 'l' ?
+    `<select id=cmt style="width:100%;margin-bottom:6px">${
+      THREATS.slice().sort((p, q) => p.n.localeCompare(q.n, 'pt')).map(t => `<option value="${t.id}">${t.n} (PV ${t.pv[0]})</option>`).join('')}</select>` :
+    `<input id=cmn placeholder="Nome" style="margin:0 0 6px">`}<div class=grid2 style="margin-bottom:6px"><input id=cmr type=number inputmode=numeric placeholder="Dado rodado"><input id=cmb type=number inputmode=numeric placeholder="Bônus de Iniciativa"></div>${
+  k == 'l' ? '<small style="display:block;margin-bottom:6px">A vida vem do livro.</small>' :
+             '<input id=cmh type=number inputmode=numeric min=0 placeholder="Vida (opcional)" style="margin-bottom:6px;width:100%">'}<button class=btn onclick="cmbAdd()">+ Adicionar</button></div>
 ${m.on ? `<div class=bar>Rodada ${m.r}</div>` : '<div class=bar>Ordem</div>'}
 <div id=cml>${
     m.l.length ?
       m.l
         .map(
           (x, i) => `<div class="cmbr ${m.on && m.c == x.id ? 'cur' : ''}" data-id="${x.id}"><span class=cmbn>${
-            i + 1}</span><div style="flex:1;min-width:0"><b style="word-break:break-word">${
+            i + 1}</span><div style="flex:1;min-width:0"><b style="word-break:break-word" ${
+            THREATS.some(t => t.id == x.th) ? `class=cmbl onclick="cmbTh('${x.th}')"` : ''}>${
             esc(x.n)}</b><br><small>Pode atrasar até <b>${
             cmbLim(x)}</b> pt(s) nesta rodada</small></div><span class=cmbi>${x.i}</span>${
             m.on ? `<button onclick="cmbDl(${x.id})" title="Atrasar ação">⏳</button>` :
@@ -44,7 +52,7 @@ ${m.on ? `<div class=bar>Rodada ${m.r}</div>` : '<div class=bar>Ordem</div>'}
             m.dl == x.id ?
               `<div class=cmbd><input id=cda type=number inputmode=numeric min=1 placeholder="Atrasar quantos pontos?"><button onclick="cmbDo(${
                 x.id})">OK</button></div>` :
-              ''}</div>`)
+              ''}${cmbHpH(x)}</div>`)
         .join('') :
       '<small>Nenhum personagem adicionado.</small>'}</div>
 ${
@@ -54,19 +62,35 @@ ${
         m.l.length ? '<button onclick="cmbClear()" style="width:100%">Limpar tudo</button>' : ''}`}</div>`
 }
 
+// Tipo de ameaça a adicionar: diversa (nome + vida opcional) ou do livro (vida automática)
+function cmbMode(k) {
+  S.cmbk = k;
+  R()
+}
 // Adicionar combatente
 function cmbAdd() {
-  const n = $('#cmn').value.trim(), d = $('#cmr').value, b = $('#cmb').value;
-  if (!n) return toast('Informe o nome.');
+  const k = S.cmbk == 'l' ? 'l' : 'd', d = $('#cmr').value, b = $('#cmb').value;
   if (d === '' || isNaN(+d)) return toast('Informe o dado rodado.');
   if (b !== '' && isNaN(+b)) return toast('Bônus inválido.');
-  cmbPush(n, +d, +b || 0)
+  if (k == 'l') {
+    const t = THREATS.find(z => z.id == ($('#cmt') || {}).value);
+    if (!t) return toast('Escolha a ameaça.');
+    const ns = cmbS().l.map(x => x.n);
+    let n = t.n, i = 1;
+    while (ns.includes(n)) n = `${t.n} ${++i}`;  // Zumbi, Zumbi 2, Zumbi 3…
+    return cmbPush(n, +d, +b || 0, null, {th: t.id, hp: t.pv[0], mx: t.pv[0]})
+  }
+  const n = $('#cmn').value.trim(), h = $('#cmh').value;
+  if (!n) return toast('Informe o nome.');
+  if (h !== '' && (isNaN(+h) || +h < 0)) return toast('Vida inválida.');
+  cmbPush(n, +d, +b || 0, null, h === '' ? null : {hp: Math.floor(+h), mx: Math.floor(+h)})
 }
 
 // Coloca o combatente na ordem (iniciativa = dado + bônus); com combate em andamento entra na posição certa
-function cmbPush(n, d, b, p) {
+function cmbPush(n, d, b, p, x) {
   const m = cmbS(), e = {id: (m.n = (m.n || 0) + 1), n, d, b};
   if (p) e.p = p;
+  if (x) Object.assign(e, x);
   e.i = e.d + e.b;
   if (m.on) {
     let p = m.l.findIndex(x => x.i < e.i || (x.i == e.i && x.b < e.b));
@@ -205,4 +229,55 @@ function cmbAddP(i) {
   if (!z) return;
   if (d === '' || isNaN(+d)) return toast('Informe o dado rodado.');
   cmbPush(z.n, +d, z.b, z.p)
+}
+
+// ---- Vida no combate (só o Mestre vê; o jogador nunca recebe vida nem dado) ----
+// Jogador presente: vida ao vivo da ficha dele (somente leitura). Ameaça: vida controlada aqui (− / +).
+const cmbHpOf = x => {
+  if (x.p) {
+    const z = ((typeof CS !== 'undefined' && CS.data[S.cp]) || []).find(q => q.k + '|' + q.cid == x.p), d = z && z.data;
+    return d && d.pv != null ? {hp: d.pv, mx: csMax(d).pv, live: 1} : {hp: null, live: 1}
+  }
+  return x.hp == null ? null : {hp: x.hp, mx: x.mx}
+};
+const cmbHpT = x => {
+  const h = cmbHpOf(x);
+  return !h || h.hp == null ? '—' : `${h.hp}${h.mx != null ? '/' + h.mx : ''}${h.hp <= 0 && !h.live ? ' ☠' : ''}`
+};
+const cmbHpH = x => {
+  const h = cmbHpOf(x);
+  if (!h) return '';
+  return `<div class=cmhp>PV <b class=cmhv data-id="${x.id}">${cmbHpT(x)}</b>${
+    h.live ? ' <small>(ao vivo)</small>' :
+             `<input id=hpd${x.id} type=number inputmode=numeric min=1 placeholder="1" class=cmhi><button onclick="cmbHp(${
+               x.id},-1)">− Dano</button><button onclick="cmbHp(${x.id},1)">+ Cura</button>`}</div>`
+};
+// Atualiza os números de vida na tela sem redesenhar (e sem apagar o que está sendo digitado)
+function cmbHpPaint() {
+  try {
+    const m = cmbS();
+    document.querySelectorAll('.cmhv').forEach(e => {
+      const x = m.l.find(z => z.id == e.dataset.id);
+      if (x) e.textContent = cmbHpT(x)
+    })
+  } catch (e) {
+  }
+}
+function cmbHp(id, sg) {
+  const m = cmbS(), x = m.l.find(z => z.id == id), e = $('#hpd' + id);
+  if (!x || x.p || x.hp == null) return;
+  const v = Math.abs(Math.floor(+(e && e.value) || 1)) || 1;
+  x.hp = Math.max(0, Math.min(x.mx != null ? x.mx : 1e6, x.hp + sg * v));
+  if (e) e.value = '';
+  save();
+  cmbHpPaint()
+}
+// Ameaça do livro: toque no nome abre a ficha dela (e "voltar" retorna ao combate)
+function cmbTh(id) {
+  S.thbk = S.v;
+  S.thid = id;
+  S.tht = 'i';
+  S.v = 'thd';
+  R();
+  window.scrollTo(0, 0)
 }

@@ -214,7 +214,8 @@ function csRender() {
       busy = [...e.querySelectorAll('input')].some(i => i.value !== '' || i === document.activeElement)
     } catch (x) {
     }
-    if (e && !busy) e.innerHTML = cmbPlH()
+    if (e && !busy) e.innerHTML = cmbPlH();
+    cmbHpPaint()  // vida dos jogadores no combate, ao vivo
   }
 }
 function csTick() {
@@ -225,11 +226,20 @@ function csTick() {
   if (S.v == 'camp' || S.v == 'cs' || S.v == 'cmbc') csPoll();
   if (S.v == 'camp') cbPoll()
 }
-if (typeof setInterval == 'function') setInterval(csTick, 4000);
+if (typeof setInterval == 'function') setInterval(csTick, 3000);
 
 
-// ---- Combate da campanha: o Mestre publica só a ORDEM (nome, turno, rodada; nada de dado ou número de iniciativa)
-const CB = {data: {}, sig: {}, t: null, pb: 0, on: {}};
+// ---- Combate da campanha: o Mestre publica só a ORDEM (nome, turno, rodada; nada de dado, vida ou número de iniciativa)
+const CB = {data: {}, sig: {}, html: {}, t: null, pb: 0, on: {}, err: '', ok: 0, perr: ''};
+
+// Erro de combate com texto próprio (o mais comum: o SQL "COMBATE NA CAMPANHA" ainda não foi rodado)
+const cbMiss = e => /could not find the function|schema cache|does not exist|PGRST20|42883|42P01/i.test(
+  String((e && (e.message || e.details)) || e || '') + ' ' + ((e && e.code) || ''));
+const cbErr = e => cbMiss(e) ?
+  'O combate ao vivo ainda não foi ativado neste servidor: rode o bloco "COMBATE NA CAMPANHA" do supabase.sql no Supabase (SQL Editor) uma vez.' :
+  aerr(e);
+const cbStat = () => CB.err ? `<div class=card style="border-color:var(--red)"><small>⚠ ${aesc(CB.err)}</small></div>` :
+                              CB.ok ? '<small>● Os jogadores estão vendo a ordem ao vivo</small>' : '';
 
 // Mestre: publica (com atraso) o combate da campanha aberta; sem combate em andamento = apaga
 function cmbPub() {
@@ -238,38 +248,54 @@ function cmbPub() {
 }
 async function cmbPubGo() {
   const c = campOf(S.cp);
-  if (!c || c.role != 'owner' || !campOk() || typeof sb.rpc != 'function') return;
-  const m = (S.cmbs || {})[c.id];
-  const pub = m && m.on && m.l.length ?
-    {on: 1, r: m.r, c: m.c, l: m.l.map(x => ({id: x.id, n: String(x.n).slice(0, 60)}))} : null;
-  try {
-    await sb.rpc('camp_combat_set', {p_camp: c.id, p_data: pub})
-  } catch (e) {
+  if (!c || c.role != 'owner' || typeof sb.rpc != 'function') return;
+  const m = (S.cmbs || {})[c.id], on = !!(m && m.on && m.l.length);
+  const paint = () => {
+    const e = $('#cbe');
+    if (e) e.innerHTML = cbStat()
+  };
+  if (!campOk()) {
+    if (on) CB.err = 'Sem internet: os jogadores não estão vendo o combate.';
+    return paint()
   }
+  const pub = on ? {on: 1, r: m.r, c: m.c, l: m.l.map(x => ({id: x.id, n: String(x.n).slice(0, 60)}))} : null;
+  try {
+    const r = await sb.rpc('camp_combat_set', {p_camp: c.id, p_data: pub});
+    if (r.error) throw r.error;
+    CB.err = '';
+    CB.ok = on ? 1 : 0
+  } catch (e) {
+    CB.err = cbErr(e);
+    CB.ok = 0
+  }
+  paint()
 }
 
-// Jogador (e Mestre): busca a ordem publicada
+// Jogador: busca a ordem publicada e desenha no quadro da tela inicial da campanha
 async function cbPoll() {
   const c = campOf(S.cp);
   if (!c || c.role != 'member' || !campOk() || typeof sb.rpc != 'function' || CB.pb) return;
   CB.pb = 1;
   try {
     const r = await sb.rpc('camp_combat_get', {p_camp: c.id});
-    if (!r.error) {
-      const d = r.data && r.data.on ? r.data : null, sig = JSON.stringify(d);
-      if (sig !== CB.sig[c.id]) {
-        const first = CB.sig[c.id] === undefined;
-        CB.sig[c.id] = sig;
-        CB.data[c.id] = d;
-        if (d && !CB.on[c.id] && !first) toast('⚔ Combate iniciado!');
-        CB.on[c.id] = !!d;
-        if (S.v == 'camp' && S.cp == c.id) {
-          const e = $('#cbl');
-          if (e) e.innerHTML = cbH(c)
-        }
-      }
+    if (r.error) {
+      CB.perr = cbMiss(r.error) ? 'miss' : ''
+    } else {
+      CB.perr = '';
+      const d = r.data && r.data.on ? r.data : null;
+      if (d && !CB.on[c.id] && CB.sig[c.id] !== undefined) toast('⚔ Combate iniciado!');
+      CB.on[c.id] = !!d;
+      CB.sig[c.id] = JSON.stringify(d);
+      CB.data[c.id] = d
     }
   } catch (e) {
   }
-  CB.pb = 0
+  CB.pb = 0;
+  if (S.v == 'camp' && S.cp == c.id) {
+    const e = $('#cbl'), h = cbH(c);
+    if (e && h !== CB.html[c.id]) {
+      CB.html[c.id] = h;
+      e.innerHTML = h
+    }
+  }
 }

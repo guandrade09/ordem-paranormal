@@ -50,7 +50,7 @@ function campCombat() {
 // Jogador: quadro do combate (nomes na ordem, quem age agora em vermelho; sem dados nem números de iniciativa)
 function cbH(c) {
   const d = CB.data[c.id];
-  if (!d) return '';
+  if (!d) return CB.perr ? '<small>⚠ Combate ao vivo indisponível: o Mestre precisa ativar no servidor.</small>' : '';
   return `<b style="font:24px 'Bebas Neue';letter-spacing:1px">⚔ Combate</b> <small>Rodada ${+d.r || 1}</small>${(d.l || []).map((x, i) =>
     `<div class="cmbr ${x.id == d.c ? 'cur' : ''}"><span class=cmbn>${i + 1}</span><div style="flex:1;min-width:0"><b style="word-break:break-word">${
       aesc(x.n)}</b>${x.id == d.c ? '<br><small>Turno atual</small>' : ''}</div></div>`).join('')}`
