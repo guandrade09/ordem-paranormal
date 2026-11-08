@@ -144,6 +144,20 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   M.S.v = 'grim'; M.R();
   T('Mestre vê o homebrew nas listas das telas dele (Grimório)', M.RT.some((r) => r.n == 'Chuva de Cinzas'));
 
+  // ---- 7b. Imagem do ritual (homebrew com upload; rituais do livro por slug)
+  const IMG = 'data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==';
+  M.HB.img = IMG; await save('rit', { n: 'Selo de Cinza', ci: '1', el: 'Morte', s: 'Com imagem.', x: 'Texto.' });
+  M.HB.img = 'data:image/svg+xml;base64,PHN2Zz4='; await save('rit', { n: 'Selo Falso', ci: '1', el: 'Morte', s: 'Imagem proibida.', x: 'Texto.' });
+  M.HB.img = 'javascript:alert(1)'; await save('rit', { n: 'Selo Js', ci: '1', el: 'Morte', s: 'x', x: 'y' });
+  await sleep(1500); await J.campPull(); J.S.v = 'sheet'; J.S.tab = 1; J.R();
+  const rs = J.RT.find((r) => r.n == 'Selo de Cinza'), rf = J.RT.find((r) => r.n == 'Selo Falso'), rj = J.RT.find((r) => r.n == 'Selo Js');
+  T('Ritual homebrew com imagem: o jogador recebe a imagem', rs && rs.img == IMG);
+  T('Imagem que não é PNG/WebP/JPG em base64 (SVG, javascript:) é recusada', rf && rf.img === '' && rj && rj.img === '');
+  T('Card do ritual mostra a imagem pequena, sem borda (classe rimg, sem style de borda)', (() => { const h = J.rimg(rs); return /<img class="rimg" src="data:image\/webp/.test(h) && !/border/.test(h) && J.rimg(rf) === ''; })());
+  T('Na lista da ficha a imagem vira o ícone do ritual (rimg ic)', /class="rimg ic"/.test(J.rimg(rs, 1)));
+  T('A cópia do homebrew guardada na ficha NÃO leva imagens (ficha leve)', J.cur().hbs && !/data:image/.test(JSON.stringify(J.cur().hbs)) && J.cur().hbs.rit.some((r) => r.n == 'Selo de Cinza'));
+  T('Ritual do livro sem imagem continua com o desenho de sempre; com slug em RART mostra o PNG', (() => { const r = J.RT.find((z) => z.n == 'Cicatrização'); const a = J.rimg(r); J.RART.add('cicatrizacao'); const b = J.rimg(r); J.RART.delete('cicatrizacao'); return a === '' && /src="img\/rit\/cicatrizacao\.png"/.test(b); })());
+
   // ---- 8. Mestre apaga um ritual: a ficha que já usou continua funcionando
   const ana2 = J.cur(); ana2.rit.push('Chuva de Cinzas'); J.S.v = 'sheet'; J.R();
   M.S.hbc = camp.id; M.hbDel2('rit', M.S.camps[0].homebrew.rit[0].id); await sleep(1500);

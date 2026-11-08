@@ -1485,3 +1485,22 @@ body[data-thel=conhecimento] .thh .thsy img {
   .ldr-sym img:first-child { opacity: 1; }
   .ldr-dots { animation: none; width: 3ch; }
 }
+
+/* Imagem do ritual: PNG solto, sem borda nem fundo */
+.rimg {
+  display: block;
+  margin: 0 auto 8px;
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: contain;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  background: none;
+}
+.rimg.ic {
+  width: 80px;
+  height: 80px;
+  margin: 0;
+  flex: none;
+}

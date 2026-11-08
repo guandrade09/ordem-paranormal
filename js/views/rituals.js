@@ -2,6 +2,15 @@
  * Rituais na ficha: lista, cards, conjuração e rolagens.
  */
 
+// Imagem do ritual (PNG pequeno, SEM borda). Rituais do livro: slugs em RART → img/rit/<slug>.png (as imagens chegam aos poucos).
+// Homebrew: r.img = data URL enviada pelo Mestre (validada em hbApply).
+const RART = new Set([]), rslug = n => nz(n).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+      rsrc = r => r.img || (RART.has(rslug(r.n)) ? `img/rit/${rslug(r.n)}.png` : ''),
+      rimg = (r, ic) => {
+        const s = rsrc(r);
+        return s ? `<img class="rimg${ic ? ' ic' : ''}" src="${s}" alt="">` : ''
+      };
+
 // Lista de rituais
 function rlist(ci) {
   let q = nz(S.q || ''), h = '';
@@ -25,7 +34,7 @@ function rcard(i) {
     S.d.rit = S.d.rit.filter(x => x.split('|')[0] != r.n);
     return rr()
   }
-  modal(`${r.el == '*' ? art4(r.ci) : `<svg viewBox="0 0 100 100" width=90>${art(r.el, r.ci)}</svg>`}<br><b>${
+  modal(`${rimg(r) || (r.el == '*' ? art4(r.ci) : `<svg viewBox="0 0 100 100" width=90>${art(r.el, r.ci)}</svg>`)}<br><b>${
     r.n}</b> · ${r.ci}º círculo · ${BC[r.ci]} PE${rinfo(r)}<small>${rver(r)}</small>${
     r.el == '*' ? '<small>Escolha o elemento:</small><div class=grid2>' +
         ELO.slice(0, 4)
@@ -53,8 +62,8 @@ function rsheet(c, k) {
         h += `<div class=bar style="background:${EC[e]}">${ci}º círculo · ${e}</div>` +
           g.map(
              x => `<div class="card lp row" data-t="${esc(x.r.n + ': ' + x.r.s)}" onclick="if(!LP)rv('${
-               x.id}')"><svg viewBox="0 0 100 100" width=80 height=80 style="flex:none">${
-               art(x.e, ci)}</svg><div style="flex:1;min-width:0"><b>${x.r.n}</b> <span class=el style="background:${
+               x.id}')">${rimg(x.r, 1) || `<svg viewBox="0 0 100 100" width=80 height=80 style="flex:none">${
+               art(x.e, ci)}</svg>`}<div style="flex:1;min-width:0"><b>${x.r.n}</b> <span class=el style="background:${
                EC[x.e]}">${x.e}</span>${(c.grm || []).includes(x.id) ? ' <small>📖</small>' : ''}<br><small class=cl2>${
                x.r.s}</small>${c.rl && c.rl[x.id] ? `<br><small>Usado ${c.rl[x.id]}×</small>` : ''}${
                (c.sust || []).some(q => q.id == x.id) ?
@@ -91,7 +100,7 @@ function flaRv(id) {
         ['Normal', Math.max(0, b), 1, 0], ['Discente', r.d && Math.max(0, b + r.d[0]), r.d && r.d[1], r.d && r.d[2]],
         ['Verdadeiro', r.v && Math.max(0, b + r.v[0]), r.v && r.v[1], r.v && r.v[2]]
       ];
-  modal(`<button class=xc onclick="cm()">✕</button><b>${r.n}</b> <span class=el style="background:${EC[e] || '#000'}">${
+  modal(`<button class=xc onclick="cm()">✕</button>${rimg(r)}<b>${r.n}</b> <span class=el style="background:${EC[e] || '#000'}">${
     e}</span> · ${r.ci}º círculo<br>${rinfo(r)}${
     o.map((x, j) => {
        let off = x[1] == null || a < x[2];
@@ -115,7 +124,7 @@ function rv(id) {
         ['Normal', Math.max(0, b), 1, 0], ['Discente', r.d && Math.max(0, b + r.d[0]), r.d && r.d[1], r.d && r.d[2]],
         ['Verdadeiro', r.v && Math.max(0, b + r.v[0]), r.v && r.v[1], r.v && r.v[2]]
       ];
-  modal(`<button class=xc onclick="cm()">✕</button><b>${r.n}</b> <span class=el style="background:${EC[e]}">${
+  modal(`<button class=xc onclick="cm()">✕</button>${rimg(r)}<b>${r.n}</b> <span class=el style="background:${EC[e]}">${
     e}</span> · ${r.ci}º círculo<br>${rinfo(r)}${
     o.map((x, j) => {
        let off = x[1] == null || a < x[2];

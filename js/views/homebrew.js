@@ -18,7 +18,8 @@ const HBT = [
           ['n', 'Nome', 't'], ['ci', 'Círculo', 's', [['1', '1º'], ['2', '2º'], ['3', '3º'], ['4', '4º']]],
           ['el', 'Elemento', 's', [...HBEL, 'Medo'].map(e => [e, e])], ['s', 'Resumo (uma linha)', 't'],
           ['x', 'Descrição completa', 'a'], ['ex', 'Execução (ex.: padrão)', 't'], ['al', 'Alcance', 't'],
-          ['av', 'Alvo / Área', 't'], ['du', 'Duração', 't'], ['re', 'Resistência', 't']
+          ['av', 'Alvo / Área', 't'], ['du', 'Duração', 't'], ['re', 'Resistência', 't'],
+          ['img', 'Imagem do ritual (PNG, opcional)', 'i']
         ],
         hab: [['n', 'Nome', 't'], ['t', 'Descrição (se escrever "gasta 2 PE", o custo aparece no botão)', 'a']],
         pod: [
@@ -84,7 +85,9 @@ function hbData() {
         const nw = (own.homebrew && own.homebrew[t]) || [], ids = new Set(nw.map(x => x.id));
         mg[t] = nw.concat((old[t] || []).filter(x => x && !ids.has(x.id)))
       });
-      if (JSON.stringify(mg) != JSON.stringify(old) && S.v != 'create') c.hbs = mg;
+      const sn = {};  // a cópia na ficha não leva imagens (a ficha não pode ficar pesada)
+      HBT.forEach(([t]) => {sn[t] = mg[t].map(x => x && x.img ? (({img, ...r}) => r)(x) : x)});
+      if (JSON.stringify(sn) != JSON.stringify(old) && S.v != 'create') c.hbs = sn;
       add(mg)
     } else
       add(c.hbs)
@@ -126,7 +129,8 @@ function hbApply(H) {
     const n = hbN(r.n);
     if (!n || RT.some(z => z.n == n)) return;
     const el = [...HBEL, 'Medo'].includes(r.el) ? r.el : 'Conhecimento', ci = Math.min(4, Math.max(1, +r.ci || 1));
-    RT.push({ci, el, n, s: hbT(r.s || r.x).slice(0, 140), d: null, v: null, hb: 1});
+    RT.push({ci, el, n, s: hbT(r.s || r.x).slice(0, 140), d: null, v: null, hb: 1,
+             img: typeof r.img == 'string' && r.img.length <= HBIMGMAX + 2000 && HBIMG.test(r.img) ? r.img : ''});
     put(INFO, n, [hbT(r.ex), hbT(r.al), hbT(r.av), hbT(r.du), hbT(r.re)]);
     put(DS, n, [hbT(r.x || r.s)])
   });
@@ -240,7 +244,8 @@ function hbmv() {
       `<small>Campanha: <b>${aesc(c.name)}</b></small>`}<small style="display:block;margin:4px 0 8px;opacity:.75">Os jogadores da campanha recebem tudo daqui nas listas deles (rituais, armas, habilidades…). Monstros nunca são compartilhados.</small><div class=pills>${
     HBT.map(([k, n]) => `<button class="${k == t ? 'on' : ''}" onclick="S.hbt='${k}';R()">${n}</button>`).join('')
   }</div><button class=btn onclick="hbEdit('${t}','')">+ Novo(a) ${HBT.find(x => x[0] == t)[1].toLowerCase()}</button>${
-    l.map(x => `<div class="card row" onclick="hbEdit('${t}','${x.id}')"><div style="flex:1"><b>${aesc(x.n)}</b><br><small>${
+    l.map(x => `<div class="card row" onclick="hbEdit('${t}','${x.id}')">${
+      HBIMG.test(x.img || '') ? `<img class="rimg ic" style="width:48px;height:48px" src="${x.img}" alt="">` : ''}<div style="flex:1"><b>${aesc(x.n)}</b><br><small>${
       aesc(hbSub(t, x))}</small></div><button class=x onclick="event.stopPropagation();hbDel('${t}','${x.id}')">✕</button></div>`)
       .join('') || '<p><small>Nada criado neste tipo ainda.</small></p>'}</div>`
 }
@@ -254,6 +259,9 @@ function hbSub(t, x) {
 function hbField(f, v) {
   const [k, lb, ty, op] = f, id = 'hf_' + k;
   v = v == null ? '' : v;
+  if (ty == 'i')
+    return `<div><small>${lb}</small><img id=hf_img_p class=rimg src="${HB.img || ''}" alt="" style="${
+      HB.img ? '' : 'display:none'}"><input type=file accept="image/png,image/webp,image/jpeg" onchange="hbPick(this)" style="width:100%"><button class=btn style="width:auto;padding:4px 12px" onclick="hbImgX()">Tirar imagem</button><small style="display:block;opacity:.7">Fica pequena (até 160 px). PNG sem fundo fica melhor.</small></div>`;
   if (ty == 'a')
     return `<label><small>${lb}</small><textarea id=${id} rows=4 style="width:100%">${aesc(v)}</textarea></label>`;
   if (ty == 's')
@@ -264,12 +272,53 @@ function hbField(f, v) {
 }
 function hbEdit(t, id) {
   const c = hbCur(), x = id ? ((c.homebrew[t] || []).find(z => z.id == id) || {}) : {};
+  HB.img = x.img || '';
   modal(`<button class=xc onclick="cm()">✕</button><b>${id ? 'Editar' : 'Novo(a)'} ${
     HBT.find(z => z[0] == t)[1].toLowerCase()}</b><div class=scr style="max-height:62vh">${
     HBF[t].map(f => hbField(f, x[f[0]])).join('')}</div><button class=btn onclick="hbSave('${t}','${id}')">Salvar</button>`);
   if (t == 'eqp') hbEqK()
 }
 // campos de arma/proteção/munição/elemento só aparecem quando fazem sentido
+// Imagem do ritual: reduz para até 160 px (mantém transparência) e guarda como data URL pequena
+const HBIMG = /^data:image\/(png|webp|jpeg);base64,[A-Za-z0-9+\/=]+$/, HBIMGMAX = 30000;
+function hbShow() {
+  const e = $('#hf_img_p');
+  if (!e) return;
+  e.src = HB.img || '';
+  e.style.display = HB.img ? '' : 'none'
+}
+function hbImgX() {
+  HB.img = '';
+  hbShow()
+}
+function hbPick(inp) {
+  const f = inp && inp.files && inp.files[0];
+  if (!f) return;
+  if (!/^image\/(png|webp|jpeg)$/.test(f.type)) return toast('Use uma imagem PNG, WebP ou JPG.');
+  const r = new FileReader();
+  r.onerror = () => toast('Não consegui ler a imagem.');
+  r.onload = () => {
+    const im = new Image();
+    im.onerror = () => toast('Imagem inválida.');
+    im.onload = () => {
+      for (const m of [160, 112, 80]) {
+        const k = Math.min(1, m / Math.max(im.width, im.height)), cv = document.createElement('canvas');
+        cv.width = Math.max(1, Math.round(im.width * k));
+        cv.height = Math.max(1, Math.round(im.height * k));
+        cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+        const u = cv.toDataURL('image/webp', .85);
+        if (HBIMG.test(u) && u.length <= HBIMGMAX) {
+          HB.img = u;
+          hbShow();
+          return
+        }
+      }
+      toast('Imagem pesada demais: use uma mais simples.')
+    };
+    im.src = r.result
+  };
+  r.readAsDataURL(f)
+}
 function hbEqK() {
   const k = ($('#hf_k') || {}).value, show = (ks, ids) => ids.forEach(i => {
     const e = $('#hf_' + i), l = e && e.closest ? e.closest('label') : null;
@@ -288,6 +337,8 @@ function hbSave(t, id) {
   });
   o.n = hbN(o.n);
   if (!o.n) return toast('Dê um nome.');
+  if (t == 'rit') o.img = HB.img || '';
+  else delete o.img;
   const l = c.homebrew[t] = c.homebrew[t] || [], i = l.findIndex(z => z.id == id);
   if (l.some(z => z.id != o.id && hbN(z.n).toLowerCase() == o.n.toLowerCase())) return toast('Já existe um com esse nome.');
   if (i >= 0)

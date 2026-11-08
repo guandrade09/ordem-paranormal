@@ -27,7 +27,7 @@ function gcard(i) {
       v = x => x ?
     `${BC[r.ci] + x[0]} PE${x[1] > 1 ? ' · requer ' + x[1] + 'º círculo' : ''}${x[2] ? ' · afinidade' : ''}` :
     'indisponível';
-  modal(`${r.el == '*' ? art4(r.ci) : `<svg viewBox="0 0 100 100" width=90>${art(r.el, r.ci)}</svg>`}<br><b>${
+  modal(`${rimg(r) || (r.el == '*' ? art4(r.ci) : `<svg viewBox="0 0 100 100" width=90>${art(r.el, r.ci)}</svg>`)}<br><b>${
     r.n}</b><br><small>${r.ci}º círculo · ${r.el == '*' ? 'Conhecimento, Energia, Morte ou Sangue' : r.el}</small>${
     rinfo(r)}<small>Normal: ${BC[r.ci]} PE<br>Discente: ${v(r.d)}<br>Verdadeiro: ${
     v(r.v)}</small><button class=btn onclick="cm()">Fechar</button>`)
