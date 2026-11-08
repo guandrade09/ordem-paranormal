@@ -11,6 +11,9 @@ const HBT = [
   ['mel', 'Melhoria'], ['eqp', 'Equipamento']
 ],
       HBEL = ['Sangue', 'Morte', 'Conhecimento', 'Energia'],
+      // classe da habilidade: Geral aparece nas três classes
+      HBCL = [['Geral', 'Geral (as três classes)'], ['Combatente', 'Combatente'], ['Especialista', 'Especialista'], ['Ocultista', 'Ocultista']],
+      HBPEL = 'Custo de PE (opcional; vazio = lê "gasta 2 PE" da descrição, 0 = passivo)',
       HBREQ = [['', 'Sem requisito'], ['2', 'Requer 2º círculo'], ['3', 'Requer 3º círculo'], ['4', 'Requer 4º círculo']],
       HBEQ = [['arm', 'Arma'], ['pro', 'Proteção'], ['mun', 'Munição'], ['uti', 'Utilidade'], ['par', 'Paranormal'],
               ['amd', 'Amaldiçoado']],
@@ -27,13 +30,15 @@ const HBT = [
           ['hv', 'Tem versão Verdadeiro', 'c'], ['vt', 'Efeito do Verdadeiro', 'a'], ['vp', 'PE a mais que o Normal (Verdadeiro)', 'n'],
           ['vr', 'Requisito do Verdadeiro', 's', HBREQ], ['va', 'Verdadeiro exige afinidade', 'c']
         ],
-        hab: [['n', 'Nome', 't'], ['t', 'Descrição (se escrever "gasta 2 PE", o custo aparece no botão)', 'a']],
+        hab: [
+          ['n', 'Nome', 't'], ['cl', 'Classe', 's', HBCL], ['pe', HBPEL, 'n'], ['t', 'Descrição', 'a']
+        ],
         pod: [
-          ['n', 'Nome', 't'], ['el', 'Elemento', 's', HBEL.map(e => [e, e])], ['t', 'Descrição', 'a'],
+          ['n', 'Nome', 't'], ['el', 'Elemento', 's', HBEL.map(e => [e, e])], ['pe', HBPEL, 'n'], ['t', 'Descrição', 'a'],
           ['s', 'Resumo (opcional)', 't'], ['a', 'Afinidade (opcional)', 'a']
         ],
         mal: [
-          ['n', 'Nome', 't'], ['el', 'Elemento', 's', HBEL.map(e => [e, e])],
+          ['n', 'Nome', 't'], ['el', 'Elemento', 's', HBEL.map(e => [e, e])], ['pe', HBPEL, 'n'],
           ['k', 'Aplica em', 's',
            [['arma', 'Qualquer arma'], ['corpo', 'Só corpo a corpo'], ['prot', 'Proteções e escudo'],
             ['acc', 'Utensílios e vestuários']]],
@@ -58,6 +63,8 @@ const HBT = [
           ['pr', 'Resistência (texto) — proteção', 't'], ['q', 'Quantidade/ataques — munição', 'n']
         ]
       };
+// custo de PE das habilidades e poderes homebrew (nome → PE); lido por abl() em js/rules/abilities.js
+const HBPE = Object.create(null);
 const HB = {k: [], key: '', mw: [], mod: {prot: [], acc: []}},
       HBMOD = HB.mod,
       // texto seguro (o Mestre escreve, o jogador lê: nunca confiar no HTML)
@@ -85,7 +92,7 @@ const hbCount = c => HBT.reduce((n, [t]) => n + (((c.homebrew || {})[t]) || []).
 function hbUsed(c, t, x) {
   const n = hbN(x.n), inv = c.inv || [];
   return t == 'rit' ? (c.rit || []).some(r => typeof r == 'string' && r.split('|')[0] == n) :
-    t == 'hab'      ? (c.ab || []).some(a => a.hb == x.id) :
+    t == 'hab'      ? (c.ab || []).some(a => a.hb == x.id || (a.pw && a.n == n)) :
     t == 'pod'      ? (c.ab || []).some(a => a.el && a.n == n) :
     t == 'mal'      ? inv.some(i => (i.cur || []).some(m => mb(m) == n)) :
     t == 'mel'      ? inv.some(i => (i.mods || []).some(m => mb(m) == n)) :
@@ -139,6 +146,7 @@ function hbClear() {
   cut(CURSES);
   Object.keys(CAT).forEach(k => cut(CAT[k]));
   Object.keys(D.PP || {}).forEach(e => cut(D.PP[e]));
+  ['Combatente', 'Especialista', 'Ocultista'].forEach(k => cut(D[k].pow));
   HB.k.forEach(([o, k]) => {delete o[k]});
   HB.k = [];
   [MW_ALL, MW_FIRE].forEach(a => {
@@ -169,15 +177,28 @@ function hbApply(H) {
     put(INFO, n, [hbT(r.ex), hbT(r.al), hbT(r.av), hbT(r.du), hbT(r.re)]);
     put(DS, n, [hbT(r.x || r.s), r.hd == '1' ? hbT(r.dt) : '', r.hv == '1' ? hbT(r.vt) : ''])
   });
+  // custo de PE digitado pelo Mestre (vazio/ inválido = null: o app lê "gasta N PE" do texto)
+  const pe = v => v === '' || v == null || isNaN(+v) ? null : Math.max(0, Math.min(99, Math.floor(+v)));
+  H.hab.forEach(h => {
+    const n = hbN(h.n), cl = ['Combatente', 'Especialista', 'Ocultista'].includes(h.cl) ? [h.cl] : ['Combatente', 'Especialista', 'Ocultista'];
+    if (!n || ['Combatente', 'Especialista', 'Ocultista'].some(k => D[k].pow.some(z => z.n == n))) return;
+    cl.forEach(k => {
+      D[k].pow.push({n, t: hbT(h.t), s: '', p: '', hb: 1});
+      D[k].pow.sort((a, b) => a.n.localeCompare(b.n, 'pt'))
+    });
+    if (pe(h.pe) != null) put(HBPE, n, pe(h.pe))
+  });
   H.pod.forEach(p => {
     const n = hbN(p.n), el = HBEL.includes(p.el) ? p.el : 'Conhecimento';
     if (!n || !D.PP[el] || D.PP[el].some(z => z.n == n)) return;
-    D.PP[el].push({n, t: hbT(p.t), s: hbT(p.s), p: '', a: hbT(p.a), hb: 1})
+    D.PP[el].push({n, t: hbT(p.t), s: hbT(p.s), p: '', a: hbT(p.a), hb: 1});
+    if (pe(p.pe) != null) put(HBPE, n, pe(p.pe))
   });
   H.mal.forEach(m => {
     const n = hbN(m.n), el = HBEL.includes(m.el) ? m.el : 'Conhecimento';
     if (!n || CURSES.some(z => z.n == n)) return;
-    CURSES.push({n, el, k: ['arma', 'corpo', 'prot', 'acc'].includes(m.k) ? m.k : 'arma', t: hbT(m.t), hb: 1})
+    CURSES.push({n, el, k: ['arma', 'corpo', 'prot', 'acc'].includes(m.k) ? m.k : 'arma', t: hbT(m.t), hb: 1});
+    if (!(n in CUX)) put(CUX, n, pe(m.pe) ? {s: hbT(m.t).slice(0, 110), pe: pe(m.pe)} : {s: hbT(m.t).slice(0, 110)})
   });
   H.mel.forEach(m => {
     const n = hbN(m.n);
@@ -236,29 +257,6 @@ function hbSync() {
   }
 }
 
-// ---- Habilidades homebrew na aba de habilidades da ficha ----
-function hbAbSec(c) {
-  const l = hbSrc('hab');
-  if (!l.length) return '';
-  return `<div class=bar>Habilidades homebrew</div>${l.map(h => {
-    const has = (c.ab || []).some(a => a.hb == hbI(h));
-    return `<div class="card row"><div style="flex:1"><b>${hbT(hbN(h.n))}</b><br><small>${
-      md(hbT(h.t).slice(0, 90))}${hbT(h.t).length > 90 ? '…' : ''}</small></div><button class=btn style="width:auto;padding:6px 12px" onclick="hbAb('${
-      hbI(h)}')">${has ? 'Remover' : 'Adicionar'}</button></div>`
-  }).join('')}`
-}
-function hbAb(id) {
-  const h = hbSrc('hab').find(x => hbI(x) == id);
-  if (!h) return;
-  mut(c => {
-    c.ab = c.ab || [];
-    if (c.ab.some(a => a.hb == id))
-      c.ab = c.ab.filter(a => a.hb != id);
-    else
-      abAdd(c, {n: hbN(h.n), t: hbT(h.t), hb: id})
-  })
-}
-
 // ---- Editor do Mestre: biblioteca (menu do Mestre) e seleção por campanha (dentro da campanha, S.hbx) ----
 const hbOwned = () => (S.camps || []).filter(x => x.role == 'owner'),
       hbCopy = x => JSON.parse(JSON.stringify(x)),
@@ -307,7 +305,8 @@ function hbAll(on) {
 }
 function hbSub(t, x) {
   return t == 'rit' ? `${x.ci || 1}º círculo · ${x.el || ''}` :
-    t == 'pod' || t == 'mal'                              ? `${x.el || ''}${x.k ? ' · ' + x.k : ''}` :
+    t == 'hab'                                            ? (x.cl || 'Geral') + (x.pe !== '' && x.pe != null ? ' · ' + x.pe + ' PE' : '') :
+    t == 'pod' || t == 'mal'                              ? `${x.el || ''}${x.k ? ' · ' + x.k : ''}${x.pe ? ' · ' + x.pe + ' PE' : ''}` :
     t == 'mel'                                            ? 'Melhoria · ' + (x.k || 'arma') :
     t == 'eqp'                                            ? (HBEQ.find(z => z[0] == x.k) || [, ''])[1] :
                                                             String(x.t || '').slice(0, 60)

@@ -141,7 +141,7 @@ const abl = (c, k) => [...pods(c, k), ...(k.o ? [[k.o[2], k.o[4], 'Energia', k.o
   }
   return [
     a.n,
-    TEC[a.n] ? 2 :
+    a.n in HBPE ? HBPE[a.n] : TEC[a.n] ? 2 :
                (OPT[a.n] && a.n == 'Paramédico' ? 2 :
                                                   (a.rp                          ? 0 :
                                                       a.n == 'Segurar o Gatilho' ? (c.sg || 0) + 1 :

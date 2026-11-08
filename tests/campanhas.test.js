@@ -147,14 +147,15 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   J.add('pro', ip);
   const k1 = J.K(J.cur());
   T('Proteção homebrew soma na Defesa e mostra a resistência', k1.def > d0 && /Colete Reforçado Z/.test(k1.pr.n) && k1.pr.r == 'Balístico 3', d0 + ' → ' + k1.def);
-  // habilidade homebrew na aba de habilidades
-  const sec = J.hbAbSec(J.cur());
-  T('Aba de habilidades oferece a habilidade homebrew', /Faro para Problemas/.test(sec) && /Adicionar/.test(sec));
-  J.hbAb(jc.homebrew.hab[0].id);
-  T('Adicionar: vira habilidade da ficha, com o custo em PE lido do texto', J.cur().ab.some((a) => a.n == 'Faro para Problemas') && J.abl(J.cur(), J.K(J.cur())).some((p) => p[0] == 'Faro para Problemas' && p[1] == 2));
-  J.hbAb(jc.homebrew.hab[0].id);
-  T('Remover tira a habilidade', !J.cur().ab.some((a) => a.n == 'Faro para Problemas'));
-  J.hbAb(jc.homebrew.hab[0].id);
+  // habilidade homebrew: entra na lista de poderes de classe (subida de NEX); NÃO existe seção na aba de ações
+  const inPow = (app, n, cl) => app.D[cl].pow.some((z) => z.n == n);
+  T('Habilidade homebrew "Geral" entra nos poderes das três classes', ['Combatente', 'Especialista', 'Ocultista'].every((cl) => inPow(J, 'Faro para Problemas', cl)));
+  J.S.lv = { x: { q: '' } };
+  T('Aparece na lista de escolha de poder ao subir de NEX', /Faro para Problemas/.test(J.plist()));
+  J.S.lv = null; J.S.v = 'sheet'; J.S.tab = 1; J.R();
+  T('Aba de ações NÃO tem a seção "Habilidades homebrew"', !/Habilidades homebrew/.test(jog.el.innerHTML));
+  J.abAdd(J.cur(), { n: 'Faro para Problemas', t: 'Gaste 2 PE para sentir perigo.', pw: 1 });
+  T('Ao escolher o poder: vira habilidade da ficha, com o custo em PE lido do texto', J.cur().ab.some((a) => a.n == 'Faro para Problemas') && J.abl(J.cur(), J.K(J.cur())).some((p) => p[0] == 'Faro para Problemas' && p[1] == 2));
 
   // ---- 6. Segurança: texto do Mestre nunca vira HTML/JS no jogador
   const evil = J.RT.find((r) => /Evil/.test(r.n));
@@ -186,25 +187,25 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   const campS = () => DB.camps[0].homebrew;
   T('Item criado pela biblioteca (fora de campanha) NÃO vai para a campanha nem para os jogadores', !(campS().hab || []).some((x) => x.n == 'Habilidade Reserva') && !(campS().pod || []).some((x) => x.n == 'Poder Reserva'));
   await J.campPull(); J.S.v = 'sheet'; J.R();
-  T('Jogador não vê o item não marcado (nem na lista de habilidades, nem nos poderes)', !/Habilidade Reserva/.test(J.hbAbSec(J.cur())) && !J.D.PP.Sangue.some((p) => p.n == 'Poder Reserva'));
+  T('Jogador não vê o item não marcado (nem na lista de habilidades, nem nos poderes)', !inPow(J, 'Habilidade Reserva', 'Ocultista') && !J.D.PP.Sangue.some((p) => p.n == 'Poder Reserva'));
   M.S.hbx = camp.id; M.S.hbt = 'hab';
   const reserva = M.hbLib().hab.find((x) => x.n == 'Habilidade Reserva');
   M.hbTog('hab', reserva.id); await sleep(1500);
   T('Marcar o check publica o item na campanha', (campS().hab || []).some((x) => x.n == 'Habilidade Reserva'));
   await J.campPull(); J.S.v = 'sheet'; J.R();
-  T('Jogador passa a ver o item marcado', /Habilidade Reserva/.test(J.hbAbSec(J.cur())));
+  T('Jogador passa a ver o item marcado', inPow(J, 'Habilidade Reserva', 'Ocultista'));
   M.hbTog('hab', reserva.id); await sleep(1500);
   await J.campPull(); J.S.v = 'sheet'; J.R();
-  T('Desmarcar tira o item dos jogadores (e da cópia da ficha, porque ela não usava)', !(campS().hab || []).some((x) => x.n == 'Habilidade Reserva') && !/Habilidade Reserva/.test(J.hbAbSec(J.cur())) && !((J.cur().hbs || {}).hab || []).some((x) => x.n == 'Habilidade Reserva'));
+  T('Desmarcar tira o item dos jogadores (e da cópia da ficha, porque ela não usava)', !(campS().hab || []).some((x) => x.n == 'Habilidade Reserva') && !inPow(J, 'Habilidade Reserva', 'Ocultista') && !((J.cur().hbs || {}).hab || []).some((x) => x.n == 'Habilidade Reserva'));
   M.S.hbt = 'pod'; M.hbAll(1); await sleep(1500);
   T('Marcar todos publica todos do tipo; desmarcar todos limpa', (campS().pod || []).some((x) => x.n == 'Poder Reserva'));
   M.hbAll(0); await sleep(1500);
   T('Desmarcar todos limpa o tipo na campanha, mas a biblioteca continua com os itens', !(campS().pod || []).length && M.hbLib().pod.some((x) => x.n == 'Poder Reserva'));
   // item que a ficha JÁ usa continua funcionando depois de desmarcado
-  M.S.hbt = 'hab'; M.hbTog('hab', reserva.id); await sleep(1500); await J.campPull(); J.S.v = 'sheet'; J.R(); J.hbAb(reserva.id.replace(/[^\w]/g, ''));
+  M.S.hbt = 'hab'; M.hbTog('hab', reserva.id); await sleep(1500); await J.campPull(); J.S.v = 'sheet'; J.R(); J.abAdd(J.cur(), { n: 'Habilidade Reserva', t: 'Só para outra campanha.', pw: 1 });
   M.hbTog('hab', reserva.id); await sleep(1500); await J.campPull(); J.S.v = 'sheet'; J.R();
   T('Item já usado pela ficha continua nela depois de desmarcado', J.cur().ab.some((a) => a.n == 'Habilidade Reserva') && ((J.cur().hbs || {}).hab || []).some((x) => x.n == 'Habilidade Reserva'));
-  J.hbAb(reserva.id.replace(/[^\w]/g, '')); J.R();
+  J.cur().ab = J.cur().ab.filter((a) => a.n != 'Habilidade Reserva'); J.R();
   // editar na biblioteca atualiza as campanhas que já publicam o item
   M.S.hbx = camp.id; M.S.hbt = 'rit';
   const rr = M.hbLib().rit.find((x) => x.n == 'Chuva de Cinzas');
@@ -281,6 +282,22 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   const lixo = await J.sb.rpc('camp_combat_set', { p_camp: camp.id, p_data: { on: 1, l: [] } });
   T('Jogador NÃO consegue publicar combate (só o Mestre)', !!lixo.error && !DB.combat[camp.id]);
   M.cmbClear(); M.S.v = 'camp';
+
+  // ---- 7g. Custo de PE e classe nas habilidades, poderes e maldições
+  M.S.hbx = camp.id;
+  await save('hab', { n: 'Golpe Teste', cl: 'Combatente', pe: '3', t: 'Um golpe.' });
+  await save('hab', { n: 'Passiva Zero', cl: 'Geral', pe: '0', t: 'Gasta 5 PE (texto), mas o campo diz 0.' });
+  await save('hab', { n: 'Custo Do Texto', cl: 'Especialista', pe: '', t: 'Você gasta 6 PE para isso.' });
+  await save('pod', { n: 'Poder Pago', el: 'Sangue', pe: '4', t: 'Poder.', s: 's', a: '' });
+  await save('mal', { n: 'Maldição Paga', el: 'Morte', k: 'arma', pe: '2', t: 'Maldição que gasta PE.' });
+  await sleep(1500); await J.campPull(); J.S.v = 'sheet'; J.S.tab = 0; J.R();
+  T('Habilidade de classe só aparece na classe dela (Geral aparece nas três)', inPow(J, 'Golpe Teste', 'Combatente') && !inPow(J, 'Golpe Teste', 'Ocultista') && !inPow(J, 'Golpe Teste', 'Especialista') && inPow(J, 'Passiva Zero', 'Ocultista') && inPow(J, 'Passiva Zero', 'Combatente') && inPow(J, 'Custo Do Texto', 'Especialista') && !inPow(J, 'Custo Do Texto', 'Combatente'));
+  const custo = (n, extra) => { J.abAdd(J.cur(), Object.assign({ n, t: 'x', pw: 1 }, extra || {})); const v = J.abl(J.cur(), J.K(J.cur())).find((p) => p[0] == n); J.cur().ab = J.cur().ab.filter((a) => a.n != n); return v && v[1]; };
+  T('Campo de custo de PE da habilidade vale (3); 0 vale como passiva; vazio lê do texto (6)', custo('Golpe Teste') === 3 && custo('Passiva Zero') === 0 && custo('Custo Do Texto') === 6, [custo('Golpe Teste'), custo('Passiva Zero'), custo('Custo Do Texto')].join());
+  T('Poder paranormal homebrew com custo de PE (4)', custo('Poder Pago', { el: 'Sangue' }) === 4);
+  T('Maldição homebrew com custo de PE (2) fica usável (CUX), com resumo', J.CUX['Maldição Paga'] && J.CUX['Maldição Paga'].pe == 2 && /Maldição que gasta PE/.test(J.CUX['Maldição Paga'].s));
+  T('Formulário tem Classe e Custo de PE em habilidade, poder e maldição', ['hab', 'pod', 'mal'].every((t) => M.HBF[t].some((f) => f[0] == 'pe' && f[2] == 'n')) && M.HBF.hab.some((f) => f[0] == 'cl' && f[3].map((o) => o[0]).join() == 'Geral,Combatente,Especialista,Ocultista'));
+  M.S.hbx = null; await J.campPull(); J.S.v = 'sheet'; J.R();
 
   // ---- 8. Mestre apaga um ritual: a ficha que já usou continua funcionando
   const ana2 = J.cur(); ana2.rit.push('Chuva de Cinzas'); J.S.v = 'sheet'; J.R();

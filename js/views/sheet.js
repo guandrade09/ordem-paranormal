@@ -247,7 +247,7 @@ ${fl('PROTEÇÃO', k.pr.n + (c.inv.some(x => PR[x.n] && lack(c, x)) ? ' ⚠️' 
                p[1] ? `<b class=pec>${p[1]} PE</b>` : ''}</div>`)
         .join('')}
 ${curCards(c)}
-${hbAbSec(c)}${rsheet(c, k)}`
+${rsheet(c, k)}`
   }
   if (S.tab == 2) {
     const pt = PT.map((p, i) => c.pp >= p[1] ? i : 0).reduce((a, b) => Math.max(a, b)), P = PT[pt], N = PT[pt + 1],
