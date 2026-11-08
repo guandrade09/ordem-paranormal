@@ -24,9 +24,11 @@ async function campPull() {
     const loc = new Map((S.camps || []).map(c => [c.id, c]));
     S.camps = (r.data || []).map(x => {
       const l = loc.get(x.id);
+      if (x.role == 'member' && l && l.gift) x.gift = l.gift;  // enquanto busca, mantém os itens exclusivos já recebidos
       return l && l.d && x.role == 'owner' ? l : x
     });
     CAMP.err = '';
+    await Promise.all(S.camps.filter(x => x.role == 'member').map(gfMine));
     save();
     return true
   } catch (e) {
@@ -296,6 +298,63 @@ async function cbPoll() {
     if (e && h !== CB.html[c.id]) {
       CB.html[c.id] = h;
       e.innerHTML = h
+    }
+  }
+}
+
+
+// ---- Homebrew EXCLUSIVO por jogador (o Mestre dá um item a UM jogador; só ele recebe, os outros nunca veem) ----
+// Mestre: CG.all[campanha] = { <código do jogador>: { rit: [...], hab: [...] … } } (a verdade fica no servidor)
+// Jogador: S.camps[i].gift = o que é só dele (guardado para funcionar sem internet)
+const CG = {all: {}, err: '', busy: {}};
+const gfErr = e => cbMiss(e) ?
+  'O homebrew exclusivo ainda não foi ativado neste servidor: rode o bloco "HOMEBREW EXCLUSIVO POR JOGADOR" do supabase.sql no Supabase (SQL Editor) uma vez.' :
+  aerr(e);
+async function gfMine(c) {
+  try {
+    const r = await sb.rpc('camp_gifts_mine', {p_camp: c.id});
+    if (!r.error && r.data && typeof r.data == 'object') c.gift = r.data
+  } catch (e) {
+  }
+}
+async function gfFetch(c) {
+  if (!campOk() || typeof sb.rpc != 'function') return CG.all[c.id] || {};
+  try {
+    const r = await sb.rpc('camp_gifts', {p_camp: c.id});
+    if (r.error) throw r.error;
+    CG.all[c.id] = r.data && typeof r.data == 'object' ? r.data : {};
+    CG.err = ''
+  } catch (e) {
+    CG.err = gfErr(e)
+  }
+  return CG.all[c.id] || {}
+}
+// Envia o que é exclusivo de UM jogador (vazio = nada)
+async function gfPush(c, k) {
+  const pl = (CG.all[c.id] || {})[k] || {}, empty = !HBT.some(([t]) => (pl[t] || []).length);
+  if (!campOk() || typeof sb.rpc != 'function') {
+    CG.err = 'Sem internet: o item exclusivo não foi enviado.';
+    return
+  }
+  try {
+    const r = await sb.rpc('camp_gift_set', {p_camp: c.id, p_k: k, p_data: empty ? null : pl});
+    if (r.error) throw r.error;
+    CG.err = ''
+  } catch (e) {
+    CG.err = gfErr(e)
+  }
+}
+// Item da biblioteca mudou ou foi excluído: atualiza (ou tira) as cópias exclusivas já entregues
+async function gfPropagate(t, x, id) {
+  for (const c of S.camps || []) {
+    if (c.role != 'owner') continue;
+    const all = await gfFetch(c);
+    for (const k of Object.keys(all)) {
+      const l = (all[k] || {})[t] || [], i = l.findIndex(z => z.id == id);
+      if (i < 0) continue;
+      if (x) l[i] = hbCopy(x);
+      else l.splice(i, 1);
+      await gfPush(c, k)
     }
   }
 }

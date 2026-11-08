@@ -343,3 +343,62 @@ end $$;
 revoke all on function public.camp_combat_set(uuid,jsonb), public.camp_combat_get(uuid) from public, anon;
 grant execute on function public.camp_combat_set(uuid,jsonb), public.camp_combat_get(uuid) to authenticated;
 
+-- =====================================================================================
+-- HOMEBREW EXCLUSIVO POR JOGADOR (v0.26.9) — rode este bloco no SQL Editor (pode rodar de novo).
+-- O Mestre dá itens do homebrew a UM jogador; só ele recebe (os outros nunca veem).
+-- =====================================================================================
+create table if not exists public.campaign_gifts (
+  campaign_id uuid        not null references public.campaigns(id) on delete cascade,
+  user_id     uuid        not null references auth.users(id) on delete cascade,
+  data        jsonb       not null default '{}'::jsonb,
+  updated_at  timestamptz not null default now(),
+  primary key (campaign_id, user_id),
+  constraint campaign_gifts_obj  check (jsonb_typeof(data) = 'object'),
+  constraint campaign_gifts_size check (octet_length(data::text) < 400000)
+);
+alter table public.campaign_gifts enable row level security;
+revoke all on public.campaign_gifts from anon, authenticated;
+
+-- Mestre dá/retira: p_k = código curto do jogador (o mesmo de camp_sheets); p_data nulo/vazio = nada exclusivo
+create or replace function public.camp_gift_set(p_camp uuid, p_k text, p_data jsonb) returns void
+language plpgsql security definer set search_path = '' as $$
+declare u uuid;
+begin
+  if not exists (select 1 from public.campaigns where id = p_camp and owner = auth.uid()) then
+    raise exception 'Campanha não encontrada.';
+  end if;
+  select m.user_id into u from public.campaign_members m
+   where m.campaign_id = p_camp and left(md5(m.user_id::text), 8) = p_k limit 1;
+  if u is null then raise exception 'Jogador não encontrado nesta campanha.'; end if;
+  if p_data is null or jsonb_typeof(p_data) <> 'object' or p_data = '{}'::jsonb then
+    delete from public.campaign_gifts where campaign_id = p_camp and user_id = u;
+  else
+    insert into public.campaign_gifts (campaign_id, user_id, data) values (p_camp, u, p_data)
+    on conflict (campaign_id, user_id) do update set data = excluded.data, updated_at = now();
+  end if;
+end $$;
+
+-- Mestre lê tudo: { "<código do jogador>": { rit: [...], hab: [...], ... } }
+create or replace function public.camp_gifts(p_camp uuid) returns jsonb
+language plpgsql security definer stable set search_path = '' as $$
+begin
+  if not exists (select 1 from public.campaigns where id = p_camp and owner = auth.uid()) then
+    raise exception 'Campanha não encontrada.';
+  end if;
+  return coalesce((select jsonb_object_agg(left(md5(g.user_id::text), 8), g.data)
+                     from public.campaign_gifts g where g.campaign_id = p_camp), '{}'::jsonb);
+end $$;
+
+-- Jogador lê só o DELE
+create or replace function public.camp_gifts_mine(p_camp uuid) returns jsonb
+language plpgsql security definer stable set search_path = '' as $$
+begin
+  if not exists (select 1 from public.campaign_members where campaign_id = p_camp and user_id = auth.uid()) then
+    raise exception 'Campanha não encontrada.';
+  end if;
+  return coalesce((select data from public.campaign_gifts where campaign_id = p_camp and user_id = auth.uid()), '{}'::jsonb);
+end $$;
+
+revoke all on function public.camp_gift_set(uuid,text,jsonb), public.camp_gifts(uuid), public.camp_gifts_mine(uuid) from public, anon;
+grant execute on function public.camp_gift_set(uuid,text,jsonb), public.camp_gifts(uuid), public.camp_gifts_mine(uuid) to authenticated;
+

@@ -120,7 +120,10 @@ function hbData() {
     if (own) {
       const old = c.hbs || {}, mg = {};
       HBT.forEach(([t]) => {
-        const nw = (own.homebrew && own.homebrew[t]) || [], ids = new Set(nw.map(x => x.id));
+        // o da campanha + o que o Mestre deu só para este jogador (exclusivo, sem repetir)
+        const pub = (own.homebrew && own.homebrew[t]) || [],
+              nw = pub.concat(((own.gift && own.gift[t]) || []).filter(g => g && !pub.some(p => p.id == g.id))),
+              ids = new Set(nw.map(x => x.id));
         mg[t] = nw.concat((old[t] || []).filter(x => x && !ids.has(x.id) && hbUsed(c, t, x)))
       });
       const sn = {};  // a cópia na ficha não leva imagens (a ficha não pode ficar pesada)
@@ -277,7 +280,9 @@ function hbmv() {
       cx ? `<input type=checkbox class=ck ${
              hbIn(cx, t, x.id) ? 'checked' : ''} onclick="event.stopPropagation()" onchange="hbTog('${t}','${x.id}')">` : ''}${
       HBIMG.test(x.img || '') ? `<img class="rimg ic" style="width:48px;height:48px" src="${x.img}" alt="">` : ''}<div style="flex:1"><b>${aesc(x.n)}</b><br><small>${
-      aesc(hbSub(t, x))}${cx ? '' : ' · em ' + hbOwned().filter(cp => hbIn(cp, t, x.id)).length + ' campanha(s)'}</small></div><button class=x onclick="event.stopPropagation();hbDel('${
+      aesc(hbSub(t, x))}${cx ? '' : ' · em ' + hbOwned().filter(cp => hbIn(cp, t, x.id)).length + ' campanha(s)'}</small>${
+      cx ? gfWho(cx, t, x.id) : ''}</div>${
+      cx ? `<button class=x title="Dar só a um jogador" onclick="event.stopPropagation();gfOpen('${t}','${x.id}')">＋</button>` : ''}<button class=x onclick="event.stopPropagation();hbDel('${
       t}','${x.id}')">✕</button></div>`)
       .join('') || '<p><small>Nada criado neste tipo ainda.</small></p>'}</div>`
 }
@@ -294,6 +299,52 @@ function hbTog(t, id) {
   }
   campSave(c);
   R()
+}
+// ---- Exclusivo por jogador ----
+// Jogadores com ficha na campanha (o Mestre os conhece pelo código curto, igual ao das fichas ao vivo)
+function gfPlayers(c) {
+  const m = new Map();
+  (CS.data[c.id] || []).forEach(x => {
+    if (!m.has(x.k)) m.set(x.k, String((x.data && x.data.name) || 'Jogador').slice(0, 40))
+  });
+  Object.keys(CG.all[c.id] || {}).forEach(k => {
+    if (!m.has(k)) m.set(k, 'Jogador')
+  });
+  return [...m].map(([k, name]) => ({k, name}))
+}
+const gfHas = (c, k, t, id) => (((CG.all[c.id] || {})[k] || {})[t] || []).some(z => z.id == id);
+// "Exclusivo: Ana, Bia" embaixo do nome do item (só o Mestre vê)
+const gfWho = (c, t, id) => {
+  const n = gfPlayers(c).filter(p => gfHas(c, p.k, t, id)).map(p => aesc(p.name));
+  return n.length ? `<br><small style="color:var(--red)">Exclusivo: ${n.join(', ')}</small>` : ''
+};
+async function gfLoad() {
+  const c = hbOwned().find(x => x.id == S.hbx);
+  if (!c) return;
+  await Promise.all([gfFetch(c), csPoll(true)]);
+  if (S.v == 'hbm') R()
+}
+function gfOpen(t, id) {
+  const c = hbOwned().find(x => x.id == S.hbx), x = (hbLib()[t] || []).find(z => z.id == id);
+  if (!c || !x) return;
+  const ps = gfPlayers(c);
+  modal(`<button class=xc onclick="cm();R()">✕</button><b>${aesc(x.n)}</b><p><small>Marque os jogadores que recebem este item <b>só para eles</b>. Vale mesmo se ele estiver desmarcado para a campanha; os outros jogadores não veem nada.</small></p>${
+    CG.err ? `<div class=card style="border-color:var(--red)"><small>⚠ ${aesc(CG.err)}</small></div>` : ''}${
+    ps.map(p => `<label class=row style="gap:10px;align-items:center;margin:8px 0"><input type=checkbox class=ck ${
+      gfHas(c, p.k, t, id) ? 'checked' : ''} onchange="gfTog('${t}','${id}','${p.k}')"><span>${aesc(p.name)}</span></label>`).join('') ||
+    '<p><small>Nenhum jogador vinculou uma ficha a esta campanha ainda.</small></p>'}`)
+}
+async function gfTog(t, id, k) {
+  const c = hbOwned().find(x => x.id == S.hbx);
+  if (!c || !/^\w{1,16}$/.test(k)) return;
+  const all = CG.all[c.id] = CG.all[c.id] || {}, pl = all[k] = all[k] || {}, l = pl[t] = pl[t] || [], i = l.findIndex(z => z.id == id);
+  if (i >= 0)
+    l.splice(i, 1);
+  else {
+    const x = (hbLib()[t] || []).find(z => z.id == id);
+    if (x) l.push(hbCopy(x))
+  }
+  await gfPush(c, k)
 }
 function hbAll(on) {
   const c = hbOwned().find(x => x.id == S.hbx), t = S.hbt || 'rit';
@@ -433,6 +484,7 @@ function hbSave(t, id) {
     }
   });
   save();
+  gfPropagate(t, o, o.id);
   cm();
   R()
 }
@@ -452,5 +504,6 @@ function hbDel2(t, id) {
     }
   });
   save();
+  gfPropagate(t, null, id);
   R()
 }

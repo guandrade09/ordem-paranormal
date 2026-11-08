@@ -123,7 +123,7 @@ function campv() {
     own ? `<label><small>Nome</small><input value="${aesc(c.name)}" maxlength=80 style="width:100%" onchange="campEd('name',this.value)"></label><label><small>Descrição</small><textarea rows=4 style="width:100%" onchange="campEd('descr',this.value)">${
             aesc(c.descr || '')}</textarea></label><div class=card><small>Para convidar</small><br>Código <b style="font-size:22px;letter-spacing:3px">${
             aesc(c.code || '')}</b> · ${c.members || 0} jogador(es)<br><button class=btn style="margin-top:8px" onclick="campPassM()">Trocar senha</button></div><button class=btn onclick="S.hbx='${
-            c.id}';S.v='hbm';R()">Homebrew desta campanha (${hbCount(c)} marcado(s))</button><button class=btn onclick="campCombat()">⚔ Criador de Combates${
+            c.id}';S.v='hbm';R();gfLoad()">Homebrew desta campanha (${hbCount(c)} marcado(s))</button><button class=btn onclick="campCombat()">⚔ Criador de Combates${
             ((S.cmbs || {})[c.id] || {}).on ? ' (em andamento)' : ''}</button><div class=bar>Missões</div><small>Só você enxerga as missões: use para planejar.</small>${
             (c.missions || []).map(m => `<div class=card><div style="display:flex;gap:8px;align-items:center"><input type=checkbox class=ck ${
                                           m.ok ? 'checked' : ''} onchange="campMis('${m.id}','ok',this.checked)"><input value="${

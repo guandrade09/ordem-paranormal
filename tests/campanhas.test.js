@@ -5,7 +5,7 @@
  */
 const { loadApp } = require('./helpers/app-loader');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const DB = { camps: [], members: [], att: [], n: 0, noSql: false, sheets: [], combat: {}, noCombat: false };
+const DB = { camps: [], members: [], att: [], n: 0, noSql: false, sheets: [], combat: {}, noCombat: false, gifts: [], noGifts: false };
 
 function rpc(uid, name, a) {
   if (DB.noSql) return { data: null, error: { message: 'Could not find the function public.' + name + ' in the schema cache', code: 'PGRST202' } };
@@ -43,6 +43,25 @@ function rpc(uid, name, a) {
     return { data: JSON.parse(JSON.stringify(DB.sheets.filter((z) => z.c == a.p_camp).map((z) => ({ k: z.u.slice(0, 8), cid: z.cid, data: z.data, upd: z.upd })))) };
   }
   if ((name == 'camp_combat_set' || name == 'camp_combat_get') && DB.noCombat) return { error: { message: 'Could not find the function public.' + name + ' in the schema cache' } };
+  if (/^camp_gift/.test(name) && DB.noGifts) return { error: { message: 'Could not find the function public.' + name + ' in the schema cache' } };
+  if (name == 'camp_gift_set') {
+    if (!mine(a.p_camp)) return { error: { message: 'Campanha não encontrada.' } };
+    const m = DB.members.find((z) => z.c == a.p_camp && z.u.slice(0, 8) == a.p_k);
+    if (!m) return { error: { message: 'Jogador não encontrado nesta campanha.' } };
+    DB.gifts = DB.gifts.filter((z) => !(z.c == a.p_camp && z.u == m.u));
+    if (a.p_data && Object.keys(a.p_data).length) DB.gifts.push({ c: a.p_camp, u: m.u, data: JSON.parse(JSON.stringify(a.p_data)) });
+    return { data: null };
+  }
+  if (name == 'camp_gifts') {
+    if (!mine(a.p_camp)) return { error: { message: 'Campanha não encontrada.' } };
+    const o = {}; DB.gifts.filter((z) => z.c == a.p_camp).forEach((z) => { o[z.u.slice(0, 8)] = JSON.parse(JSON.stringify(z.data)); });
+    return { data: o };
+  }
+  if (name == 'camp_gifts_mine') {
+    if (!DB.members.some((m) => m.c == a.p_camp && m.u == uid)) return { error: { message: 'Campanha não encontrada.' } };
+    const g = DB.gifts.find((z) => z.c == a.p_camp && z.u == uid);
+    return { data: g ? JSON.parse(JSON.stringify(g.data)) : {} };
+  }
   if (name == 'camp_combat_set') {
     if (!mine(a.p_camp)) return { error: { message: 'Campanha não encontrada.' } };
     if (a.p_data == null) delete DB.combat[a.p_camp]; else DB.combat[a.p_camp] = JSON.parse(JSON.stringify(a.p_data));
@@ -363,6 +382,40 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   DB.noCombat = false; M.cmbPub(); await sleep(900);
   T('Com o SQL ativo o aviso some e o combate é publicado', M.CB.err === '' && M.CB.ok === 1 && DB.combat[camp.id]);
   M.cmbClear(); await sleep(900); M.S.v = 'camp';
+
+  // ---- 7h. Homebrew EXCLUSIVO de um jogador (o "＋" ao lado do check)
+  M.S.hbx = camp.id; M.S.hbt = 'pod';
+  await save('pod', { n: 'Poder Secreto', el: 'Morte', pe: '', t: 'Só para a Ana.', s: 's', a: '' });
+  const sec = M.hbLib().pod.find((x) => x.n == 'Poder Secreto');
+  M.hbAll(0); await sleep(1300); // nada marcado para a campanha inteira
+  await M.csPoll(true); await M.gfLoad();
+  const kAna = M.gfPlayers(M.hbOwned().find((x) => x.id == camp.id)).find((p) => p.name == 'Ana');
+  T('Mestre vê os jogadores da campanha para escolher (por nome da ficha)', !!kAna && /^\w+$/.test(kAna.k));
+  mestre.el.innerHTML = M.hbmv();
+  T('Cada item tem o botão ＋ (só na campanha)', /gfOpen\('pod','/.test(mestre.el.innerHTML));
+  M.gfOpen('pod', sec.id);
+  T('Janela do ＋ lista o jogador com check', /Ana/.test(mestre.el.innerHTML) && /só para eles/.test(mestre.el.innerHTML));
+  await M.gfTog('pod', sec.id, kAna.k);
+  T('Dar ao jogador grava no servidor só para ele (vazio não grava)', DB.gifts.length == 1 && DB.gifts[0].data.pod.some((x) => x.n == 'Poder Secreto'));
+  T('Item continua NÃO publicado para a campanha (anônimo)', !(DB.camps[0].homebrew.pod || []).some((x) => x.n == 'Poder Secreto'));
+  await J.campPull(); J.S.v = 'sheet'; J.R();
+  T('Jogador que recebeu vê o poder nas listas', J.D.PP.Morte.some((p) => p.n == 'Poder Secreto') && (J.S.camps.find((x) => x.id == camp.id).gift.pod || []).length == 1);
+  mestre.el.innerHTML = (M.S.v = 'hbm', M.hbmv());
+  T('Mestre vê "Exclusivo: Ana" embaixo do item', /Exclusivo: Ana/.test(mestre.el.innerHTML));
+  // outro jogador NÃO vê: simula trocando o código do dono do presente
+  DB.gifts[0].u = 'ffffffff-0000-0000-0000-000000000000';
+  await J.campPull(); J.S.v = 'sheet'; J.R();
+  T('Quem não recebeu não vê o item (a ficha só guarda o que usou)', !J.D.PP.Morte.some((p) => p.n == 'Poder Secreto') || ((J.cur().hbs || {}).pod || []).some((x) => x.n == 'Poder Secreto'));
+  DB.gifts[0].u = DB.members.find((m) => m.u.slice(0, 8) == kAna.k).u;
+  setIn(mestre, { hf_n: 'Poder Secreto', hf_el: 'Morte', hf_pe: '', hf_t: 'Texto novo.', hf_s: 's', hf_a: '' }); M.hbSave('pod', sec.id); await sleep(300);
+  T('Editar o item na biblioteca atualiza a cópia exclusiva', DB.gifts[0].data.pod.find((x) => x.n == 'Poder Secreto').t == 'Texto novo.');
+  await M.gfTog('pod', sec.id, kAna.k);
+  T('Tirar o ＋ remove do jogador (nada sobra no servidor)', DB.gifts.length == 0);
+  await M.gfTog('pod', sec.id, kAna.k); M.hbDel2('pod', sec.id); await sleep(300);
+  T('Excluir o item da biblioteca tira também o exclusivo', DB.gifts.length == 0);
+  DB.noGifts = true; await M.gfLoad(); M.S.hbx = camp.id; M.gfOpen('pod', 'x');
+  T('Sem o SQL novo: aviso com o nome do bloco', /HOMEBREW EXCLUSIVO POR JOGADOR/.test(M.CG.err));
+  DB.noGifts = false; await M.gfLoad(); M.S.hbx = null; M.S.v = 'camp';
 
   // ---- 8. Mestre apaga um ritual: a ficha que já usou continua funcionando
   const ana2 = J.cur(); ana2.rit.push('Chuva de Cinzas'); J.S.v = 'sheet'; J.R();
