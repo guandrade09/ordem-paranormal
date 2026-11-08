@@ -5,7 +5,7 @@
  */
 const { loadApp } = require('./helpers/app-loader');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const DB = { camps: [], members: [], att: [], n: 0, noSql: false };
+const DB = { camps: [], members: [], att: [], n: 0, noSql: false, sheets: [] };
 
 function rpc(uid, name, a) {
   if (DB.noSql) return { data: null, error: { message: 'Could not find the function public.' + name + ' in the schema cache', code: 'PGRST202' } };
@@ -31,7 +31,18 @@ function rpc(uid, name, a) {
     if (!DB.members.some((m) => m.c == c.id && m.u == uid)) DB.members.push({ c: c.id, u: uid });
     return { data: { ok: true, id: c.id } };
   }
-  if (name == 'camp_leave') { DB.members = DB.members.filter((m) => !(m.c == a.p_id && m.u == uid)); return { data: null }; }
+  if (name == 'camp_sheet_put') {
+    if (!DB.members.some((m) => m.c == a.p_camp && m.u == uid)) return { error: { message: 'Você não está nesta campanha.' } };
+    const x = DB.sheets.find((z) => z.c == a.p_camp && z.u == uid && z.cid == a.p_cid), d = JSON.parse(JSON.stringify(a.p_data));
+    if (x) { x.data = d; x.upd = new Date(++DB.n + 1.7e12).toISOString(); } else DB.sheets.push({ c: a.p_camp, u: uid, cid: a.p_cid, data: d, upd: new Date(++DB.n + 1.7e12).toISOString() });
+    return { data: null };
+  }
+  if (name == 'camp_sheet_keep') { DB.sheets = DB.sheets.filter((z) => !(z.c == a.p_camp && z.u == uid) || a.p_cids.includes(z.cid)); return { data: null }; }
+  if (name == 'camp_sheets') {
+    if (!mine(a.p_camp)) return { error: { message: 'Campanha não encontrada.' } };
+    return { data: JSON.parse(JSON.stringify(DB.sheets.filter((z) => z.c == a.p_camp).map((z) => ({ k: z.u.slice(0, 8), cid: z.cid, data: z.data, upd: z.upd })))) };
+  }
+  if (name == 'camp_leave') { DB.sheets = DB.sheets.filter((z) => !(z.c == a.p_id && z.u == uid)); DB.members = DB.members.filter((m) => !(m.c == a.p_id && m.u == uid)); return { data: null }; }
   if (name == 'camp_delete') { DB.camps = DB.camps.filter((c) => !(c.id == a.p_id && c.owner == uid)); DB.members = DB.members.filter((m) => DB.camps.some((c) => c.id == m.c)); return { data: null }; }
   return { error: { message: 'função desconhecida' } };
 }
@@ -69,7 +80,7 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   T('Missão criada e enviada (só o Mestre tem)', DB.camps[0].missions.length == 1 && DB.camps[0].missions[0].t == 'Investigar o hotel');
 
   // ---- 3. Homebrew: um de cada tipo
-  M.S.hbc = camp.id;
+  M.S.hbx = camp.id;
   const save = async (t, vals) => { setIn(mestre, Object.fromEntries(Object.entries(vals).map(([k, v]) => ['hf_' + k, v]))); M.hbSave(t, ''); };
   await save('rit', { n: 'Chuva de Cinzas', ci: '2', el: 'Morte', s: 'Cinzas caem do céu.', x: 'Todos em 6m sofrem **2d6** de dano.', ex: 'padrão', al: 'curto', av: 'área', du: 'cena', re: 'Fortitude parcial' });
   await save('hab', { n: 'Faro para Problemas', t: 'Gaste 2 PE para sentir perigo.' });
@@ -158,9 +169,68 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   T('A cópia do homebrew guardada na ficha NÃO leva imagens (ficha leve)', J.cur().hbs && !/data:image/.test(JSON.stringify(J.cur().hbs)) && J.cur().hbs.rit.some((r) => r.n == 'Selo de Cinza'));
   T('Ritual do livro sem imagem continua com o desenho de sempre; com slug em RART mostra o PNG', (() => { const r = J.RT.find((z) => z.n == 'Cicatrização'); const a = J.rimg(r); J.RART.add('cicatrizacao'); const b = J.rimg(r); J.RART.delete('cicatrizacao'); return a === '' && /src="img\/rit\/cicatrizacao\.png"/.test(b); })());
 
+  // ---- 7c. Biblioteca do Mestre + seleção por campanha
+  M.S.hbx = null;
+  await save('hab', { n: 'Habilidade Reserva', t: 'Só para outra campanha.' });
+  await save('pod', { n: 'Poder Reserva', el: 'Sangue', t: 'Só para outra campanha.', s: 'x' });
+  await sleep(1500);
+  const campS = () => DB.camps[0].homebrew;
+  T('Item criado pela biblioteca (fora de campanha) NÃO vai para a campanha nem para os jogadores', !(campS().hab || []).some((x) => x.n == 'Habilidade Reserva') && !(campS().pod || []).some((x) => x.n == 'Poder Reserva'));
+  await J.campPull(); J.S.v = 'sheet'; J.R();
+  T('Jogador não vê o item não marcado (nem na lista de habilidades, nem nos poderes)', !/Habilidade Reserva/.test(J.hbAbSec(J.cur())) && !J.D.PP.Sangue.some((p) => p.n == 'Poder Reserva'));
+  M.S.hbx = camp.id; M.S.hbt = 'hab';
+  const reserva = M.hbLib().hab.find((x) => x.n == 'Habilidade Reserva');
+  M.hbTog('hab', reserva.id); await sleep(1500);
+  T('Marcar o check publica o item na campanha', (campS().hab || []).some((x) => x.n == 'Habilidade Reserva'));
+  await J.campPull(); J.S.v = 'sheet'; J.R();
+  T('Jogador passa a ver o item marcado', /Habilidade Reserva/.test(J.hbAbSec(J.cur())));
+  M.hbTog('hab', reserva.id); await sleep(1500);
+  await J.campPull(); J.S.v = 'sheet'; J.R();
+  T('Desmarcar tira o item dos jogadores (e da cópia da ficha, porque ela não usava)', !(campS().hab || []).some((x) => x.n == 'Habilidade Reserva') && !/Habilidade Reserva/.test(J.hbAbSec(J.cur())) && !((J.cur().hbs || {}).hab || []).some((x) => x.n == 'Habilidade Reserva'));
+  M.S.hbt = 'pod'; M.hbAll(1); await sleep(1500);
+  T('Marcar todos publica todos do tipo; desmarcar todos limpa', (campS().pod || []).some((x) => x.n == 'Poder Reserva'));
+  M.hbAll(0); await sleep(1500);
+  T('Desmarcar todos limpa o tipo na campanha, mas a biblioteca continua com os itens', !(campS().pod || []).length && M.hbLib().pod.some((x) => x.n == 'Poder Reserva'));
+  // item que a ficha JÁ usa continua funcionando depois de desmarcado
+  M.S.hbt = 'hab'; M.hbTog('hab', reserva.id); await sleep(1500); await J.campPull(); J.S.v = 'sheet'; J.R(); J.hbAb(reserva.id.replace(/[^\w]/g, ''));
+  M.hbTog('hab', reserva.id); await sleep(1500); await J.campPull(); J.S.v = 'sheet'; J.R();
+  T('Item já usado pela ficha continua nela depois de desmarcado', J.cur().ab.some((a) => a.n == 'Habilidade Reserva') && ((J.cur().hbs || {}).hab || []).some((x) => x.n == 'Habilidade Reserva'));
+  J.hbAb(reserva.id.replace(/[^\w]/g, '')); J.R();
+  // editar na biblioteca atualiza as campanhas que já publicam o item
+  M.S.hbx = camp.id; M.S.hbt = 'rit';
+  const rr = M.hbLib().rit.find((x) => x.n == 'Chuva de Cinzas');
+  setIn(mestre, { hf_n: 'Chuva de Cinzas', hf_ci: '3', hf_el: 'Morte', hf_s: 'Editado.', hf_x: 'Novo texto.' }); M.HB.img = ''; M.hbSave('rit', rr.id); await sleep(1500);
+  T('Editar um item da biblioteca atualiza a cópia nas campanhas que o publicam', campS().rit.find((x) => x.n == 'Chuva de Cinzas').ci == '3');
+  T('Biblioteca vai para a conta (user_state) e volta num aparelho novo', /"hb"/.test(JSON.stringify(Object.keys(M.stO([]))).concat(M.stO([]).hb ? '"hb"' : '')));
+
+  // ---- 7d. Fichas ao vivo: jogador envia, só o Mestre lê
+  await J.csPush();
+  T('Ficha vinculada do jogador é enviada à campanha (sem histórico do Desfazer nem cópia do homebrew)', DB.sheets.length == 1 && DB.sheets[0].data.name == 'Ana' && DB.sheets[0].data.hist === undefined && DB.sheets[0].data.hbs === undefined);
+  await M.csPoll(true);
+  const lista = M.CS.data[camp.id] || [];
+  T('Mestre recebe a ficha do jogador (sem poder criar a dele nesta tela)', lista.length == 1 && lista[0].data.name == 'Ana');
+  M.S.cp = camp.id; M.S.v = 'camp'; M.R();
+  const hc = mestre.el.innerHTML;
+  T('Tela da campanha do Mestre mostra "Fichas dos jogadores", sem "Criar ficha neste mundo" nem "Usar aqui"', /Fichas dos jogadores/.test(hc) && /ao vivo/.test(hc) && /Ana/.test(hc) && !/Criar ficha neste mundo/.test(hc) && !/Usar aqui/.test(hc));
+  // mudança em tempo real
+  J.cur().pv = Math.max(0, J.cur().pv - 3); J.cur().inv.push({ n: 'Lanterna', cat: 0, e: 1, ds: '' }); J.save(); await J.csPush();
+  await M.csPoll();
+  const lg = (M.CS.log[camp.id] || []).map((e) => e.m);
+  T('Mestre vê o registro do que mudou (PV e item novo)', lg.some((m) => /^PV \d+ → \d+$/.test(m)) && lg.includes('Item: Lanterna'), JSON.stringify(lg));
+  M.csOpen(lista[0].k, String(lista[0].cid)); const hd = mestre.el.innerHTML;
+  T('Detalhe da ficha: PV/PE/SAN, atributos, inventário e mudanças', /Ana/.test(hd) && /Lanterna/.test(hd) && /Mudanças desta ficha/.test(hd) && /PV/.test(hd));
+  M.S.v = 'camp';
+  // outro Mestre/ jogador não lê; desvincular tira da campanha
+  const rj2 = await J.sb.rpc('camp_sheets', { p_camp: camp.id });
+  T('Jogador NÃO consegue ler as fichas da campanha (só o Mestre)', !!rj2.error && !rj2.data);
+  J.S.cp = jc.id; J.campLink(J.cur().id); await J.csPush();
+  T('Desvincular a ficha retira ela da campanha do Mestre', DB.sheets.length == 0);
+  J.campLink(J.cur().id); await J.csPush();
+  T('Vincular de novo devolve a ficha', DB.sheets.length == 1);
+
   // ---- 8. Mestre apaga um ritual: a ficha que já usou continua funcionando
   const ana2 = J.cur(); ana2.rit.push('Chuva de Cinzas'); J.S.v = 'sheet'; J.R();
-  M.S.hbc = camp.id; M.hbDel2('rit', M.S.camps[0].homebrew.rit[0].id); await sleep(1500);
+  M.S.hbx = camp.id; M.hbDel2('rit', M.S.camps[0].homebrew.rit[0].id); await sleep(1500);
   await J.campPull(); J.S.v = 'sheet'; J.S.tab = 1;
   let ok8 = true; try { J.R(); J.rsheet(J.cur(), J.K(J.cur())); } catch (e) { ok8 = false; }
   T('Mestre apagou o ritual do servidor: a ficha que já tinha continua abrindo (cópia na ficha)', ok8 && J.RT.some((r) => r.n == 'Chuva de Cinzas'));
@@ -203,7 +273,7 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   M.S.camps = [{ id: 'z', role: 'owner', name: 'T<b>x</b>', descr: 'd<script>1</script>', code: '123456', members: 1, missions: [{ id: 'a', t: '"><img src=x>', d: '', ok: 0 }], homebrew: {} }];
   M.S.v = 'camps'; M.R(); const h1 = mestre.el.innerHTML;
   M.S.cp = 'z'; M.S.v = 'camp'; M.R(); const h2 = mestre.el.innerHTML;
-  M.S.hbc = 'z'; M.S.v = 'hbm'; M.R(); const h3 = mestre.el.innerHTML;
+  M.S.hbx = 'z'; M.S.v = 'hbm'; M.R(); const h3 = mestre.el.innerHTML;
   T('Telas de campanha, detalhe e homebrew renderizam e escapam HTML', /Campanhas/.test(h1) && /Missões/.test(h2) && /Homebrew/.test(h3) && !/<img src=x/.test(h2) && !/<script>1/.test(h1 + h2) && !/<b>x<\/b>/.test(h1));
   M.S.v = 'start'; M.R();
   T('Início tem o botão Campanhas abaixo de Jogador e Mestre', (() => { const h = mestre.el.innerHTML; return h.indexOf('Jogador') < h.indexOf('Mestre') && h.indexOf('Mestre') < h.indexOf('Campanhas'); })());

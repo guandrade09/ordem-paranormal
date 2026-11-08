@@ -62,7 +62,32 @@ const HB = {k: [], key: '', mw: [], mod: {prot: [], acc: []}},
       hbN = s => String(s == null ? '' : s).replace(/[<>"'`\\|&{}$\r\n]/g, '').trim().slice(0, 60),
       hbId = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3) + (hbId.n = (hbId.n || 0) + 1).toString(36);
 
-// Homebrew efetivo: junta as campanhas ativas; ficha vinculada guarda uma cópia (c.hbs) que nunca perde o que já tinha
+// Biblioteca do Mestre (tudo que ele criou, de todas as campanhas): S.hb. Cada campanha publica só o que ele marcou
+// (campanha.homebrew = cópias dos itens marcados). Itens que só existem numa campanha (versão antiga) entram na biblioteca.
+function hbLib() {
+  const lib = S.hb = S.hb || {};
+  HBT.forEach(([t]) => {lib[t] = lib[t] || []});
+  (S.camps || []).filter(x => x.role == 'owner').forEach(cp => HBT.forEach(([t]) => ((cp.homebrew || {})[t] || []).forEach(x => {
+    if (x && x.id && x.n && !lib[t].some(z => z.id == x.id)) lib[t].push(JSON.parse(JSON.stringify(x)))
+  })));
+  return lib
+}
+// Quantos itens a campanha publica
+const hbCount = c => HBT.reduce((n, [t]) => n + (((c.homebrew || {})[t]) || []).length, 0);
+
+// A ficha ainda usa este item? (item removido da campanha só continua na cópia da ficha se ela já usa)
+function hbUsed(c, t, x) {
+  const n = hbN(x.n), inv = c.inv || [];
+  return t == 'rit' ? (c.rit || []).some(r => typeof r == 'string' && r.split('|')[0] == n) :
+    t == 'hab'      ? (c.ab || []).some(a => a.hb == x.id) :
+    t == 'pod'      ? (c.ab || []).some(a => a.el && a.n == n) :
+    t == 'mal'      ? inv.some(i => (i.cur || []).some(m => mb(m) == n)) :
+    t == 'mel'      ? inv.some(i => (i.mods || []).some(m => mb(m) == n)) :
+                      inv.some(i => i.n == n)
+}
+
+// Homebrew efetivo da tela atual. Ficha vinculada: o que a campanha publicou + o que a ficha já usa (cópia c.hbs).
+// Mestre (telas dele e NPCs): a biblioteca inteira.
 function hbData() {
   const out = {rit: [], hab: [], pod: [], mal: [], mel: [], eqp: []}, L = S.camps || [], seen = {};
   let c = null;
@@ -83,7 +108,7 @@ function hbData() {
       const old = c.hbs || {}, mg = {};
       HBT.forEach(([t]) => {
         const nw = (own.homebrew && own.homebrew[t]) || [], ids = new Set(nw.map(x => x.id));
-        mg[t] = nw.concat((old[t] || []).filter(x => x && !ids.has(x.id)))
+        mg[t] = nw.concat((old[t] || []).filter(x => x && !ids.has(x.id) && hbUsed(c, t, x)))
       });
       const sn = {};  // a cópia na ficha não leva imagens (a ficha não pode ficar pesada)
       HBT.forEach(([t]) => {sn[t] = mg[t].map(x => x && x.img ? (({img, ...r}) => r)(x) : x)});
@@ -91,8 +116,8 @@ function hbData() {
       add(mg)
     } else
       add(c.hbs)
-  } else
-    L.filter(x => x.role == 'owner').forEach(x => add(x.homebrew));
+  } else if (L.some(x => x.role == 'owner') || (S.hb && HBT.some(([t]) => (S.hb[t] || []).length)))
+    add(hbLib());
   return out
 }
 
@@ -224,30 +249,51 @@ function hbAb(id) {
   })
 }
 
-// ---- Editor do Mestre ----
-function hbMine() {
-  return (S.camps || []).filter(x => x.role == 'owner')
-}
-function hbCur() {
-  const L = hbMine();
-  return L.find(x => x.id == S.hbc) || L[0] || null
-}
+// ---- Editor do Mestre: biblioteca (menu do Mestre) e seleção por campanha (dentro da campanha, S.hbx) ----
+const hbOwned = () => (S.camps || []).filter(x => x.role == 'owner'),
+      hbCopy = x => JSON.parse(JSON.stringify(x)),
+      hbIn = (cp, t, id) => (((cp.homebrew || {})[t]) || []).some(z => z.id == id);
 function hbmv() {
-  const L = hbMine(), c = hbCur(), t = S.hbt || 'rit';
-  if (!L.length)
-    return `<div class=fade><button onclick="S.v='mestre';R()">← Voltar</button><div class=bar>Homebrew</div><div class=card style="text-align:center;padding:26px 10px">Homebrew é guardado dentro de uma campanha.<br><small>Crie uma campanha na aba Campanhas do início para começar.</small></div><button class=btn onclick="campGo()">Ir para Campanhas</button></div>`;
-  const l = (c.homebrew && c.homebrew[t]) || [];
-  return `<div class=fade><button onclick="S.v='mestre';R()">← Voltar</button><div class=bar>Homebrew</div>${
-    L.length > 1 ?
-      `<div class=pills>${L.map(x => `<button class="${x.id == c.id ? 'on' : ''}" onclick="S.hbc='${x.id}';R()">${
-                              aesc(x.name)}</button>`).join('')}</div>` :
-      `<small>Campanha: <b>${aesc(c.name)}</b></small>`}<small style="display:block;margin:4px 0 8px;opacity:.75">Os jogadores da campanha recebem tudo daqui nas listas deles (rituais, armas, habilidades…). Monstros nunca são compartilhados.</small><div class=pills>${
+  const t = S.hbt || 'rit', lib = hbLib(), cx = S.hbx ? hbOwned().find(x => x.id == S.hbx) : null, l = lib[t] || [],
+        nome = HBT.find(x => x[0] == t)[1].toLowerCase();
+  return `<div class=fade><button onclick="S.v='${cx ? 'camp' : 'mestre'}';R()">← ${cx ? 'Campanha' : 'Voltar'}</button><div class=bar>Homebrew${
+    cx ? ' · ' + aesc(cx.name) : ''}</div><small style="display:block;margin:4px 0 8px;opacity:.75">${
+    cx ? 'Marque o que vale nesta campanha: só o que estiver marcado aparece para os jogadores dela.' :
+         'Sua biblioteca: tudo o que você criou. Em cada campanha você marca o que vale. Monstros nunca são compartilhados.'}</small><div class=pills>${
     HBT.map(([k, n]) => `<button class="${k == t ? 'on' : ''}" onclick="S.hbt='${k}';R()">${n}</button>`).join('')
-  }</div><button class=btn onclick="hbEdit('${t}','')">+ Novo(a) ${HBT.find(x => x[0] == t)[1].toLowerCase()}</button>${
+  }</div><button class=btn onclick="hbEdit('${t}','')">+ Novo(a) ${nome}</button>${
+    cx && l.length ?
+      `<div class=grid2 style="gap:8px"><button class=btn onclick="hbAll(1)">Marcar todos</button><button class=btn onclick="hbAll(0)">Desmarcar todos</button></div>` :
+      ''}${
     l.map(x => `<div class="card row" onclick="hbEdit('${t}','${x.id}')">${
+      cx ? `<input type=checkbox style="width:26px;height:26px;flex:none;padding:0;margin:0" ${
+             hbIn(cx, t, x.id) ? 'checked' : ''} onclick="event.stopPropagation()" onchange="hbTog('${t}','${x.id}')">` : ''}${
       HBIMG.test(x.img || '') ? `<img class="rimg ic" style="width:48px;height:48px" src="${x.img}" alt="">` : ''}<div style="flex:1"><b>${aesc(x.n)}</b><br><small>${
-      aesc(hbSub(t, x))}</small></div><button class=x onclick="event.stopPropagation();hbDel('${t}','${x.id}')">✕</button></div>`)
+      aesc(hbSub(t, x))}${cx ? '' : ' · em ' + hbOwned().filter(cp => hbIn(cp, t, x.id)).length + ' campanha(s)'}</small></div><button class=x onclick="event.stopPropagation();hbDel('${
+      t}','${x.id}')">✕</button></div>`)
       .join('') || '<p><small>Nada criado neste tipo ainda.</small></p>'}</div>`
+}
+// Marca/desmarca um item para a campanha (publica uma cópia para os jogadores)
+function hbTog(t, id) {
+  const c = hbOwned().find(x => x.id == S.hbx);
+  if (!c) return;
+  const h = c.homebrew = c.homebrew || {}, l = h[t] = h[t] || [], i = l.findIndex(z => z.id == id);
+  if (i >= 0)
+    l.splice(i, 1);
+  else {
+    const x = (hbLib()[t] || []).find(z => z.id == id);
+    if (x) l.push(hbCopy(x))
+  }
+  campSave(c);
+  R()
+}
+function hbAll(on) {
+  const c = hbOwned().find(x => x.id == S.hbx), t = S.hbt || 'rit';
+  if (!c) return;
+  const h = c.homebrew = c.homebrew || {};
+  h[t] = on ? (hbLib()[t] || []).map(hbCopy) : [];
+  campSave(c);
+  R()
 }
 function hbSub(t, x) {
   return t == 'rit' ? `${x.ci || 1}º círculo · ${x.el || ''}` :
@@ -271,7 +317,7 @@ function hbField(f, v) {
     aesc(v)}" style="width:100%"></label>`
 }
 function hbEdit(t, id) {
-  const c = hbCur(), x = id ? ((c.homebrew[t] || []).find(z => z.id == id) || {}) : {};
+  const x = id ? ((hbLib()[t] || []).find(z => z.id == id) || {}) : {};
   HB.img = x.img || '';
   modal(`<button class=xc onclick="cm()">✕</button><b>${id ? 'Editar' : 'Novo(a)'} ${
     HBT.find(z => z[0] == t)[1].toLowerCase()}</b><div class=scr style="max-height:62vh">${
@@ -330,7 +376,7 @@ function hbEqK() {
   show(['amd'], ['el'])
 }
 function hbSave(t, id) {
-  const c = hbCur(), o = {id: id || hbId()};
+  const o = {id: id || hbId()};
   HBF[t].forEach(([k]) => {
     const e = $('#hf_' + k);
     o[k] = e ? String(e.value || '').trim() : ''
@@ -339,24 +385,42 @@ function hbSave(t, id) {
   if (!o.n) return toast('Dê um nome.');
   if (t == 'rit') o.img = HB.img || '';
   else delete o.img;
-  const l = c.homebrew[t] = c.homebrew[t] || [], i = l.findIndex(z => z.id == id);
+  const l = hbLib()[t], i = l.findIndex(z => z.id == id);
   if (l.some(z => z.id != o.id && hbN(z.n).toLowerCase() == o.n.toLowerCase())) return toast('Já existe um com esse nome.');
   if (i >= 0)
     l[i] = o;
   else
     l.push(o);
-  campSave(c);
+  // campanhas que já publicam este item recebem a versão nova; item novo criado dentro de uma campanha já vem marcado nela
+  hbOwned().forEach(cp => {
+    const cl = ((cp.homebrew = cp.homebrew || {})[t] = cp.homebrew[t] || []), j = cl.findIndex(z => z.id == o.id);
+    if (j >= 0) {
+      cl[j] = hbCopy(o);
+      campSave(cp)
+    } else if (i < 0 && cp.id == S.hbx) {
+      cl.push(hbCopy(o));
+      campSave(cp)
+    }
+  });
+  save();
   cm();
   R()
 }
 function hbDel(t, id) {
-  const c = hbCur(), x = (c.homebrew[t] || []).find(z => z.id == id);
+  const x = (hbLib()[t] || []).find(z => z.id == id);
   if (!x) return;
-  modal(`<b>Excluir ${aesc(x.n)}?</b><p><small>Some da campanha. Jogadores que já usaram mantêm na ficha deles.</small></p><div class=grid2><button class=btn onclick="cm()">Cancelar</button><button class=btn style="background:var(--red)" onclick="cm();hbDel2('${t}','${id}')">Excluir</button></div>`)
+  modal(`<b>Excluir ${aesc(x.n)}?</b><p><small>Some da sua biblioteca e de todas as campanhas. Jogadores que já usaram mantêm na ficha deles.</small></p><div class=grid2><button class=btn onclick="cm()">Cancelar</button><button class=btn style="background:var(--red)" onclick="cm();hbDel2('${t}','${id}')">Excluir</button></div>`)
 }
 function hbDel2(t, id) {
-  const c = hbCur();
-  c.homebrew[t] = (c.homebrew[t] || []).filter(z => z.id != id);
-  campSave(c);
+  const lib = hbLib();
+  lib[t] = (lib[t] || []).filter(z => z.id != id);
+  hbOwned().forEach(cp => {
+    const cl = ((cp.homebrew || {})[t]) || [];
+    if (cl.some(z => z.id == id)) {
+      cp.homebrew[t] = cl.filter(z => z.id != id);
+      campSave(cp)
+    }
+  });
+  save();
   R()
 }

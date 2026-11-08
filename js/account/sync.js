@@ -3,7 +3,10 @@
  */
 
 // Estado do usuário que vai para a conta (tema, combate e lápides das fichas excluídas)
-const stO = d => ({theme: S.theme || null, cmb: S.cmb || null, del: d && d.length ? d : undefined});
+const stO = d => ({
+  theme: S.theme || null, cmb: S.cmb || null, del: d && d.length ? d : undefined,
+  hb: S.hb && Object.values(S.hb).some(a => a && a.length) ? S.hb : undefined  // biblioteca de homebrew do Mestre
+});
 
 // Baixa fichas da conta e mescla com as locais
 async function pull() {
@@ -65,6 +68,7 @@ async function pull() {
   if (rs && stSame) {
     if (rs.theme !== undefined) S.theme = rs.theme || undefined;
     if (rs.cmb) S.cmb = rs.cmb;
+    if (rs.hb) S.hb = rs.hb;
     try {
       if (S.theme) document.documentElement.dataset.theme = S.theme
     } catch (e) {

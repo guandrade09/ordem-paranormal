@@ -33,7 +33,8 @@ function campsv() {
 function campOpen(id) {
   S.cp = id;
   S.v = 'camp';
-  R()
+  R();
+  csPoll(true)  // Mestre: busca as fichas dos jogadores na hora (depois atualiza sozinho)
 }
 
 // ---- criar ----
@@ -96,13 +97,13 @@ async function campJoin() {
 function campv() {
   const c = campOf(S.cp);
   if (!c) return `<div class=fade><button onclick="S.v='camps';R()">← Campanhas</button><p><small>Campanha não encontrada.</small></p></div>`;
-  const own = c.role == 'owner', chars = S.chars.filter(z => own || !z.npc);
+  const own = c.role == 'owner', chars = S.chars.filter(z => !z.npc);
   return `<div class=fade><button onclick="S.v='camps';R()">← Campanhas</button><div class=bar>${aesc(c.name)}</div>${
     CAMP.err ? `<div class=card style="border-color:var(--red)"><small>${aesc(CAMP.err)}</small></div>` : ''}${
     own ? `<label><small>Nome</small><input value="${aesc(c.name)}" maxlength=80 style="width:100%" onchange="campEd('name',this.value)"></label><label><small>Descrição</small><textarea rows=4 style="width:100%" onchange="campEd('descr',this.value)">${
             aesc(c.descr || '')}</textarea></label><div class=card><small>Para convidar</small><br>Código <b style="font-size:22px;letter-spacing:3px">${
-            aesc(c.code || '')}</b> · ${c.members || 0} jogador(es)<br><button class=btn style="margin-top:8px" onclick="campPassM()">Trocar senha</button></div><button class=btn onclick="S.hbc='${
-            c.id}';S.v='hbm';R()">Homebrew desta campanha</button><div class=bar>Missões</div><small>Só você enxerga as missões: use para planejar.</small>${
+            aesc(c.code || '')}</b> · ${c.members || 0} jogador(es)<br><button class=btn style="margin-top:8px" onclick="campPassM()">Trocar senha</button></div><button class=btn onclick="S.hbx='${
+            c.id}';S.v='hbm';R()">Homebrew desta campanha (${hbCount(c)} marcado(s))</button><div class=bar>Missões</div><small>Só você enxerga as missões: use para planejar.</small>${
             (c.missions || []).map(m => `<div class=card><div style="display:flex;gap:8px;align-items:center"><input type=checkbox style="width:26px;height:26px;flex:none;padding:0;margin:0" ${
                                           m.ok ? 'checked' : ''} onchange="campMis('${m.id}','ok',this.checked)"><input value="${
                                           aesc(m.t)}" maxlength=100 style="flex:1;min-width:0;width:auto;margin:0" placeholder="Título" onchange="campMis('${
@@ -110,12 +111,13 @@ function campv() {
                                           m.id}')">✕</button></div><textarea rows=2 style="width:100%;margin-top:6px" placeholder="Anotações" onchange="campMis('${
                                           m.id}','d',this.value)">${aesc(m.d || '')}</textarea></div>`).join('') ||
               '<p><small>Nenhuma missão.</small></p>'}<button class=btn onclick="campMisAdd()">+ Missão</button>` :
-          `<div class=card>${campBr(c.descr || 'Sem descrição.')}</div><small>O Mestre desta campanha compartilha o homebrew dele com as fichas vinculadas abaixo (rituais, habilidades, armas…).</small>`}<div class=bar>Fichas nesta campanha</div>${
+          `<div class=card>${campBr(c.descr || 'Sem descrição.')}</div><small>O Mestre desta campanha compartilha o homebrew dele com as fichas vinculadas abaixo (rituais, habilidades, armas…).</small>`}${own ? `<div class=bar>Fichas dos jogadores <small>● ao vivo</small></div><div id=csl>${csListH(c)}</div>` :
+          `<div class=bar>Minhas fichas nesta campanha</div><small>O Mestre vê as fichas vinculadas em tempo real (PV, PE, itens…).</small>${
     chars.map(z => `<div class="card row" onclick="campOpenCh(${z.id})"><div style="flex:1"><b>${aesc(z.name || 'Sem nome')}</b><br><small>${
-                   z.npc ? 'NPC · ' : ''}${aesc(z.classe || '')}${
+                   aesc(z.classe || '')}${
                    z.camp == c.id ? ' · ✔ nesta campanha' : z.camp ? ' · em outra campanha' : ''}</small></div><button class=btn style="width:auto;padding:6px 12px" onclick="event.stopPropagation();campLink(${
                    z.id})">${z.camp == c.id ? 'Tirar' : 'Usar aqui'}</button></div>`).join('') ||
-    '<p><small>Você ainda não tem fichas.</small></p>'}<button class=btn onclick="campNewChar()">+ Criar ficha neste mundo</button>${
+    '<p><small>Você ainda não tem fichas.</small></p>'}<button class=btn onclick="campNewChar()">+ Criar ficha neste mundo</button>`}${
     own ? '<button class=btn style="background:var(--red)" onclick="campDelM()">Excluir campanha</button>' :
           '<button class=btn style="background:var(--red)" onclick="campLeaveM()">Sair da campanha</button>'}</div>`
 }
@@ -205,4 +207,60 @@ async function campRm(fn) {
   } catch (e) {
     toast(campErr(e))
   }
+}
+
+// ---- Mestre: fichas dos jogadores ao vivo ----
+const csAgo = t => {
+  const s = Math.max(0, Math.round((Date.now() - new Date(t).getTime()) / 1000));
+  return s < 8 ? 'agora' : s < 60 ? 'há ' + s + ' s' : s < 3600 ? 'há ' + Math.round(s / 60) + ' min' :
+    s < 86400 ? 'há ' + Math.round(s / 3600) + ' h' : 'há ' + Math.round(s / 86400) + ' d'
+}, csBar = (l, v, m, col) => `<div style="flex:1;min-width:0"><small>${l} <b>${v}</b>/${m}</small><div style="height:6px;background:rgba(128,128,128,.3);margin-top:2px"><i style="display:block;height:100%;width:${
+  m > 0 ? Math.max(0, Math.min(100, v / m * 100)) : 0}%;background:${col}"></i></div></div>`,
+      csMax = d => {
+        try {
+          return K(d)
+        } catch (e) {
+          return {pv: d.pv, pe: d.pe, san: d.san, def: ''}
+        }
+      };
+function csListH(c) {
+  const l = CS.data[c.id] || [], lg = (CS.log[c.id] || []).slice(0, 12);
+  return (CS.err ? `<small style="color:var(--red)">${aesc(CS.err)}</small>` : '') +
+    (l.map(x => {
+       const d = x.data || {}, k = csMax(d);
+       return `<div class=card onclick="csOpen('${x.k}','${String(x.cid).replace(/[^\w]/g, '')}')"><b>${aesc(d.name || 'Sem nome')}</b> <small>${
+         aesc(d.player ? '· ' + d.player : '')}</small><br><small>${aesc(d.classe || '')} · NEX ${d.nex || 0}% · atualizada ${
+         csAgo(x.upd)}</small><div class=row style="gap:8px;margin-top:6px">${csBar('PV', d.pv, k.pv, '#c62828')}${
+         csBar('PE', d.pe, k.pe, '#1565c0')}${csBar('SAN', d.san, k.san, '#6a1b9a')}</div></div>`
+     }).join('') ||
+     '<p><small>Nenhum jogador vinculou uma ficha a esta campanha ainda.</small></p>') +
+    (lg.length ? `<div class=bar>Mudanças recentes</div>${
+                   lg.map(e => `<div><small>${csAgo(e.t)} · <b>${aesc(e.w)}</b>: ${aesc(e.m)}</small></div>`).join('')}` :
+                 '')
+}
+function csOpen(k, cid) {
+  S.cs = {k, cid};
+  S.v = 'cs';
+  R()
+}
+function csv() {
+  const c = campOf(S.cp), x = c && (CS.data[c.id] || []).find(z => z.k == S.cs.k && String(z.cid).replace(/[^\w]/g, '') == S.cs.cid);
+  if (!c || !x)
+    return `<div class=fade><button onclick="S.v='camp';R()">← Campanha</button><p><small>Esta ficha não está mais na campanha.</small></p></div>`;
+  const d = x.data || {}, k = csMax(d), t = d.t || {}, key = x.k + '|' + x.cid,
+        lg = (CS.log[c.id] || []).filter(e => e.k == key).slice(0, 25), list = (a, f) => a.length ? a.map(f).join(', ') : '—';
+  return `<div class=fade><button onclick="S.v='camp';R()">← Campanha</button><div class=bar>${aesc(d.name || 'Sem nome')}</div><small>${
+    aesc([d.player ? 'Jogador: ' + d.player : '', d.classe, d.origem, 'NEX ' + (d.nex || 0) + '%'].filter(Boolean).join(' · '))} · atualizada ${
+    csAgo(x.upd)} <b>● ao vivo</b></small><div class=card><div class=row style="gap:8px">${csBar('PV', d.pv, k.pv, '#c62828')}${
+    csBar('PE', d.pe, k.pe, '#1565c0')}${csBar('SAN', d.san, k.san, '#6a1b9a')}</div><small>${
+    t.pv || t.pe || t.san ? 'Temporários: PV ' + (t.pv || 0) + ' · PE ' + (t.pe || 0) + ' · SAN ' + (t.san || 0) + '<br>' : ''}Defesa <b>${
+    k.def == null ? '—' : k.def}</b></small></div><div class=card><small>${
+    A.map(a => a + ' <b>' + ((d.attr || {})[a] == null ? '—' : d.attr[a]) + '</b>').join(' · ')}</small></div><div class=card><small><b>Perícias treinadas:</b> ${
+    aesc(list(d.trained || [], z => (z && z.n) || z))}<br><b>Habilidades:</b> ${
+    aesc(list(d.ab || [], z => z.n))}<br><b>Rituais:</b> ${
+    aesc(list((d.rit || []).filter(z => typeof z == 'string'), z => z.split('|')[0]))}<br><b>Inventário:</b> ${
+    aesc(list(d.inv || [], z => z.n + (z.q != null ? ' ×' + z.q : '')))}<br><b>Efeitos ativos:</b> ${
+    aesc(list(d.sust || [], z => z.n || z.id))}</small></div><div class=bar>Mudanças desta ficha</div>${
+    lg.map(e => `<div><small>${csAgo(e.t)} · ${aesc(e.m)}</small></div>`).join('') ||
+    '<small>Nada mudou desde que você abriu a campanha.</small>'}</div>`
 }

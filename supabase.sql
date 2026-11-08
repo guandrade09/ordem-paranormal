@@ -230,3 +230,72 @@ revoke all on function public.camp_create(text,text,text), public.camp_mine(), p
   public.camp_setpass(uuid,text), public.camp_join(text,text), public.camp_leave(uuid), public.camp_delete(uuid) from public, anon;
 grant execute on function public.camp_create(text,text,text), public.camp_mine(), public.camp_update(uuid,text,text,jsonb,jsonb),
   public.camp_setpass(uuid,text), public.camp_join(text,text), public.camp_leave(uuid), public.camp_delete(uuid) to authenticated;
+
+
+-- =====================================================================================
+-- FICHAS AO VIVO NA CAMPANHA (v0.26.3) — rode este bloco no SQL Editor DEPOIS do bloco de CAMPANHAS (pode rodar de novo).
+-- O jogador que vincula uma ficha à campanha envia uma cópia dela; só o Mestre dessa campanha consegue ler.
+-- =====================================================================================
+create table if not exists public.campaign_sheets (
+  campaign_id uuid        not null references public.campaigns(id) on delete cascade,
+  user_id     uuid        not null references auth.users(id) on delete cascade,
+  cid         text        not null,
+  data        jsonb       not null,
+  updated_at  timestamptz not null default now(),
+  primary key (campaign_id, user_id, cid),
+  constraint campaign_sheets_obj  check (jsonb_typeof(data) = 'object'),
+  constraint campaign_sheets_cid  check (char_length(cid) between 1 and 64),
+  constraint campaign_sheets_size check (octet_length(data::text) < 400000)
+);
+alter table public.campaign_sheets enable row level security;
+revoke all on public.campaign_sheets from anon, authenticated;
+
+-- jogador (membro) envia/atualiza a cópia da ficha vinculada
+create or replace function public.camp_sheet_put(p_camp uuid, p_cid text, p_data jsonb) returns void
+language plpgsql security definer set search_path = '' as $$
+declare u uuid := auth.uid();
+begin
+  if u is null then raise exception 'Faça login.'; end if;
+  if not exists (select 1 from public.campaign_members where campaign_id = p_camp and user_id = u) then
+    raise exception 'Você não está nesta campanha.';
+  end if;
+  if not exists (select 1 from public.campaign_sheets where campaign_id = p_camp and user_id = u and cid = p_cid)
+     and (select count(*) from public.campaign_sheets where campaign_id = p_camp and user_id = u) >= 10 then
+    raise exception 'Limite de 10 fichas por campanha.';
+  end if;
+  insert into public.campaign_sheets (campaign_id, user_id, cid, data) values (p_camp, u, p_cid, p_data)
+  on conflict (campaign_id, user_id, cid) do update set data = excluded.data, updated_at = now();
+end $$;
+
+-- jogador mantém só as fichas que ainda estão vinculadas (as outras somem da campanha)
+create or replace function public.camp_sheet_keep(p_camp uuid, p_cids text[]) returns void
+language sql security definer set search_path = '' as $$
+  delete from public.campaign_sheets
+   where campaign_id = p_camp and user_id = auth.uid() and not (cid = any(coalesce(p_cids, '{}'::text[])));
+$$;
+
+-- só o Mestre da campanha lê as fichas
+create or replace function public.camp_sheets(p_camp uuid) returns jsonb
+language plpgsql security definer stable set search_path = '' as $$
+declare r jsonb;
+begin
+  if not exists (select 1 from public.campaigns where id = p_camp and owner = auth.uid()) then
+    raise exception 'Campanha não encontrada.';
+  end if;
+  select coalesce(jsonb_agg(jsonb_build_object('k', left(md5(s.user_id::text), 8), 'cid', s.cid, 'data', s.data, 'upd', s.updated_at)
+                            order by s.updated_at desc), '[]'::jsonb)
+    into r from public.campaign_sheets s where s.campaign_id = p_camp;
+  return r;
+end $$;
+
+-- sair da campanha também retira as fichas do jogador
+create or replace function public.camp_leave(p_id uuid) returns void
+language sql security definer set search_path = '' as $$
+  delete from public.campaign_sheets where campaign_id = p_id and user_id = auth.uid();
+  delete from public.campaign_members where campaign_id = p_id and user_id = auth.uid();
+$$;
+
+revoke all on function public.camp_sheet_put(uuid,text,jsonb), public.camp_sheet_keep(uuid,text[]), public.camp_sheets(uuid),
+  public.camp_leave(uuid) from public, anon;
+grant execute on function public.camp_sheet_put(uuid,text,jsonb), public.camp_sheet_keep(uuid,text[]), public.camp_sheets(uuid),
+  public.camp_leave(uuid) to authenticated;

@@ -12,5 +12,6 @@ function go(m) {
     m == 'Monstruário (Ameaças)'       ? 'thr' :
                                          'wip';
   S.w = m;
+  if (m == 'Homebrew') S.hbx = null;  // do menu do Mestre: biblioteca; da campanha: seleção
   R()
 }

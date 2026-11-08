@@ -54,7 +54,10 @@ const save = () => {
     localStorage.setItem('op', JSON.stringify(S))
   } catch (e) {
   }
-  if (SB_ON) syncSoon()
+  if (SB_ON) {
+    syncSoon();
+    if (typeof csSoon == 'function') csSoon()  // cópia das fichas vinculadas a campanhas (o Mestre vê ao vivo)
+  }
 }, cur = () => S.chars.find(c => c.id == S.cid);
 
 // Lixeira: ficha excluída (ou removida por outro aparelho) fica guardada aqui, para poder ser restaurada

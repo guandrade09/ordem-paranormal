@@ -65,3 +65,135 @@ async function campPush() {
   CAMP.busy = 0;
   save()
 }
+
+// ---------------------------------------------------------------------------------------------
+// Fichas ao vivo: o jogador envia cópia das fichas vinculadas (c.camp); o Mestre da campanha lê e vê as mudanças.
+// ---------------------------------------------------------------------------------------------
+const CS = {h: {}, set: {}, t: null, busy: 0, again: 0, pb: 0, data: {}, sig: {}, log: {}, err: ''};
+
+// Cópia enviada: sem histórico do Desfazer, sem cópia do homebrew e sem foto pesada
+const csStrip = c => {
+  const o = {...c};
+  delete o.hist;
+  delete o.hbs;
+  if (o.photo && o.photo.length > 60000) delete o.photo;
+  return o
+};
+function csSoon() {
+  if (!campOk()) return;
+  clearTimeout(CS.t);
+  CS.t = setTimeout(csPush, 1500)
+}
+async function csPush() {
+  if (!campOk() || typeof sb.rpc != 'function') return;
+  if (S.lv && S.lv.bak) return;  // subida de NEX em andamento: não envia ficha pela metade
+  const mem = (S.camps || []).filter(c => c.role == 'member');
+  if (!mem.length) return;
+  if (CS.busy) {
+    CS.again = 1;
+    return
+  }
+  CS.busy = 1;
+  try {
+    for (const cp of mem) {
+      const l = S.chars.filter(c => c.camp == cp.id && c.npc != 'passivo');
+      for (const c of l) {
+        const d = csStrip(c), hh = hs(JSON.stringify(d)), k = cp.id + '|' + c.id;
+        if (CS.h[k] === hh) continue;
+        const r = await sb.rpc('camp_sheet_put', {p_camp: cp.id, p_cid: String(c.id), p_data: d});
+        if (r.error) throw r.error;
+        CS.h[k] = hh
+      }
+      const ids = l.map(c => String(c.id)).sort().join(',');
+      if (CS.set[cp.id] !== ids) {  // fichas desvinculadas somem da campanha
+        const r = await sb.rpc('camp_sheet_keep', {p_camp: cp.id, p_cids: l.map(c => String(c.id))});
+        if (r.error) throw r.error;
+        CS.set[cp.id] = ids
+      }
+    }
+    CS.err = ''
+  } catch (e) {
+    CS.err = campErr(e);
+    CS.t = setTimeout(csPush, 15000)
+  }
+  CS.busy = 0;
+  if (CS.again) {
+    CS.again = 0;
+    csSoon()
+  }
+}
+
+// O que mudou entre duas versões da ficha (texto curto, para o registro do Mestre)
+function csDiff(a, b) {
+  const o = [], nm = x => (x || []).map(i => (i && (i.n || i)) + '').filter(Boolean);
+  [['pv', 'PV', ''], ['pe', 'PE', ''], ['san', 'SAN', ''], ['nex', 'NEX', '%']].forEach(([k, l, u]) => {
+    if (a[k] !== b[k]) o.push(`${l} ${a[k] == null ? 0 : a[k]}${u} → ${b[k] == null ? 0 : b[k]}${u}`)
+  });
+  ['pv', 'pe', 'san'].forEach(k => {
+    const x = (a.t || {})[k] || 0, y = (b.t || {})[k] || 0;
+    if (x !== y) o.push(`${k.toUpperCase()} temporário ${x} → ${y}`)
+  });
+  if (a.classe !== b.classe) o.push(`Classe: ${a.classe || '—'} → ${b.classe || '—'}`);
+  A.forEach(k => {
+    const x = (a.attr || {})[k], y = (b.attr || {})[k];
+    if (x !== y) o.push(`${k} ${x} → ${y}`)
+  });
+  const dif = (ra, rb, f) => {
+    const x = nm(ra), y = nm(rb);
+    y.filter(n => !x.includes(n)).forEach(n => o.push(f + ' ' + n));
+    x.filter(n => !y.includes(n)).forEach(n => o.push('Perdeu ' + n))
+  };
+  dif(a.inv, b.inv, 'Item:');
+  dif(a.ab, b.ab, 'Habilidade:');
+  dif((a.rit || []).filter(x => typeof x == 'string').map(x => x.split('|')[0]),
+      (b.rit || []).filter(x => typeof x == 'string').map(x => x.split('|')[0]), 'Ritual:');
+  const sn = r => nm((r || []).map(s => s.n || s.id)), sa = sn(a.sust);
+  sn(b.sust).filter(n => !sa.includes(n)).forEach(n => o.push('Efeito ativo: ' + n));
+  return o
+}
+
+// Mestre: busca as fichas da campanha aberta e registra o que mudou
+async function csPoll(force) {
+  const c = campOf(S.cp);
+  if (!c || c.role != 'owner' || !campOk() || typeof sb.rpc != 'function' || CS.pb) return;
+  CS.pb = 1;
+  try {
+    const r = await sb.rpc('camp_sheets', {p_camp: c.id});
+    if (r.error) throw r.error;
+    const nw = r.data || [], prev = CS.data[c.id];
+    if (prev) {
+      const pm = new Map(prev.map(x => [x.k + '|' + x.cid, x]));
+      nw.forEach(x => {
+        const p = pm.get(x.k + '|' + x.cid), nome = (x.data && x.data.name) || 'Ficha';
+        const m = p ? csDiff(p.data || {}, x.data || {}) : ['entrou na campanha'];
+        m.forEach(t => (CS.log[c.id] = CS.log[c.id] || []).unshift({t: Date.now(), w: nome, k: x.k + '|' + x.cid, m: t}));
+        if (CS.log[c.id]) CS.log[c.id] = CS.log[c.id].slice(0, 80)
+      })
+    }
+    CS.data[c.id] = nw;
+    CS.err = '';
+    const sig = JSON.stringify(nw.map(x => [x.k, x.cid, x.upd]));
+    if (force || sig !== CS.sig[c.id]) {
+      CS.sig[c.id] = sig;
+      csRender()
+    }
+  } catch (e) {
+    CS.err = campErr(e)
+  }
+  CS.pb = 0
+}
+function csRender() {
+  if (S.v == 'camp') {
+    const e = $('#csl'), c = campOf(S.cp);
+    if (e && c) e.innerHTML = csListH(c)
+  } else if (S.v == 'cs')
+    R()
+}
+function csTick() {
+  try {
+    if (document.visibilityState == 'hidden') return
+  } catch (e) {
+  }
+  if (S.v == 'camp' || S.v == 'cs') csPoll()
+}
+if (typeof setInterval == 'function') setInterval(csTick, 4000);
