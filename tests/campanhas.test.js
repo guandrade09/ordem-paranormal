@@ -119,6 +119,7 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   const jc = (J.S.camps || [])[0];
   T('Código + senha certos: entra como jogador', DB.members.length == 1 && jc && jc.role == 'member');
   T('Jogador recebe nome, descrição e homebrew — mas NUNCA missões nem código', jc && jc.name == 'Cidade Fantasma' && jc.homebrew.rit.length && jc.missions === undefined && jc.code === undefined, JSON.stringify(Object.keys(jc || {})));
+  T('Ao entrar na campanha, abre a escolha de personagem (antes da tela inicial), com criar ficha neste mundo e sem o botão de sair', /Escolha seu personagem/.test(jog.el.innerHTML) && /Criar ficha neste mundo/.test(jog.el.innerHTML) && /Cidade Fantasma/.test(jog.el.innerHTML) && !/Sair da campanha/.test(jog.el.innerHTML));
 
   // freio de tentativas
   for (let i = 0; i < 9; i++) { setIn(jog, { cj_c: '123456', cj_p: 'x' + i }); await J.campJoin(); }
@@ -129,7 +130,13 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   const ana = J.cur(); J.S.cid = ana.id; J.S.v = 'sheet'; J.S.tab = 1; J.R();
   const has = () => ({ rit: J.RT.some((r) => r.n == 'Chuva de Cinzas'), pod: J.D.PP.Morte.some((p) => p.n == 'Pele de Cinza'), mal: J.CURSES.some((x) => x.n == 'Faminta'), mel: J.MW_ALL.includes('Balanceada'), arm: J.CAT.arm.some((x) => x[0] == 'Cutelo do Açougueiro'), pro: J.CAT.pro.some((x) => x[0] == 'Colete Reforçado Z'), amd: J.CAT.amd.some((x) => x[0] == 'Amuleto Maldito') });
   T('Ficha NÃO vinculada: nada de homebrew nas listas', Object.values(has()).every((v) => !v), JSON.stringify(has()));
-  J.S.cp = jc.id; J.campLink(ana.id); J.S.v = 'sheet'; J.R();
+  J.S.cp = jc.id; J.S.v = 'camp'; J.R();
+  T('Sem ficha escolhida a campanha continua na tela de escolha (mostra a ficha existente)', /Escolha seu personagem/.test(jog.el.innerHTML) && /Ana/.test(jog.el.innerHTML));
+  J.campPick(ana.id);
+  const pv = jog.el.innerHTML;
+  T('Depois de escolher: tela inicial com título, descrição, "Ficha" com o card do personagem, quadro do combate e Sair — sem "Minhas fichas"', /Cidade Fantasma/.test(pv) && /class=bar>Ficha</.test(pv) && /Ana/.test(pv) && /cbbox/.test(pv) && /Sair da campanha/.test(pv) && !/Minhas fichas/.test(pv) && !/Escolha seu personagem/.test(pv) && ana.camp == jc.id);
+  T('Botão Sair da campanha é o último elemento da tela (rodapé)', pv.lastIndexOf('Sair da campanha') > pv.lastIndexOf('cbbox') && pv.lastIndexOf('Trocar de ficha') < pv.lastIndexOf('Sair da campanha'));
+  J.S.v = 'sheet'; J.R();
   const h = has();
   T('Ficha vinculada: ritual, poder, maldição, melhoria, arma, proteção e item amaldiçoado aparecem nas listas', Object.values(h).every(Boolean), JSON.stringify(h));
   T('Ritual homebrew traz círculo, elemento e texto de ativação', (() => { const r = J.RT.find((x) => x.n == 'Chuva de Cinzas'); return r.ci == 2 && r.el == 'Morte' && J.INFO['Chuva de Cinzas'][3] == 'cena' && /2d6/.test(J.DS['Chuva de Cinzas'][0]); })());
@@ -233,10 +240,18 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   // outro Mestre/ jogador não lê; desvincular tira da campanha
   const rj2 = await J.sb.rpc('camp_sheets', { p_camp: camp.id });
   T('Jogador NÃO consegue ler as fichas da campanha (só o Mestre)', !!rj2.error && !rj2.data);
-  J.S.cp = jc.id; J.campLink(J.cur().id); await J.csPush();
+  J.S.cp = jc.id; delete J.cur().camp; J.save(); await J.csPush();
   T('Desvincular a ficha retira ela da campanha do Mestre', DB.sheets.length == 0);
-  J.campLink(J.cur().id); await J.csPush();
+  J.campPick(J.cur().id); await J.csPush();
   T('Vincular de novo devolve a ficha', DB.sheets.length == 1);
+  // uma ficha só por campanha: escolher outra tira a anterior
+  J.newC(); J.S.d.id = 5e6 + 1; J.S.d.name = 'Bia'; J.S.d.classe = 'Combatente'; J.S.d.origem = 'Acadêmico'; J.S.d.nex = 10; J.S.d.attr = { AGI: 1, FOR: 3, INT: 1, PRE: 1, VIG: 2 }; J.fin();
+  const bia = J.cur(); J.S.cp = jc.id; J.S.cpc = 1; J.S.v = 'camp'; J.R();
+  T('"Trocar de ficha": mostra a escolha, com a atual marcada', /Escolha seu personagem/.test(jog.el.innerHTML) && /✔ atual/.test(jog.el.innerHTML) && /Bia/.test(jog.el.innerHTML));
+  J.campPick(bia.id); await J.csPush();
+  T('Escolher outra ficha tira a anterior da campanha (e do Mestre): só uma por campanha', bia.camp == jc.id && !ana.camp && DB.sheets.length == 1 && DB.sheets[0].data.name == 'Bia');
+  J.campPick(ana.id); await J.csPush(); J.chDel(bia.id); J.S.cid = ana.id; J.S.v = 'sheet'; J.R();
+  T('Volta a ficha da Ana para a campanha', ana.camp == jc.id && DB.sheets.length == 1 && DB.sheets[0].data.name == 'Ana');
 
   // ---- 7d2. É a MESMA ficha: o que o jogador muda na aba Agentes (fora da campanha) também chega ao Mestre
   J.S.v = 'home'; J.R();

@@ -1,6 +1,6 @@
 /**
  * Telas de Campanhas: lista, entrar com código + senha, criar, e a campanha (Mestre: missões, código, senha;
- * jogador: fichas vinculadas e criar ficha "dentro deste mundo").
+ * jogador: escolhe UMA ficha ao entrar (ou cria uma "dentro deste mundo"), depois vê a ficha dele e a ordem do combate ao vivo).
  */
 
 const campBr = t => aesc(t).replace(/\n/g, '<br>');
@@ -32,6 +32,7 @@ function campsv() {
 
 function campOpen(id) {
   S.cp = id;
+  S.cpc = 0;
   S.v = 'camp';
   R();
   csPoll(true);  // Mestre: busca as fichas dos jogadores na hora (depois atualiza sozinho)
@@ -46,11 +47,11 @@ function campCombat() {
   csPoll(true)
 }
 
-// Jogador: a ordem do combate (sem dados nem números de iniciativa)
+// Jogador: quadro do combate (nomes na ordem, quem age agora em vermelho; sem dados nem números de iniciativa)
 function cbH(c) {
   const d = CB.data[c.id];
   if (!d) return '';
-  return `<div class=bar>⚔ Combate · Rodada ${+d.r || 1}</div>${(d.l || []).map((x, i) =>
+  return `<b style="font:24px 'Bebas Neue';letter-spacing:1px">⚔ Combate</b> <small>Rodada ${+d.r || 1}</small>${(d.l || []).map((x, i) =>
     `<div class="cmbr ${x.id == d.c ? 'cur' : ''}"><span class=cmbn>${i + 1}</span><div style="flex:1;min-width:0"><b style="word-break:break-word">${
       aesc(x.n)}</b>${x.id == d.c ? '<br><small>Turno atual</small>' : ''}</div></div>`).join('')}`
 }
@@ -115,7 +116,8 @@ async function campJoin() {
 function campv() {
   const c = campOf(S.cp);
   if (!c) return `<div class=fade><button onclick="S.v='camps';R()">← Campanhas</button><p><small>Campanha não encontrada.</small></p></div>`;
-  const own = c.role == 'owner', chars = S.chars.filter(z => !z.npc);
+  const own = c.role == 'owner';
+  if (!own) return S.cpc || !campMine(c).length ? campcv(c) : campPv(c);
   return `<div class=fade><button onclick="S.v='camps';R()">← Campanhas</button><div class=bar>${aesc(c.name)}</div>${
     CAMP.err ? `<div class=card style="border-color:var(--red)"><small>${aesc(CAMP.err)}</small></div>` : ''}${
     own ? `<label><small>Nome</small><input value="${aesc(c.name)}" maxlength=80 style="width:100%" onchange="campEd('name',this.value)"></label><label><small>Descrição</small><textarea rows=4 style="width:100%" onchange="campEd('descr',this.value)">${
@@ -129,16 +131,43 @@ function campv() {
                                           m.id}','t',this.value)"><button class=x onclick="campMisDel('${
                                           m.id}')">✕</button></div><textarea rows=2 style="width:100%;margin-top:6px" placeholder="Anotações" onchange="campMis('${
                                           m.id}','d',this.value)">${aesc(m.d || '')}</textarea></div>`).join('') ||
-              '<p><small>Nenhuma missão.</small></p>'}<button class=btn onclick="campMisAdd()">+ Missão</button>` :
-          `<div id=cbl>${cbH(c)}</div><div class=card>${campBr(c.descr || 'Sem descrição.')}</div><small>O Mestre desta campanha compartilha o homebrew dele com as fichas vinculadas abaixo (rituais, habilidades, armas…).</small>`}${own ? `<div class=bar>Fichas dos jogadores <small>● ao vivo</small></div><div id=csl>${csListH(c)}</div>` :
-          `<div class=bar>Minhas fichas nesta campanha</div><small>O Mestre vê as fichas vinculadas em tempo real (PV, PE, itens…).</small>${
-    chars.map(z => `<div class="card row" onclick="campOpenCh(${z.id})"><div style="flex:1"><b>${aesc(z.name || 'Sem nome')}</b><br><small>${
-                   aesc(z.classe || '')}${
-                   z.camp == c.id ? ' · ✔ nesta campanha' : z.camp ? ' · em outra campanha' : ''}</small></div><button class=btn style="width:auto;padding:6px 12px" onclick="event.stopPropagation();campLink(${
-                   z.id})">${z.camp == c.id ? 'Tirar' : 'Usar aqui'}</button></div>`).join('') ||
-    '<p><small>Você ainda não tem fichas.</small></p>'}<button class=btn onclick="campNewChar()">+ Criar ficha neste mundo</button>`}${
-    own ? '<button class=btn style="background:var(--red)" onclick="campDelM()">Excluir campanha</button>' :
-          '<button class=btn style="background:var(--red)" onclick="campLeaveM()">Sair da campanha</button>'}</div>`
+              '<p><small>Nenhuma missão.</small></p>'}<button class=btn onclick="campMisAdd()">+ Missão</button>` : ''}${`<div class=bar>Fichas dos jogadores <small>● ao vivo</small></div><div id=csl>${csListH(c)}</div>`}<button class=btn style="background:var(--red)" onclick="campDelM()">Excluir campanha</button></div>`
+}
+// ---- jogador ----
+// Fichas desta pessoa vinculadas a esta campanha (a regra é UMA; fichas antigas com mais de uma continuam aparecendo)
+const campMine = c => S.chars.filter(z => !z.npc && z.camp == c.id);
+
+// Escolher o personagem: aparece ao entrar na campanha (e em "Trocar de ficha"). A partir daqui o homebrew liberado já vale
+function campcv(c) {
+  const mine = campMine(c), chars = S.chars.filter(z => !z.npc);
+  return `<div class=fade><button onclick="${mine.length && S.cpc ? "S.cpc=0;S.v='camp'" : "S.v='camps'"};R()">← ${
+    mine.length && S.cpc ? 'Campanha' : 'Campanhas'}</button><div class=bar>${aesc(c.name)}</div><div class=card>${
+    campBr(c.descr || 'Sem descrição.')}</div><div class=bar>Escolha seu personagem</div><small>O Mestre acompanha essa ficha ao vivo e você passa a usar o homebrew que ele liberou.</small>${
+    chars.map(z => `<div class="card row" onclick="campPick(${z.id})">${ph(z)}<div style="flex:1"><b>${aesc(z.name || 'Sem nome')}</b><br><small>${
+      aesc([z.classe, z.nex != null ? 'NEX ' + z.nex + '%' : ''].filter(Boolean).join(' · '))}${
+      z.camp == c.id ? ' · ✔ atual' : z.camp ? ' · está em outra campanha (sai de lá)' : ''}</small></div></div>`).join('') ||
+    '<p><small>Você ainda não tem fichas.</small></p>'}<button class=btn onclick="campNewChar()">+ Criar ficha neste mundo</button></div>`
+}
+function campPick(cid) {
+  const z = S.chars.find(x => x.id == cid);
+  if (!z) return;
+  S.chars.forEach(x => {
+    if (x.camp == S.cp && x.id != cid) delete x.camp  // uma ficha só por campanha
+  });
+  z.camp = S.cp;
+  S.cpc = 0;
+  S.v = 'camp';
+  R();
+  cbPoll()
+}
+// Tela inicial da campanha (jogador): título, descrição, a ficha, o quadro do combate e, no rodapé, sair
+function campPv(c) {
+  return `<div class="fade campp"><button onclick="S.v='camps';R()">← Campanhas</button><div class=bar>${aesc(c.name)}</div>${
+    CAMP.err ? `<div class=card style="border-color:var(--red)"><small>${aesc(CAMP.err)}</small></div>` : ''}<div class=card>${
+    campBr(c.descr || 'Sem descrição.')}</div><div class=bar>Ficha</div>${
+    campMine(c).map(z => `<div class="card row" onclick="campOpenCh(${z.id})">${ph(z)}<div style="flex:1"><b>${
+      aesc(z.name || 'Sem nome')}</b><br><small>${aesc([z.classe, z.origem, 'NEX ' + (z.nex || 0) + '%'].filter(Boolean).join(' · '))}</small></div></div>`).join('')}<button onclick="S.cpc=1;R()" style="width:100%">Trocar de ficha</button><div id=cbl class=cbbox>${
+    cbH(c)}</div><button class=btn style="background:var(--red);margin-top:auto" onclick="campLeaveM()">Sair da campanha</button></div>`
 }
 function campEd(k, v) {
   const c = campOf(S.cp);
@@ -162,15 +191,6 @@ function campMisDel(id) {
   const c = campOf(S.cp);
   c.missions = (c.missions || []).filter(x => x.id != id);
   campSave(c);
-  R()
-}
-function campLink(cid) {
-  const z = S.chars.find(x => x.id == cid);
-  if (!z) return;
-  if (z.camp == S.cp)
-    delete z.camp;
-  else
-    z.camp = S.cp;
   R()
 }
 // Abre a ficha a partir da campanha: o "Voltar" da ficha volta para a campanha

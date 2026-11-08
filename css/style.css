@@ -37,6 +37,27 @@ html {
   background: var(--bg);
 }
 
+/* ===== Campanha (jogador): tela única, botão de sair colado no rodapé; quadro do combate ===== */
+.campp {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 20px);
+  min-height: calc(100dvh - 20px);
+  margin-bottom: -70px;
+}
+.campp > button:first-child {
+  align-self: flex-start;
+}
+.cbbox .cmbr.cur small {
+  color: #fff;
+}
+.cbbox {
+  border: 2px solid var(--fg);
+  min-height: 150px;
+  padding: 8px;
+  margin: 10px 0 16px;
+}
+
 /* ===== Mestre: Criador de Combates ===== */
 .cmbi {
   font: 48px/1 'Bebas Neue';

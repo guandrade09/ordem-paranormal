@@ -122,7 +122,11 @@ async function csPush() {
       if (CS.set[cp.id] !== ids) {  // fichas desvinculadas somem da campanha
         const r = await sb.rpc('camp_sheet_keep', {p_camp: cp.id, p_cids: l.map(c => String(c.id))});
         if (r.error) throw r.error;
-        CS.set[cp.id] = ids
+        CS.set[cp.id] = ids;
+        // o que saiu da campanha precisa ser reenviado por inteiro se voltar igualzinho
+        Object.keys(CS.h).forEach(k => {
+          if (k.startsWith(cp.id + '|') && !l.some(c => cp.id + '|' + c.id == k)) delete CS.h[k]
+        })
       }
     }
     CS.err = ''
