@@ -143,7 +143,7 @@ function create() {
       d.rit.length}/3)</div><input placeholder="🔎 Pesquisar ritual..." value="${
       esc(S.q || '')}" oninput="S.q=this.value;$('#rl').innerHTML=rlist(1)"><div id=rl class=scr>${
       rlist(1)}</div><button class=btn ${d.rit.length < 3 ? 'disabled' : ''} onclick="nx()">Finalizar agente</button>`;
-  return `<div class=fade><button onclick="S.v=S.d.npc?'npc':'home';S.d=null;R()">← Cancelar</button><div class=sum style="${
+  return `<div class=fade><button onclick="S.v=S.bk||(S.d.npc?'npc':'home');S.bk=null;S.d=null;R()">← Cancelar</button><div class=sum style="${
     d.npc == 'passivo' ? 'display:none' : ''}"><div>PV<b>${k.pv || '—'}</b></div><div>PE<b>${
     k.pe || '—'}</b></div><div>SAN<b>${k.san || '—'}</b></div><div>DT<b>${k.dt}</b></div></div><div class=pills>${
     l.map(x => `<button class="${S.st == x ? 'on' : ''}" ${d.ok[x] || S.st == x ? '' : 'disabled'} onclick="S.st='${

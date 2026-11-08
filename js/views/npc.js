@@ -101,6 +101,7 @@ function npcv() {
 function openN(id) {
   let c = S.chars.find(z => z.id == id);
   if (c.npc == 'ativo') {
+    S.bk = null;
     S.cid = id;
     S.v = 'sheet';
     S.tab = 0;

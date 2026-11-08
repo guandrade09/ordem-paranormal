@@ -277,8 +277,8 @@ ${hbAbSec(c)}${rsheet(c, k)}`
           '')}<div class=grid2><button onclick="cat('arm')">📦 Itens</button><button onclick="cust()">Outro</button></div>${
       modSec(c)}`
   }
-  return `<div class=fade><div class=row style="gap:8px;align-items:stretch"><button style="flex:1;margin:0" onclick="S.v=cur().npc?'npc':'home';R()">← ${
-    c.npc ? 'NPCs' : 'Agentes'}</button><button onclick="edOpen()" aria-label="Editar nome, jogador e foto" title="Editar" style="width:auto;margin:0;padding:2px 14px;font-size:18px">✎</button></div>${
+  return `<div class=fade><div class=row style="gap:8px;align-items:stretch"><button style="flex:1;margin:0" onclick="S.v=S.bk||(cur().npc?'npc':'home');S.bk=null;R()">← ${
+    S.bk == 'camp' ? 'Campanha' : c.npc ? 'NPCs' : 'Agentes'}</button><button onclick="edOpen()" aria-label="Editar nome, jogador e foto" title="Editar" style="width:auto;margin:0;padding:2px 14px;font-size:18px">✎</button></div>${
     head}${b}<div style="height:90px"></div></div><div class=tabs>${
       ['Ficha', 'Ações', 'Inventário']
         .map((n, i) => `<button class="${S.tab == i ? 'on' : ''}" onclick="S.tab=${i};R()">${n}</button>`)

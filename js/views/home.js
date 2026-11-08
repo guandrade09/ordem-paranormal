@@ -6,7 +6,7 @@
 const home = () =>
   `<div class=fade>${gear(1)}${logoH()}<div class=bar>Fichas de Agente</div>${
     S.chars.filter(c => !c.npc)
-      .map(c => `<div class="card row" onclick="S.cid=${c.id};S.v='sheet';S.tab=0;R()">${ph(c)}<div><b>${
+      .map(c => `<div class="card row" onclick="S.bk=null;S.cid=${c.id};S.v='sheet';S.tab=0;R()">${ph(c)}<div><b>${
              c.name}</b><br><small>${c.classe} · ${c.origem} · NEX ${
              c.nex}%</small></div><button class=x onclick="event.stopPropagation();delC(${c.id})">✕</button></div>`)
       .join('') ||

@@ -176,6 +176,12 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   setIn(jog, { cj_c: camp.code, cj_p: 'senha1' }); await J.campJoin();
   J.S.cp = (J.S.camps || [])[0].id; J.campNewChar();
   T('Criar ficha neste mundo: a ficha nasce vinculada e já vê o homebrew na criação', J.S.d.camp == J.S.cp && J.S.v == 'create' && J.CAT.arm.some((x) => x[0] == 'Cutelo do Açougueiro'));
+  // voltar da ficha aberta pela campanha leva de volta à campanha (e não à lista de agentes)
+  const fid = J.S.chars[0].id; J.S.v = 'camp'; J.R(); J.campOpenCh(fid);
+  const bh = jog.el.innerHTML;
+  T('Ficha aberta pela campanha: o botão de voltar diz "Campanha" e leva para a campanha', J.S.v == 'sheet' && J.S.bk == 'camp' && /← Campanha<\/button>/.test(bh) && /S\.v=S\.bk\|\|/.test(bh));
+  J.S.v = J.S.bk || 'home'; J.S.bk = null; J.R();
+  T('Depois de voltar, estamos na tela da campanha; abrir ficha pela lista de agentes volta para agentes', J.S.v == 'camp' && (J.S.bk = null, J.S.cid = fid, J.S.v = 'sheet', J.R(), /← Agentes<\/button>/.test(jog.el.innerHTML)));
   J.S.d = null; J.S.v = 'start';
 
   // ---- 11. Mestre troca a senha / exclui

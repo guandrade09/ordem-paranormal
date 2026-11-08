@@ -111,9 +111,9 @@ function campv() {
                                           m.id}','d',this.value)">${aesc(m.d || '')}</textarea></div>`).join('') ||
               '<p><small>Nenhuma missão.</small></p>'}<button class=btn onclick="campMisAdd()">+ Missão</button>` :
           `<div class=card>${campBr(c.descr || 'Sem descrição.')}</div><small>O Mestre desta campanha compartilha o homebrew dele com as fichas vinculadas abaixo (rituais, habilidades, armas…).</small>`}<div class=bar>Fichas nesta campanha</div>${
-    chars.map(z => `<div class="card row"><div style="flex:1"><b>${aesc(z.name || 'Sem nome')}</b><br><small>${
+    chars.map(z => `<div class="card row" onclick="campOpenCh(${z.id})"><div style="flex:1"><b>${aesc(z.name || 'Sem nome')}</b><br><small>${
                    z.npc ? 'NPC · ' : ''}${aesc(z.classe || '')}${
-                   z.camp == c.id ? ' · ✔ nesta campanha' : z.camp ? ' · em outra campanha' : ''}</small></div><button class=btn style="width:auto;padding:6px 12px" onclick="campLink(${
+                   z.camp == c.id ? ' · ✔ nesta campanha' : z.camp ? ' · em outra campanha' : ''}</small></div><button class=btn style="width:auto;padding:6px 12px" onclick="event.stopPropagation();campLink(${
                    z.id})">${z.camp == c.id ? 'Tirar' : 'Usar aqui'}</button></div>`).join('') ||
     '<p><small>Você ainda não tem fichas.</small></p>'}<button class=btn onclick="campNewChar()">+ Criar ficha neste mundo</button>${
     own ? '<button class=btn style="background:var(--red)" onclick="campDelM()">Excluir campanha</button>' :
@@ -152,9 +152,20 @@ function campLink(cid) {
     z.camp = S.cp;
   R()
 }
+// Abre a ficha a partir da campanha: o "Voltar" da ficha volta para a campanha
+function campOpenCh(id) {
+  const z = S.chars.find(x => x.id == id);
+  if (!z || z.npc == 'passivo') return;  // NPC passivo não tem ficha
+  S.bk = 'camp';
+  S.cid = id;
+  S.v = 'sheet';
+  S.tab = 0;
+  R()
+}
 function campNewChar() {
   const id = S.cp;
   newC();
+  S.bk = 'camp';
   S.d.camp = id;
   R()
 }
