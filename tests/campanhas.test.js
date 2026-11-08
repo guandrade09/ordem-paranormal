@@ -238,6 +238,17 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   J.campLink(J.cur().id); await J.csPush();
   T('Vincular de novo devolve a ficha', DB.sheets.length == 1);
 
+  // ---- 7d2. É a MESMA ficha: o que o jogador muda na aba Agentes (fora da campanha) também chega ao Mestre
+  J.S.v = 'home'; J.R();
+  const antes = DB.sheets[0].data.pv;
+  J.S.cid = J.cur().id; J.mut((z) => { z.pv = Math.max(0, z.pv - 2); z.inv.push({ n: 'Corda', cat: 0, e: 1, ds: '' }); });
+  await sleep(2300);
+  T('Edição feita pela aba Agentes chega sozinha à cópia da campanha (sem abrir a campanha)', DB.sheets[0].data.pv === antes - 2 && DB.sheets[0].data.inv.some((i) => i.n == 'Corda'), antes + ' → ' + DB.sheets[0].data.pv);
+  J.cur().pv += 1; J.save(); J.csFlush(); await sleep(50);
+  T('csFlush manda na hora (app indo para segundo plano)', DB.sheets[0].data.pv === antes - 1);
+  await M.csPoll(true);
+  T('Mestre vê o valor novo ao vivo', (M.CS.data[camp.id].find((x) => x.data.name == 'Ana') || {}).data.pv === antes - 1);
+
   // ---- 7e. Ritual homebrew com versões Discente e Verdadeiro
   const chk = (id, on) => { mestre.inputs['#hf_' + id] = { type: 'checkbox', checked: on, value: '', closest: () => ({ style: {} }) }; };
   const ritV = async (vals, flags) => { setIn(mestre, Object.fromEntries(Object.entries(vals).map(([k, v]) => ['hf_' + k, v]))); Object.entries(flags).forEach(([k, v]) => chk(k, v)); M.hbSave('rit', ''); };

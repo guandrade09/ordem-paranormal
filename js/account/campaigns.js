@@ -84,6 +84,20 @@ function csSoon() {
   clearTimeout(CS.t);
   CS.t = setTimeout(csPush, 1500)
 }
+// Manda já (sem esperar o atraso) ao ir para segundo plano/fechar e quando a internet volta: edição feita na aba
+// Agentes não pode ficar para trás da cópia que o Mestre vê
+function csFlush() {
+  clearTimeout(CS.t);
+  csPush()
+}
+try {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState == 'hidden') csFlush()
+  });
+  addEventListener('pagehide', csFlush);
+  addEventListener('online', csSoon)
+} catch (e) {
+}
 async function csPush() {
   if (!campOk() || typeof sb.rpc != 'function') return;
   if (S.lv && S.lv.bak) return;  // subida de NEX em andamento: não envia ficha pela metade
