@@ -188,12 +188,70 @@ function csRender() {
     if (e && c) e.innerHTML = csListH(c)
   } else if (S.v == 'cs')
     R()
+  else if (S.v == 'cmbc') {
+    const e = $('#cmp');
+    // não apaga o dado que o Mestre está digitando
+    let busy = false;
+    try {
+      busy = [...e.querySelectorAll('input')].some(i => i.value !== '' || i === document.activeElement)
+    } catch (x) {
+    }
+    if (e && !busy) e.innerHTML = cmbPlH()
+  }
 }
 function csTick() {
   try {
     if (document.visibilityState == 'hidden') return
   } catch (e) {
   }
-  if (S.v == 'camp' || S.v == 'cs') csPoll()
+  if (S.v == 'camp' || S.v == 'cs' || S.v == 'cmbc') csPoll();
+  if (S.v == 'camp') cbPoll()
 }
 if (typeof setInterval == 'function') setInterval(csTick, 4000);
+
+
+// ---- Combate da campanha: o Mestre publica só a ORDEM (nome, turno, rodada; nada de dado ou número de iniciativa)
+const CB = {data: {}, sig: {}, t: null, pb: 0, on: {}};
+
+// Mestre: publica (com atraso) o combate da campanha aberta; sem combate em andamento = apaga
+function cmbPub() {
+  clearTimeout(CB.t);
+  CB.t = setTimeout(cmbPubGo, 600)
+}
+async function cmbPubGo() {
+  const c = campOf(S.cp);
+  if (!c || c.role != 'owner' || !campOk() || typeof sb.rpc != 'function') return;
+  const m = (S.cmbs || {})[c.id];
+  const pub = m && m.on && m.l.length ?
+    {on: 1, r: m.r, c: m.c, l: m.l.map(x => ({id: x.id, n: String(x.n).slice(0, 60)}))} : null;
+  try {
+    await sb.rpc('camp_combat_set', {p_camp: c.id, p_data: pub})
+  } catch (e) {
+  }
+}
+
+// Jogador (e Mestre): busca a ordem publicada
+async function cbPoll() {
+  const c = campOf(S.cp);
+  if (!c || c.role != 'member' || !campOk() || typeof sb.rpc != 'function' || CB.pb) return;
+  CB.pb = 1;
+  try {
+    const r = await sb.rpc('camp_combat_get', {p_camp: c.id});
+    if (!r.error) {
+      const d = r.data && r.data.on ? r.data : null, sig = JSON.stringify(d);
+      if (sig !== CB.sig[c.id]) {
+        const first = CB.sig[c.id] === undefined;
+        CB.sig[c.id] = sig;
+        CB.data[c.id] = d;
+        if (d && !CB.on[c.id] && !first) toast('⚔ Combate iniciado!');
+        CB.on[c.id] = !!d;
+        if (S.v == 'camp' && S.cp == c.id) {
+          const e = $('#cbl');
+          if (e) e.innerHTML = cbH(c)
+        }
+      }
+    }
+  } catch (e) {
+  }
+  CB.pb = 0
+}

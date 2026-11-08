@@ -5,7 +5,7 @@
  */
 const { loadApp } = require('./helpers/app-loader');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const DB = { camps: [], members: [], att: [], n: 0, noSql: false, sheets: [] };
+const DB = { camps: [], members: [], att: [], n: 0, noSql: false, sheets: [], combat: {} };
 
 function rpc(uid, name, a) {
   if (DB.noSql) return { data: null, error: { message: 'Could not find the function public.' + name + ' in the schema cache', code: 'PGRST202' } };
@@ -41,6 +41,15 @@ function rpc(uid, name, a) {
   if (name == 'camp_sheets') {
     if (!mine(a.p_camp)) return { error: { message: 'Campanha não encontrada.' } };
     return { data: JSON.parse(JSON.stringify(DB.sheets.filter((z) => z.c == a.p_camp).map((z) => ({ k: z.u.slice(0, 8), cid: z.cid, data: z.data, upd: z.upd })))) };
+  }
+  if (name == 'camp_combat_set') {
+    if (!mine(a.p_camp)) return { error: { message: 'Campanha não encontrada.' } };
+    if (a.p_data == null) delete DB.combat[a.p_camp]; else DB.combat[a.p_camp] = JSON.parse(JSON.stringify(a.p_data));
+    return { data: null };
+  }
+  if (name == 'camp_combat_get') {
+    if (!mine(a.p_camp) && !DB.members.some((m) => m.c == a.p_camp && m.u == uid)) return { error: { message: 'Campanha não encontrada.' } };
+    return { data: DB.combat[a.p_camp] ? JSON.parse(JSON.stringify(DB.combat[a.p_camp])) : null };
   }
   if (name == 'camp_leave') { DB.sheets = DB.sheets.filter((z) => !(z.c == a.p_id && z.u == uid)); DB.members = DB.members.filter((m) => !(m.c == a.p_id && m.u == uid)); return { data: null }; }
   if (name == 'camp_delete') { DB.camps = DB.camps.filter((c) => !(c.id == a.p_id && c.owner == uid)); DB.members = DB.members.filter((m) => DB.camps.some((c) => c.id == m.c)); return { data: null }; }
@@ -227,6 +236,51 @@ const setIn = (app, o) => { for (const k in app.inputs) delete app.inputs[k]; fo
   T('Desvincular a ficha retira ela da campanha do Mestre', DB.sheets.length == 0);
   J.campLink(J.cur().id); await J.csPush();
   T('Vincular de novo devolve a ficha', DB.sheets.length == 1);
+
+  // ---- 7e. Ritual homebrew com versões Discente e Verdadeiro
+  const chk = (id, on) => { mestre.inputs['#hf_' + id] = { type: 'checkbox', checked: on, value: '', closest: () => ({ style: {} }) }; };
+  const ritV = async (vals, flags) => { setIn(mestre, Object.fromEntries(Object.entries(vals).map(([k, v]) => ['hf_' + k, v]))); Object.entries(flags).forEach(([k, v]) => chk(k, v)); M.hbSave('rit', ''); };
+  await ritV({ n: 'Ritual Triplo', ci: '1', el: 'Sangue', s: 'r', x: 'Normal.', dt: 'Texto do discente.', dp: '', dr: '2', vt: 'Texto do verdadeiro.', vp: '4', vr: '3' }, { hd: true, da: false, hv: true, va: true });
+  await ritV({ n: 'Ritual Só Normal', ci: '1', el: 'Sangue', s: 'r', x: 'Só normal.', dt: 'não deve aparecer', vt: 'não deve aparecer' }, { hd: false, da: true, hv: false, va: true });
+  await ritV({ n: 'Ritual Só Verdadeiro', ci: '2', el: 'Morte', s: 'r', x: 'N.', vt: 'V.', vp: '', vr: '' }, { hd: false, da: false, hv: true, va: false });
+  await sleep(1500); await J.campPull(); J.S.v = 'sheet'; J.R();
+  const rt = (n) => J.RT.find((r) => r.n == n);
+  T('Ritual com Discente e Verdadeiro: PE a mais, círculo exigido e afinidade (PE vazio usa +2 / +5)', JSON.stringify(rt('Ritual Triplo').d) == '[2,2,0]' && JSON.stringify(rt('Ritual Triplo').v) == '[4,3,1]', JSON.stringify([rt('Ritual Triplo').d, rt('Ritual Triplo').v]));
+  T('Ritual sem as versões marcadas fica só com o Normal (mesmo com afinidade marcada e texto escrito)', rt('Ritual Só Normal').d === null && rt('Ritual Só Normal').v === null && J.DS['Ritual Só Normal'].length == 3 && !J.DS['Ritual Só Normal'][1] && !J.DS['Ritual Só Normal'][2]);
+  T('Ritual só com Verdadeiro: Discente indisponível, Verdadeiro sem requisito', rt('Ritual Só Verdadeiro').d === null && JSON.stringify(rt('Ritual Só Verdadeiro').v) == '[5,1,0]');
+  T('Descrição mostra os textos de Discente e Verdadeiro; o resumo diz o requisito', /Discente:<\/b> .*Texto do discente/.test(J.rdesc(rt('Ritual Triplo'))) && /Verdadeiro:<\/b> .*Texto do verdadeiro/.test(J.rdesc(rt('Ritual Triplo'))) && /requer 3º círculo\) \(afinidade\)/.test(J.rver(rt('Ritual Triplo'))) && !/Discente:<\/b>/.test(J.rdesc(rt('Ritual Só Normal'))));
+  T('Formulário: check de existência e requisito de 2º a 4º círculo (sem 1º)', /class=ck id=hf_hd checked/.test(M.hbField(['hd', 'x', 'c'], '1')) && /Sem requisito/.test(M.hbField(['dr', 'x', 's', M.HBREQ], '')) && !/Requer 1º/.test(M.hbField(['dr', 'x', 's', M.HBREQ], '')) && /Requer 4º/.test(M.hbField(['dr', 'x', 's', M.HBREQ], '')));
+  M.S.hbx = camp.id;
+
+  // ---- 7f. Combate da campanha: Mestre vê tudo, jogador só a ordem
+  await M.csPoll(true);
+  M.S.cp = camp.id; M.S.v = 'camp'; M.R();
+  J.S.cp = camp.id; J.S.v = 'camp'; J.R();
+  T('Campanha do Mestre tem o botão do Criador de Combates; a do jogador não', /Criador de Combates/.test(mestre.el.innerHTML) && !/Criador de Combates/.test(jog.el.innerHTML));
+  M.campCombat(); await sleep(50);
+  T('Tela do combate na campanha lista os jogadores presentes (fichas vinculadas)', M.S.v == 'cmbc' && /Jogadores presentes/.test(mestre.el.innerHTML) && /Ana/.test(M.cmbPlH()) && M.CMBP.l.length == 1);
+  setIn(mestre, { cmn: 'Zumbi', cmr: '12', cmb: '2' }); M.cmbAdd();
+  setIn(mestre, { cpd0: '17' }); M.cmbAddP(0);
+  const cm1 = M.S.cmbs[camp.id];
+  T('Jogador presente entra pela lista (sem digitar o nome), com iniciativa = dado + bônus da ficha', cm1.l.length == 2 && cm1.l.some((x) => x.n == 'Ana' && x.d == 17 && x.p));
+  T('Combate da campanha não mexe no combate do menu do Mestre', !M.S.cmb || !M.S.cmb.l.length);
+  M.R(); T('Jogador já adicionado aparece como "na ordem"', /na ordem/.test(M.cmbPlH()));
+  await sleep(1000);
+  await J.campPull(); J.S.cp = camp.id; J.S.v = 'camp'; await J.cbPoll();
+  T('Antes de clicar em Combate!, o jogador não vê nada', !DB.combat[camp.id] && !J.cbH(J.campOf(camp.id)));
+  M.cmbGo(); await sleep(1000); await J.cbPoll();
+  const pub = DB.combat[camp.id], ph = J.cbH(J.campOf(camp.id));
+  T('Ao clicar em Combate!, o servidor recebe a ordem final (nomes na ordem certa, turno e rodada)', pub && pub.on == 1 && pub.r == 1 && pub.l.length == 2 && pub.l[0].n == 'Ana' && pub.l[1].n == 'Zumbi' && pub.c == pub.l[0].id, JSON.stringify(pub));
+  T('O que vai para o servidor NÃO tem dado, bônus nem número de iniciativa', !/"(i|d|b|p)":/.test(JSON.stringify(pub)), JSON.stringify(pub));
+  T('Jogador vê a ordem e o turno atual, sem os números de iniciativa', /Ana/.test(ph) && /Zumbi/.test(ph) && /Turno atual/.test(ph) && /Rodada 1/.test(ph) && !/cmbi/.test(ph));
+  T('Mestre vê a página normal com os números', /cmbi/.test(mestre.el.innerHTML = M.cmbv()) && /Pode atrasar/.test(mestre.el.innerHTML));
+  M.cmbNext(); await sleep(1000); await J.cbPoll();
+  T('Próximo turno chega ao jogador', J.CB.data[camp.id].c == pub.l[1].id);
+  M.cmbEnd(); await sleep(1000); await J.cbPoll();
+  T('Ao encerrar o combate some para o jogador', !DB.combat[camp.id] && !J.cbH(J.campOf(camp.id)));
+  const lixo = await J.sb.rpc('camp_combat_set', { p_camp: camp.id, p_data: { on: 1, l: [] } });
+  T('Jogador NÃO consegue publicar combate (só o Mestre)', !!lixo.error && !DB.combat[camp.id]);
+  M.cmbClear(); M.S.v = 'camp';
 
   // ---- 8. Mestre apaga um ritual: a ficha que já usou continua funcionando
   const ana2 = J.cur(); ana2.rit.push('Chuva de Cinzas'); J.S.v = 'sheet'; J.R();

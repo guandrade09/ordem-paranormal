@@ -34,7 +34,25 @@ function campOpen(id) {
   S.cp = id;
   S.v = 'camp';
   R();
-  csPoll(true)  // Mestre: busca as fichas dos jogadores na hora (depois atualiza sozinho)
+  csPoll(true);  // Mestre: busca as fichas dos jogadores na hora (depois atualiza sozinho)
+  cbPoll()  // jogador: busca a ordem do combate, se houver
+}
+
+// Mestre: abre o Criador de Combates desta campanha (publica o estado atual e busca as fichas dos jogadores)
+function campCombat() {
+  S.v = 'cmbc';
+  R();
+  cmbPub();
+  csPoll(true)
+}
+
+// Jogador: a ordem do combate (sem dados nem números de iniciativa)
+function cbH(c) {
+  const d = CB.data[c.id];
+  if (!d) return '';
+  return `<div class=bar>⚔ Combate · Rodada ${+d.r || 1}</div>${(d.l || []).map((x, i) =>
+    `<div class="cmbr ${x.id == d.c ? 'cur' : ''}"><span class=cmbn>${i + 1}</span><div style="flex:1;min-width:0"><b style="word-break:break-word">${
+      aesc(x.n)}</b>${x.id == d.c ? '<br><small>Turno atual</small>' : ''}</div></div>`).join('')}`
 }
 
 // ---- criar ----
@@ -103,15 +121,16 @@ function campv() {
     own ? `<label><small>Nome</small><input value="${aesc(c.name)}" maxlength=80 style="width:100%" onchange="campEd('name',this.value)"></label><label><small>Descrição</small><textarea rows=4 style="width:100%" onchange="campEd('descr',this.value)">${
             aesc(c.descr || '')}</textarea></label><div class=card><small>Para convidar</small><br>Código <b style="font-size:22px;letter-spacing:3px">${
             aesc(c.code || '')}</b> · ${c.members || 0} jogador(es)<br><button class=btn style="margin-top:8px" onclick="campPassM()">Trocar senha</button></div><button class=btn onclick="S.hbx='${
-            c.id}';S.v='hbm';R()">Homebrew desta campanha (${hbCount(c)} marcado(s))</button><div class=bar>Missões</div><small>Só você enxerga as missões: use para planejar.</small>${
-            (c.missions || []).map(m => `<div class=card><div style="display:flex;gap:8px;align-items:center"><input type=checkbox style="width:26px;height:26px;flex:none;padding:0;margin:0" ${
+            c.id}';S.v='hbm';R()">Homebrew desta campanha (${hbCount(c)} marcado(s))</button><button class=btn onclick="campCombat()">⚔ Criador de Combates${
+            ((S.cmbs || {})[c.id] || {}).on ? ' (em andamento)' : ''}</button><div class=bar>Missões</div><small>Só você enxerga as missões: use para planejar.</small>${
+            (c.missions || []).map(m => `<div class=card><div style="display:flex;gap:8px;align-items:center"><input type=checkbox class=ck ${
                                           m.ok ? 'checked' : ''} onchange="campMis('${m.id}','ok',this.checked)"><input value="${
                                           aesc(m.t)}" maxlength=100 style="flex:1;min-width:0;width:auto;margin:0" placeholder="Título" onchange="campMis('${
                                           m.id}','t',this.value)"><button class=x onclick="campMisDel('${
                                           m.id}')">✕</button></div><textarea rows=2 style="width:100%;margin-top:6px" placeholder="Anotações" onchange="campMis('${
                                           m.id}','d',this.value)">${aesc(m.d || '')}</textarea></div>`).join('') ||
               '<p><small>Nenhuma missão.</small></p>'}<button class=btn onclick="campMisAdd()">+ Missão</button>` :
-          `<div class=card>${campBr(c.descr || 'Sem descrição.')}</div><small>O Mestre desta campanha compartilha o homebrew dele com as fichas vinculadas abaixo (rituais, habilidades, armas…).</small>`}${own ? `<div class=bar>Fichas dos jogadores <small>● ao vivo</small></div><div id=csl>${csListH(c)}</div>` :
+          `<div id=cbl>${cbH(c)}</div><div class=card>${campBr(c.descr || 'Sem descrição.')}</div><small>O Mestre desta campanha compartilha o homebrew dele com as fichas vinculadas abaixo (rituais, habilidades, armas…).</small>`}${own ? `<div class=bar>Fichas dos jogadores <small>● ao vivo</small></div><div id=csl>${csListH(c)}</div>` :
           `<div class=bar>Minhas fichas nesta campanha</div><small>O Mestre vê as fichas vinculadas em tempo real (PV, PE, itens…).</small>${
     chars.map(z => `<div class="card row" onclick="campOpenCh(${z.id})"><div style="flex:1"><b>${aesc(z.name || 'Sem nome')}</b><br><small>${
                    aesc(z.classe || '')}${

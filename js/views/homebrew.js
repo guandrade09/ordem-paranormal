@@ -11,6 +11,7 @@ const HBT = [
   ['mel', 'Melhoria'], ['eqp', 'Equipamento']
 ],
       HBEL = ['Sangue', 'Morte', 'Conhecimento', 'Energia'],
+      HBREQ = [['', 'Sem requisito'], ['2', 'Requer 2º círculo'], ['3', 'Requer 3º círculo'], ['4', 'Requer 4º círculo']],
       HBEQ = [['arm', 'Arma'], ['pro', 'Proteção'], ['mun', 'Munição'], ['uti', 'Utilidade'], ['par', 'Paranormal'],
               ['amd', 'Amaldiçoado']],
       HBF = {
@@ -19,7 +20,12 @@ const HBT = [
           ['el', 'Elemento', 's', [...HBEL, 'Medo'].map(e => [e, e])], ['s', 'Resumo (uma linha)', 't'],
           ['x', 'Descrição completa', 'a'], ['ex', 'Execução (ex.: padrão)', 't'], ['al', 'Alcance', 't'],
           ['av', 'Alvo / Área', 't'], ['du', 'Duração', 't'], ['re', 'Resistência', 't'],
-          ['img', 'Imagem do ritual (PNG, opcional)', 'i']
+          ['img', 'Imagem do ritual (PNG, opcional)', 'i'],
+          // versões do ritual: Discente e Verdadeiro (cada uma pode não existir)
+          ['hd', 'Tem versão Discente', 'c'], ['dt', 'Efeito do Discente', 'a'], ['dp', 'PE a mais que o Normal (Discente)', 'n'],
+          ['dr', 'Requisito do Discente', 's', HBREQ], ['da', 'Discente exige afinidade', 'c'],
+          ['hv', 'Tem versão Verdadeiro', 'c'], ['vt', 'Efeito do Verdadeiro', 'a'], ['vp', 'PE a mais que o Normal (Verdadeiro)', 'n'],
+          ['vr', 'Requisito do Verdadeiro', 's', HBREQ], ['va', 'Verdadeiro exige afinidade', 'c']
         ],
         hab: [['n', 'Nome', 't'], ['t', 'Descrição (se escrever "gasta 2 PE", o custo aparece no botão)', 'a']],
         pod: [
@@ -154,10 +160,14 @@ function hbApply(H) {
     const n = hbN(r.n);
     if (!n || RT.some(z => z.n == n)) return;
     const el = [...HBEL, 'Medo'].includes(r.el) ? r.el : 'Conhecimento', ci = Math.min(4, Math.max(1, +r.ci || 1));
-    RT.push({ci, el, n, s: hbT(r.s || r.x).slice(0, 140), d: null, v: null, hb: 1,
+    // versões: [PE a mais, círculo mínimo, exige afinidade (0/1)]; null = o ritual não tem essa versão
+    const ver = (f, p, q, a, def) => r[f] == '1' ?
+      [r[p] === '' || r[p] == null || isNaN(+r[p]) ? def : Math.max(0, Math.min(30, Math.floor(+r[p]))),
+       Math.min(4, Math.max(1, +r[q] || 1)), r[a] == '1' ? 1 : 0] : null;
+    RT.push({ci, el, n, s: hbT(r.s || r.x).slice(0, 140), d: ver('hd', 'dp', 'dr', 'da', 2), v: ver('hv', 'vp', 'vr', 'va', 5), hb: 1,
              img: typeof r.img == 'string' && r.img.length <= HBIMGMAX + 2000 && HBIMG.test(r.img) ? r.img : ''});
     put(INFO, n, [hbT(r.ex), hbT(r.al), hbT(r.av), hbT(r.du), hbT(r.re)]);
-    put(DS, n, [hbT(r.x || r.s)])
+    put(DS, n, [hbT(r.x || r.s), r.hd == '1' ? hbT(r.dt) : '', r.hv == '1' ? hbT(r.vt) : ''])
   });
   H.pod.forEach(p => {
     const n = hbN(p.n), el = HBEL.includes(p.el) ? p.el : 'Conhecimento';
@@ -266,7 +276,7 @@ function hbmv() {
       `<div class=grid2 style="gap:8px"><button class=btn onclick="hbAll(1)">Marcar todos</button><button class=btn onclick="hbAll(0)">Desmarcar todos</button></div>` :
       ''}${
     l.map(x => `<div class="card row" onclick="hbEdit('${t}','${x.id}')">${
-      cx ? `<input type=checkbox style="width:26px;height:26px;flex:none;padding:0;margin:0" ${
+      cx ? `<input type=checkbox class=ck ${
              hbIn(cx, t, x.id) ? 'checked' : ''} onclick="event.stopPropagation()" onchange="hbTog('${t}','${x.id}')">` : ''}${
       HBIMG.test(x.img || '') ? `<img class="rimg ic" style="width:48px;height:48px" src="${x.img}" alt="">` : ''}<div style="flex:1"><b>${aesc(x.n)}</b><br><small>${
       aesc(hbSub(t, x))}${cx ? '' : ' · em ' + hbOwned().filter(cp => hbIn(cp, t, x.id)).length + ' campanha(s)'}</small></div><button class=x onclick="event.stopPropagation();hbDel('${
@@ -308,6 +318,9 @@ function hbField(f, v) {
   if (ty == 'i')
     return `<div><small>${lb}</small><img id=hf_img_p class=rimg src="${HB.img || ''}" alt="" style="${
       HB.img ? '' : 'display:none'}"><input type=file accept="image/png,image/webp,image/jpeg" onchange="hbPick(this)" style="width:100%"><button class=btn style="width:auto;padding:4px 12px" onclick="hbImgX()">Tirar imagem</button><small style="display:block;opacity:.7">Fica pequena (até 160 px). PNG sem fundo fica melhor.</small></div>`;
+  if (ty == 'c')
+    return `<label style="display:flex;align-items:center;gap:10px;margin:8px 0"><input type=checkbox class=ck id=${id} ${
+      v == '1' ? 'checked' : ''} ${k == 'hd' || k == 'hv' ? 'onchange="hbRv()"' : ''}><span>${lb}</span></label>`;
   if (ty == 'a')
     return `<label><small>${lb}</small><textarea id=${id} rows=4 style="width:100%">${aesc(v)}</textarea></label>`;
   if (ty == 's')
@@ -319,10 +332,28 @@ function hbField(f, v) {
 function hbEdit(t, id) {
   const x = id ? ((hbLib()[t] || []).find(z => z.id == id) || {}) : {};
   HB.img = x.img || '';
+  if (t == 'rit') {
+    // ritual novo já nasce com Discente e Verdadeiro marcados; os antigos (sem a marca) ficam como eram: sem as versões
+    const nv = !id ? {hd: '1', hv: '1', dp: '2', vp: '5'} : {};
+    Object.keys(nv).forEach(k => {
+      if (x[k] == null) x[k] = nv[k]
+    })
+  }
   modal(`<button class=xc onclick="cm()">✕</button><b>${id ? 'Editar' : 'Novo(a)'} ${
     HBT.find(z => z[0] == t)[1].toLowerCase()}</b><div class=scr style="max-height:62vh">${
     HBF[t].map(f => hbField(f, x[f[0]])).join('')}</div><button class=btn onclick="hbSave('${t}','${id}')">Salvar</button>`);
-  if (t == 'eqp') hbEqK()
+  if (t == 'eqp') hbEqK();
+  if (t == 'rit') hbRv()
+}
+// Ritual: os campos de Discente/Verdadeiro só aparecem quando a versão existe
+function hbRv() {
+  [['hd', ['dt', 'dp', 'dr', 'da']], ['hv', ['vt', 'vp', 'vr', 'va']]].forEach(([f, ids]) => {
+    const on = ($('#hf_' + f) || {}).checked;
+    ids.forEach(i => {
+      const e = $('#hf_' + i), l = e && e.closest ? e.closest('label') : null;
+      if (l) l.style.display = on ? (e.type == 'checkbox' ? 'flex' : '') : 'none'
+    })
+  })
 }
 // campos de arma/proteção/munição/elemento só aparecem quando fazem sentido
 // Imagem do ritual: reduz para até 160 px (mantém transparência) e guarda como data URL pequena
@@ -379,7 +410,7 @@ function hbSave(t, id) {
   const o = {id: id || hbId()};
   HBF[t].forEach(([k]) => {
     const e = $('#hf_' + k);
-    o[k] = e ? String(e.value || '').trim() : ''
+    o[k] = !e ? '' : e.type == 'checkbox' ? (e.checked ? '1' : '0') : String(e.value || '').trim()
   });
   o.n = hbN(o.n);
   if (!o.n) return toast('Dê um nome.');

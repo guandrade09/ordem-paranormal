@@ -19,7 +19,7 @@ function R() {
     MDC = null
   }
   hbSync();  // homebrew da campanha da ficha aberta entra nas listas do livro
-  $('#app').innerHTML = ({start, home, mestre, conta, create, sheet, wip, grim, minv, npc: npcv, cmb: cmbv, thr, thd, camps: campsv, camp: campv, cs: csv, hbm: hbmv})[S.v]();
+  $('#app').innerHTML = ({start, home, mestre, conta, create, sheet, wip, grim, minv, npc: npcv, cmb: cmbv, cmbc: cmbv, thr, thd, camps: campsv, camp: campv, cs: csv, hbm: hbmv})[S.v]();
   thTheme();
   save();
   if (S.lv && S.v == 'sheet') lvStep()

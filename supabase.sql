@@ -299,3 +299,47 @@ revoke all on function public.camp_sheet_put(uuid,text,jsonb), public.camp_sheet
   public.camp_leave(uuid) from public, anon;
 grant execute on function public.camp_sheet_put(uuid,text,jsonb), public.camp_sheet_keep(uuid,text[]), public.camp_sheets(uuid),
   public.camp_leave(uuid) to authenticated;
+
+-- =====================================================================================
+-- COMBATE NA CAMPANHA (v0.26.4) — rode este bloco no SQL Editor (pode rodar de novo).
+-- O Mestre publica só a ORDEM do combate (nomes, turno, rodada — sem dados nem números); os membros da campanha leem.
+-- =====================================================================================
+create table if not exists public.campaign_combat (
+  campaign_id uuid        primary key references public.campaigns(id) on delete cascade,
+  data        jsonb       not null,
+  updated_at  timestamptz not null default now(),
+  constraint campaign_combat_obj  check (jsonb_typeof(data) = 'object'),
+  constraint campaign_combat_size check (octet_length(data::text) < 20000)
+);
+alter table public.campaign_combat enable row level security;
+revoke all on public.campaign_combat from anon, authenticated;
+
+-- Mestre publica (p_data nulo = combate encerrado)
+create or replace function public.camp_combat_set(p_camp uuid, p_data jsonb) returns void
+language plpgsql security definer set search_path = '' as $$
+begin
+  if not exists (select 1 from public.campaigns where id = p_camp and owner = auth.uid()) then
+    raise exception 'Campanha não encontrada.';
+  end if;
+  if p_data is null or jsonb_typeof(p_data) <> 'object' then
+    delete from public.campaign_combat where campaign_id = p_camp;
+  else
+    insert into public.campaign_combat (campaign_id, data) values (p_camp, p_data)
+    on conflict (campaign_id) do update set data = excluded.data, updated_at = now();
+  end if;
+end $$;
+
+-- Mestre e membros leem
+create or replace function public.camp_combat_get(p_camp uuid) returns jsonb
+language plpgsql security definer stable set search_path = '' as $$
+begin
+  if not exists (select 1 from public.campaigns where id = p_camp and owner = auth.uid())
+     and not exists (select 1 from public.campaign_members where campaign_id = p_camp and user_id = auth.uid()) then
+    raise exception 'Campanha não encontrada.';
+  end if;
+  return (select data from public.campaign_combat where campaign_id = p_camp);
+end $$;
+
+revoke all on function public.camp_combat_set(uuid,jsonb), public.camp_combat_get(uuid) from public, anon;
+grant execute on function public.camp_combat_set(uuid,jsonb), public.camp_combat_get(uuid) to authenticated;
+

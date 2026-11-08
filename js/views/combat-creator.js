@@ -1,5 +1,7 @@
 /**
  * Mestre: Criador de Combates (iniciativa dinâmica e atraso de ação).
+ * Existe em dois lugares com a mesma tela: no menu do Mestre (S.cmb) e dentro de cada campanha (tela 'cmbc', S.cmbs[campanha]);
+ * na campanha a ORDEM (só nomes, turno e rodada) é publicada para os jogadores (cmbPub em js/account/campaigns.js).
  */
 
 // Criador de Combates: limite de atraso (10 + bônus, mínimo 1)
@@ -9,14 +11,24 @@ const cmbLim = x => Math.max(0, Math.min(10 + x.b - (x.u || 0), x.i - 1)),
           m.r++;
           m.l.forEach(x => {x.u = 0})
         },
-      cmbS = () => (S.cmb = S.cmb || {l: [], on: 0, c: null, r: 1}),
+      cmbNew = () => ({l: [], on: 0, c: null, r: 1}),
+      cmbC = () => S.v == 'cmbc',
+      cmbS = () => cmbC() ? ((S.cmbs = S.cmbs || {})[S.cp] = S.cmbs[S.cp] || cmbNew()) : (S.cmb = S.cmb || cmbNew()),
+      // redesenha; na campanha, publica a ordem para os jogadores
+      cmbR = () => {
+        if (cmbC()) cmbPub();
+        R()
+      },
       cmbSort = l =>
         l.map((x, k) => [x, k]).sort((p, q) => q[0].i - p[0].i || q[0].b - p[0].b || p[1] - q[1]).map(z => z[0]);
 
 // Tela do Criador de Combates
 function cmbv() {
-  const m = cmbS();
-  return `<div class=fade><button onclick="S.v='mestre';R()">← Voltar</button><div class=bar>Criador de Combates</div>
+  const m = cmbS(), cc = cmbC(), c = cc && campOf(S.cp);
+  if (cc && !c) return `<div class=fade><button onclick="S.v='camps';R()">← Campanhas</button><p><small>Campanha não encontrada.</small></p></div>`;
+  return `<div class=fade><button onclick="${cc ? "S.v='camp'" : "S.v='mestre'"};R()">← ${cc ? 'Campanha' : 'Voltar'}</button><div class=bar>Criador de Combates${
+    cc ? ' · ' + esc(c.name) : ''}</div>${cc ? `<small>Os jogadores desta campanha veem a ordem assim que você clicar em Combate! (sem os números).</small>` : ''}${
+    cc ? `<div id=cmp>${cmbPlH()}</div>` : ''}
 <div class=card><b>Adicionar personagem</b><input id=cmn placeholder="Nome" style="margin:6px 0"><div class=grid2 style="margin-bottom:6px"><input id=cmr type=number inputmode=numeric placeholder="Dado rodado"><input id=cmb type=number inputmode=numeric placeholder="Bônus de Iniciativa"></div><button class=btn onclick="cmbAdd()">+ Adicionar</button></div>
 ${m.on ? `<div class=bar>Rodada ${m.r}</div>` : '<div class=bar>Ordem</div>'}
 <div id=cml>${
@@ -48,7 +60,13 @@ function cmbAdd() {
   if (!n) return toast('Informe o nome.');
   if (d === '' || isNaN(+d)) return toast('Informe o dado rodado.');
   if (b !== '' && isNaN(+b)) return toast('Bônus inválido.');
-  const m = cmbS(), e = {id: (m.n = (m.n || 0) + 1), n, d: +d, b: +b || 0};
+  cmbPush(n, +d, +b || 0)
+}
+
+// Coloca o combatente na ordem (iniciativa = dado + bônus); com combate em andamento entra na posição certa
+function cmbPush(n, d, b, p) {
+  const m = cmbS(), e = {id: (m.n = (m.n || 0) + 1), n, d, b};
+  if (p) e.p = p;
   e.i = e.d + e.b;
   if (m.on) {
     let p = m.l.findIndex(x => x.i < e.i || (x.i == e.i && x.b < e.b));
@@ -56,7 +74,7 @@ function cmbAdd() {
     m.l.splice(p, 0, e)
   } else
     m.l.push(e);
-  R()
+  cmbR()
 }
 
 // Iniciar combate
@@ -68,7 +86,7 @@ function cmbGo() {
   m.c = m.l[0].id;
   m.r = 1;
   m.dl = null;
-  R()
+  cmbR()
 }
 
 // Próximo turno
@@ -82,7 +100,7 @@ function cmbNext() {
   }
   m.c = m.l[i].id;
   m.dl = null;
-  R()
+  cmbR()
 }
 function cmbEnd() {
   const m = cmbS();
@@ -95,16 +113,17 @@ function cmbEnd() {
     x.u = 0
   });
   m.l = cmbSort(m.l);
-  R()
+  cmbR()
 }
 function cmbClear() {
-  S.cmb = {l: [], on: 0, c: null, r: 1};
-  R()
+  if (cmbC()) S.cmbs[S.cp] = cmbNew();
+  else S.cmb = cmbNew();
+  cmbR()
 }
 function cmbDl(id) {
   const m = cmbS();
   m.dl = m.dl == id ? null : id;
-  R()
+  cmbR()
 }
 function cmbDel(id) {
   const m = cmbS(), i = m.l.findIndex(x => x.id == id);
@@ -124,7 +143,7 @@ function cmbDel(id) {
     m.r = 1
   }
   if (m.dl == id) m.dl = null;
-  R()
+  cmbR()
 }
 
 // Atrasar ação
@@ -154,5 +173,36 @@ function cmbDo(id) {
     }
   }
   m.dl = null;
-  R()
+  cmbR()
+}
+
+// ---- Jogadores presentes (só na campanha): fichas vinculadas, o Mestre só informa o dado
+// bônus de Iniciativa da ficha do jogador (perícia + bônus de poderes), 0 se não der para calcular
+function cmbBon(d) {
+  try {
+    const k = K(d), v = Math.floor(gb(d, 'Iniciativa', k.tr.includes('Iniciativa')) + ob(d, 'Iniciativa'));
+    return isFinite(v) ? Math.max(-20, Math.min(60, v)) : 0
+  } catch (e) {
+    return 0
+  }
+}
+let CMBP = {l: []};
+function cmbPlH() {
+  const c = campOf(S.cp), m = cmbS(), l = (c && CS.data[c.id]) || [];
+  CMBP.l = l.map(x => ({p: x.k + '|' + x.cid, n: String((x.data && x.data.name) || 'Ficha').slice(0, 40), b: cmbBon(x.data || {})}));
+  return `<div class=card><b>Jogadores presentes</b>${
+    CMBP.l.map((z, i) => {
+      const on = m.l.some(x => x.p == z.p);
+      return `<div class=row style="gap:6px;margin-top:6px;align-items:center"><div style="flex:1;min-width:0;word-break:break-word"><b>${
+        esc(z.n)}</b> <small>Iniciativa ${z.b >= 0 ? '+' : ''}${z.b}</small></div>${
+        on ? '<small>✔ na ordem</small>' :
+             `<input id=cpd${i} type=number inputmode=numeric placeholder="Dado" style="width:70px"><button onclick="cmbAddP(${i})" style="width:auto">+</button>`}</div>`
+    }).join('') ||
+    '<br><small>Nenhum jogador vinculou uma ficha a esta campanha ainda (eles escolhem "Usar aqui" na campanha). Você ainda pode adicionar à mão abaixo.</small>'}</div>`
+}
+function cmbAddP(i) {
+  const z = CMBP.l[i], d = $('#cpd' + i).value;
+  if (!z) return;
+  if (d === '' || isNaN(+d)) return toast('Informe o dado rodado.');
+  cmbPush(z.n, +d, z.b, z.p)
 }
